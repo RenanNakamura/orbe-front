@@ -1,0 +1,42 @@
+<vex-page-layout>
+
+    <vex-page-layout-content class="flex flex-col">
+        <form [formGroup]="form" [class.container]="'boxed'">
+            <div class="flex flex-row">
+                <mat-form-field class="w-2/12 mr-2" appearance="outline">
+                    <mat-label>{{'channel.title' | translate}}</mat-label>
+                    <mat-select formControlName="phoneNumberId">
+                        <mat-option
+                                *ngFor="let channel of this.channels"
+                                [value]="channel.phoneNumberId"
+                                class="example-radio-button">
+                            {{ channel.name || '' }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="w-2/12" appearance="outline">
+                    <mat-label>{{'dashboard.period' | translate}}</mat-label>
+                    <mat-select formControlName="periodValue">
+                        <mat-option
+                                *ngFor="let option of this.periodOptions"
+                                [value]="option.value"
+                                class="example-radio-button">
+                                {{ option.label || '' }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </form>
+
+        <div class="mt-2" [class.container]="'boxed'">
+            <widget-analytics-messages-overview-chart
+                    [series]="series"
+                    [total]="totalMessagesSent"
+                    [amountMessagesDeliveredRead]="totalMessagesDeliveredAndRead"
+                    [amountMessagesSending]="totalMessagesSending"
+                    [amountMessagesFailed]="totalMessagesFailed">
+            </widget-analytics-messages-overview-chart>
+        </div>
+    </vex-page-layout-content>
+</vex-page-layout>

@@ -1,0 +1,115 @@
+<vex-page-layout>
+
+  <vex-page-layout-header class="flex flex-col pb-16 items-center justify-center">
+    <div class="w-full flex flex-col sm:flex-row justify-between" [class.container]="'boxed'">
+      <div class="flex items-center justify-center">
+                  <span
+                    class="w-10 h-10 rounded-full text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center bg-primary-600/10">
+                      <mat-icon svgIcon="mat:message" size="20px"></mat-icon>
+                  </span>
+        <h1 class="title font-semibold">{{ 'templates' | translate }}</h1>
+      </div>
+    </div>
+  </vex-page-layout-header>
+
+  <vex-page-layout-content [class.container]="'boxed'" class="-mt-6">
+    <div class="card overflow-auto -mt-16">
+      <div class="flex flex-row items-center justify-between bg-app-bar px-6 h-16 border-b sticky left-0">
+        <div class="flex flex-row items-center bg-white bg-card rounded-full border px-4">
+          <mat-icon svgIcon="mat:search" size="20px"></mat-icon>
+          <input [formControl]="searchCtrl"
+                 class="px-4 py-3 border-0 outline-none w-full bg-transparent"
+                 [placeholder]="'search' | translate"
+                 type="search">
+        </div>
+
+        <div>
+          <button (click)="onSync()"
+                  class="flex-none ml-4"
+                  color="primary"
+                  mat-mini-fab
+                  [matTooltip]="'template.sync' | translate"
+                  type="button">
+            <mat-icon svgIcon="mat:sync"></mat-icon>
+          </button>
+
+          <button (click)="onCreate()"
+                  class="flex-none ml-4"
+                  color="primary"
+                  mat-mini-fab
+                  [matTooltip]="'template.new' | translate"
+                  type="button">
+            <mat-icon svgIcon="mat:add"></mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <table [dataSource]="dataSource"
+             (matSortChange)="onSortBy($event)"
+             class="w-full"
+             mat-table
+             matSort>
+
+        <!-- Text Columns -->
+        <ng-container *ngFor="let column of columns; trackBy: trackByProperty">
+          <ng-container *ngIf="column.type === 'text'" [matColumnDef]="column.property">
+            <th *matHeaderCellDef mat-header-cell
+                mat-sort-header> {{ column.label | translate }}
+            </th>
+            <td *matCellDef="let row" [ngClass]="column.cssClasses" mat-cell>{{ row[column.property] }}</td>
+          </ng-container>
+          <ng-container *ngIf="column.type === 'enum'" [matColumnDef]="column.property">
+            <th *matHeaderCellDef mat-header-cell
+                mat-sort-header> {{ column.label | translate }}
+            </th>
+            <td *matCellDef="let row" mat-cell>
+                            <span class="inline-block px-2 py-1 rounded"
+                                  [ngClass]="row[column.property] | labelStatusColor">
+                                {{ row[column.property] | translate }}
+                            </span>
+            </td>
+          </ng-container>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header></th>
+          <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
+            <button (click)="$event.stopPropagation()"
+                    [matMenuTriggerData]="{ row: row }"
+                    [matMenuTriggerFor]="actionsMenu"
+                    mat-icon-button
+                    type="button">
+              <mat-icon svgIcon="mat:more_horiz"></mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="visibleColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: visibleColumns;"
+            @fadeInUp
+            class="hover:bg-hover trans-ease-out cursor-pointer"
+            mat-row></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="pageSizeOptions"
+                     [pageSize]="pageSize"
+                     [length]="length"
+                     (page)="onPage($event)"
+                     class="sticky left-0"></mat-paginator>
+    </div>
+
+  </vex-page-layout-content>
+
+</vex-page-layout>
+<mat-menu #actionsMenu="matMenu" xPosition="before" yPosition="below">
+  <ng-template let-row="row" matMenuContent>
+    <button (click)="onUpdate(row)" [disabled]="!this.onCanUpdate(row)" mat-menu-item>
+      <mat-icon svgIcon="mat:edit"></mat-icon>
+      <span>{{ 'edit' | translate }}</span>
+    </button>
+    <button (click)="onDelete(row)" mat-menu-item>
+      <mat-icon svgIcon="mat:delete"></mat-icon>
+      <span>{{ 'delete' | translate }}</span>
+    </button>
+  </ng-template>
+</mat-menu>

@@ -1,0 +1,27 @@
+<div class="status-header">
+    <h2 class="text-lg font-semibold m-0">{{ 'channel.message-delivery-status' | translate }}</h2>
+    <div class="text-xs space-x-1 px-2 py-1 font-semibold rounded-full" [ngClass]="messageStatus.classes">
+        {{ messageStatus.label | translate }}
+    </div>
+</div>
+
+<div *ngFor="let entity of entities" class="entity-card">
+    <div class="card-header">
+        <strong>{{ getEntityTitle(entity.entity_type) | translate }}</strong>
+        <div class="text-xs space-x-1 px-2 py-1 font-semibold rounded-full"
+             [ngClass]="getStatusClass(entity.can_send_message).classes">
+            {{ getStatusClass(entity.can_send_message).label | translate }}
+        </div>
+    </div>
+    <div class="card-body">
+        <p><strong>ID:</strong> {{ entity.id }}</p>
+        <p *ngIf="!entity.errors && !entity.additional_info"><strong>{{ 'channel.entity.description' | translate }}
+            :</strong> {{ 'channel.entity.no-problems-detected' | translate }}.</p>
+        <p *ngIf="entity.additional_info"><strong>{{ 'channel.entity.description' | translate }}
+            :</strong> {{ entity.additional_info }}</p>
+        <ng-container *ngFor="let error of entity.errors || []">
+            <p><strong>{{ 'channel.entity.description' | translate }}:</strong> {{ error.error_description }}</p>
+            <p><strong>{{ 'channel.entity.recommended-action' | translate }}:</strong> {{ error.possible_solution }}</p>
+        </ng-container>
+    </div>
+</div>

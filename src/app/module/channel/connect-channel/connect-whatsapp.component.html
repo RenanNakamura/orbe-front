@@ -1,0 +1,257 @@
+<vex-page-layout mode="simple">
+  <vex-page-layout-content class="flex flex-col">
+    <div class="card flex flex-col">
+      <div class="flex flex-row mt-12">
+        <div class="flex flex-col w-6/12 left-panel">
+          <div class="flex flex-col ml-20">
+            <div class="left-content flex flex-col space-y-4">
+              <div class="flex items-center justify-start">
+                <img src="assets/img/meta/Digital_Stacked_Green.png" alt="WhatsApp" class="whatsapp-image">
+              </div>
+              <div class="flex flex-col space-y-4">
+                <h1 class="font-bold text-5xl leading-none">{{ 'channel.onboarding.left-panel.welcome' | translate }}
+                  <br>{{ 'channel.onboarding.left-panel.whatsapp-channel' | translate }}</h1>
+                <p
+                  class="font-medium text-base text-gray-400">{{ 'channel.onboarding.left-panel.description' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--STEP 1-->
+        <div *ngIf="step === 1" class="flex flex-col w-6/12 right-panel">
+          <div class="flex flex-col">
+            <div class="flex flex-col space-y-4">
+              <h1 class="font-bold text-2xl">{{ 'channel.onboarding.right-panel.title' | translate }}</h1>
+              <mat-radio-group class="flex flex-col radio-group" [(ngModel)]="selectedOption" color="primary">
+                <mat-radio-button value="manual" class="font-medium text-base">
+                  {{ 'channel.onboarding.right-panel.step-1' | translate }}
+                </mat-radio-button>
+                <mat-radio-button value="facebook" class="font-medium text-base">
+                  {{ 'channel.onboarding.right-panel.step-1-facebook' | translate }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+        </div>
+        <!--STEP 1-->
+
+        <!--STEP 2: MANUAL-->
+        <div *ngIf="step === 2 && selectedOption === 'manual' && form"
+             [formGroup]="form"
+             class="right-panel w-6/12">
+          <div class="flex flex-col space-y-4">
+            <div class="w-10/12 space-y-2">
+              <h1
+                class="font-bold text-2xl">{{ 'channel.onboarding.right-panel.description-step-2-main-title' | translate }}</h1>
+              <p
+                class="font-medium text-base text-gray-400">{{ 'channel.onboarding.right-panel.description-step-2-sub-title' | translate }}</p>
+            </div>
+
+            <form (ngSubmit)="onSubmit()" [formGroup]="form">
+              <mat-dialog-content class="flex flex-col space-y-2 w-10/12">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'name' | translate }}</mat-label>
+                  <input formControlName="name" matInput required>
+                  <mat-error *ngIf="form.get('name').hasError('required')">
+                    {{ 'name.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'applicationId' | translate }}</mat-label>
+                  <input formControlName="applicationId" matInput required>
+                  <mat-error *ngIf="form.get('applicationId').hasError('required')">
+                    {{ 'applicationId.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'wabaId' | translate }}</mat-label>
+                  <input formControlName="wabaId" matInput required>
+                  <mat-error *ngIf="form.get('wabaId').hasError('required')">
+                    {{ 'wabaId.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'phoneNumberId' | translate }}</mat-label>
+                  <input formControlName="phoneNumberId" matInput required>
+                  <mat-error *ngIf="form.get('phoneNumberId').hasError('required')">
+                    {{ 'phoneNumberId.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'accessToken' | translate }}</mat-label>
+                  <textarea [rows]="3" formControlName="accessToken" matInput required></textarea>
+                  <mat-error *ngIf="form.get('accessToken').hasError('required')">
+                    {{ 'accessToken.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+              </mat-dialog-content>
+            </form>
+          </div>
+
+        </div>
+        <!--STEP 2: MANUAL-->
+
+        <!--STEP 2: FACEBOOK-->
+        <div *ngIf="step === 2 && selectedOption === 'facebook'" class="flex flex-col right-panel w-6/12">
+          <div class="flex flex-col space-y-4">
+            <div class="flex flex-col space-y-2">
+              <h1
+                class="font-bold text-2xl">{{ 'channel.onboarding.right-panel.description-step-2-facebook-main-title' | translate }}</h1>
+              <p
+                class="font-medium text-base text-gray-400">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title' | translate }}</p>
+            </div>
+            <div class="flex flex-col space-y-4">
+              <div class="flex flex-col space-x-2">
+                <div class="flex space-x-2 items-center">
+                  <mat-icon svgIcon="mat:call" size="18px"></mat-icon>
+                  <span
+                    class="font-medium text-base">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-1' | translate }}</span>
+                </div>
+
+                <mat-radio-group class="px-4" [(ngModel)]="selectedOptionHowConnect" name="option">
+                  <!-- Card 1 -->
+                  <label class="flex items-center p-4 mt-2 border rounded-t-lg cursor-pointer">
+                    <mat-radio-button value="new" color="primary"></mat-radio-button>
+                    <div class="ml-2">
+                      <p
+                        class="font-medium text-base">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-2' | translate }}</p>
+                      <p
+                        class="text-sm text-primary-500">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-3' | translate }}</p>
+                    </div>
+                  </label>
+
+                  <!-- Card 2 -->
+                  <label class="flex items-center p-4 border cursor-pointer">
+                    <mat-radio-button value="business" color="primary"></mat-radio-button>
+                    <div class="ml-2">
+                      <p
+                        class="font-medium">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-4' | translate }}</p>
+                    </div>
+                  </label>
+
+                  <!-- Card 3 -->
+                  <label class="flex items-center p-4 border rounded-b-lg cursor-pointer">
+                    <mat-radio-button value="provider" color="primary"></mat-radio-button>
+                    <div class="ml-2">
+                      <p
+                        class="font-medium">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-5' | translate }}</p>
+                    </div>
+                  </label>
+                </mat-radio-group>
+
+                <div *ngIf="selectedOptionHowConnect === 'business'" class="card m-4">
+                  <div class="flex flex-col bg-orange-50 rounded text-orange-500">
+                    <div class="flex space-x-2 items-center m-2">
+                      <mat-icon svgIcon="mat:warning" size="18px"></mat-icon>
+                      <span
+                        class="font-bold">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-6' | translate }}</span>
+                    </div>
+                    <div class="flex flex-col px-6 py-2 space-y-2">
+                      <p>{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-7' | translate }}</p>
+                      <p>{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-8' | translate }}</p>
+
+                      <label class="flex items-center p-4 border rounded cursor-pointer bg-white text-black">
+                        <mat-checkbox color="primary" [(ngModel)]="twoFactorDisabledBusiness"></mat-checkbox>
+                        <div class="ml-2">
+                          <p
+                            class="font-medium">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-9' | translate }}</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="selectedOptionHowConnect === 'provider'" class="card m-4">
+                  <div class="flex flex-col bg-orange-50 rounded text-orange-500">
+                    <div class="flex space-x-2 items-center m-2">
+                      <mat-icon svgIcon="mat:warning" size="18px"></mat-icon>
+                      <span
+                        class="font-bold">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-6' | translate }}</span>
+                    </div>
+                    <div class="flex flex-col px-6 py-2 space-y-2">
+                      <p>{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-10' | translate }}</p>
+                      <p>{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-11' | translate }}</p>
+                      <p>{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-12' | translate }}</p>
+
+                      <label class="flex items-center p-4 border rounded cursor-pointer bg-white text-black">
+                        <mat-checkbox color="primary" [(ngModel)]="twoFactorDisabledProvider"></mat-checkbox>
+                        <div class="ml-2">
+                          <p
+                            class="font-medium">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-9' | translate }}</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col space-x-2">
+                <div class="flex space-x-2 items-center">
+                  <mat-icon svgIcon="logo:meta_black" size="18px"></mat-icon>
+                  <span
+                    class="font-medium">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-13' | translate }}</span>
+                </div>
+                <mat-checkbox class="font-medium px-4"
+                              color="primary"
+                              [(ngModel)]="hasBusinessManagerAccess">
+                  {{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-14' | translate }}
+                </mat-checkbox>
+              </div>
+
+              <div class="flex flex-col space-x-2">
+                <div class="flex space-x-2 items-center">
+                  <mat-icon svgIcon="mat:credit_card" size="18px"></mat-icon>
+                  <span
+                    class="font-medium">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-15' | translate }}</span>
+                </div>
+                <p
+                  class="font-medium px-4">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-16' | translate }}</p>
+                <p
+                  class="font-medium px-4">{{ 'channel.onboarding.right-panel.description-step-2-facebook-sub-title-17' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--STEP 2: FACEBOOK-->
+      </div>
+      <div class="flex flex-row m-12">
+        <div class="flex flex-col w-6/12 justify-start items-start">
+          <button class="ml-10" (click)="onToGoBack()"
+                  mat-button>{{ 'channel.onboarding.button-to-go-back' | translate }}
+          </button>
+        </div>
+
+        <div class="flex flex-col w-6/12 justify-start items-start">
+          <div class="ml-10">
+            <button *ngIf="step === 1"
+                    mat-raised-button color="primary"
+                    (click)="onNextStep()"
+                    [disabled]="!selectedOption">
+              {{ 'channel.onboarding.button-to-next-step' | translate }}
+            </button>
+
+            <button *ngIf="step === 2 && selectedOption === 'manual'"
+                    mat-raised-button color="primary"
+                    type="submit"
+                    (click)="onSubmit()"
+                    [disabled]="form.invalid">{{ 'create' | translate }}
+            </button>
+
+            <button *ngIf="step === 2 && finishedFacebookSignup"
+                    mat-raised-button color="primary"
+                    type="submit"
+                    (click)="onToGoBackChannel()">{{ 'channel.onboarding.right-panel.button-back-channels' | translate }}
+            </button>
+
+            <app-facebook-embedded-signup
+              *ngIf="step === 2 && selectedOption === 'facebook' && !finishedFacebookSignup"
+              (completed)="onFacebookSignupCompleted($event)"
+              [disabled]="disabledFacebookButton()">
+            </app-facebook-embedded-signup>
+          </div>
+        </div>
+      </div>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>

@@ -1,0 +1,9 @@
+.facebook-login-button {
+    background-color: #1877F2; /* Azul oficial Facebook */
+}
+
+.facebook-login-button:disabled {
+    background-color: #a0aec0; /* cinza claro */
+    cursor: not-allowed;
+    opacity: 0.6;
+}

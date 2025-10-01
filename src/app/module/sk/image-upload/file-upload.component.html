@@ -1,0 +1,17 @@
+<div
+  class="flex flex-row justify-start relative w-full image-upload-container ml-2 cursor-pointer"
+  (click)="fileInput.click()"
+>
+  <mat-icon [svgIcon]="icMidia" color="primary" class="w-6"></mat-icon>
+  <span *ngIf="!isSelectedFile()">{{ this.label | translate }}</span>
+  <span *ngIf="isSelectedFile()">{{ selectedFile?.name }}</span>
+
+  <input
+    type="file"
+    id="fileInput"
+    #fileInput
+    (change)="onFileSelected($event)"
+    [accept]="this.accept"
+    class="hidden"
+  />
+</div>

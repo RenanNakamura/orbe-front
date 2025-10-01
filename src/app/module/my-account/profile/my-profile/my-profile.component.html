@@ -1,0 +1,92 @@
+<div class="mt-6 flex flex-col md:flex-row md:items-start">
+  <div class="flex-auto">
+    <div class="card">
+      <div class="px-6 py-4 border-b">
+        <h2 class="title m-0">{{ 'about' | translate }}</h2>
+      </div>
+
+      <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="py-3 flex items-center">
+          <div
+            @scaleIn
+            class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
+            <mat-icon class="icon-sm" svgIcon="mat:phone"></mat-icon>
+          </div>
+
+          <div @fadeInRight>
+            <p class="m-0 body-1">{{ user?.number | mask: this.onGetMask(user?.ddi) }}</p>
+            <p class="m-0 caption text-hint">{{ 'contactPhone' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="py-3 flex items-center">
+          <div
+            @scaleIn
+            class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
+            <mat-icon class="icon-sm" svgIcon="mat:mail"></mat-icon>
+          </div>
+
+          <div @fadeInRight>
+            <p class="m-0 body-1">{{ user?.email }}</p>
+            <p class="m-0 caption text-hint">{{ 'contactEmail' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="py-3 flex items-center">
+          <div
+            @scaleIn
+            class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
+            <mat-icon class="icon-sm" svgIcon="mat:language"></mat-icon>
+          </div>
+
+          <div @fadeInRight>
+            <p class="m-0 body-1">{{ user?.language | translate }}</p>
+            <p class="m-0 caption text-hint">{{ 'language' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-auto mt-6">
+      <div class="card">
+        <div class="px-6 py-4 border-b">
+          <h2 class="title m-0">{{ 'whatsAppConfig' | translate }}</h2>
+        </div>
+
+        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="py-3 flex items-center">
+            <div
+              @scaleIn
+              class="w-10 h-10 rounded-full bg-black/10 text-black ltr:mr-3 rtl:ml-3 flex items-center justify-center">
+              <mat-icon class="icon-sm" svgIcon="mat:webhook"></mat-icon>
+            </div>
+
+            <p @fadeInRight class="m-0 body-1 cursor-pointer"
+               (click)="this.onWebhook()">{{ 'webhook.title' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-auto mt-6">
+      <div class="card">
+        <div class="px-6 py-4 border-b">
+          <h2 class="title m-0">{{ 'password-security' | translate }}</h2>
+        </div>
+
+        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="py-3 flex items-center">
+            <div
+              @scaleIn
+              class="w-10 h-10 rounded-full bg-black/10 text-black ltr:mr-3 rtl:ml-3 flex items-center justify-center">
+              <mat-icon class="icon-sm" svgIcon="mat:security"></mat-icon>
+            </div>
+
+            <p @fadeInRight class="m-0 body-1 cursor-pointer"
+               (click)="this.onChangePassword()">{{ 'password.change' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

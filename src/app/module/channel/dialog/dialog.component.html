@@ -1,0 +1,104 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="flex flex-row items-center justify-between" mat-dialog-title>
+        <h2 *ngIf="!form.get('id').value"
+            class="headline m-0">{{'channel.new' | translate}}</h2>
+
+        <button class="text-secondary" mat-dialog-close="" mat-icon-button type="button">
+            <mat-icon svgIcon="mat:close"></mat-icon>
+        </button>
+    </div>
+
+    <mat-divider class="text-border"></mat-divider>
+
+    <mat-dialog-content class="flex flex-col">
+        <div class="flex flex-row">
+            <mat-form-field class="w-6/12" appearance="outline">
+                <mat-label>{{'name' | translate}}</mat-label>
+                <input formControlName="name" matInput required>
+                <mat-error *ngIf="form.get('name').hasError('required')">
+                    {{'name.required' | translate}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="w-6/12" appearance="outline">
+                <mat-label>{{'applicationId' | translate}}</mat-label>
+                <input formControlName="applicationId" matInput required>
+                <mat-error *ngIf="form.get('applicationId').hasError('required')">
+                    {{'applicationId.required' | translate}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="flex flex-row">
+            <mat-form-field class="w-6/12" appearance="outline">
+                <mat-label>{{'wabaId' | translate}}</mat-label>
+                <input formControlName="wabaId" matInput required>
+                <mat-error *ngIf="form.get('wabaId').hasError('required')">
+                    {{'wabaId.required' | translate}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w-6/12" appearance="outline">
+                <mat-label>{{'phoneNumberId' | translate}}</mat-label>
+                <input formControlName="phoneNumberId" matInput required>
+                <mat-error *ngIf="form.get('phoneNumberId').hasError('required')">
+                    {{'phoneNumberId.required' | translate}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <mat-form-field class="flex-auto" appearance="outline">
+            <mat-label>{{'accessToken' | translate}}</mat-label>
+            <textarea [rows]="3" formControlName="accessToken" matInput required></textarea>
+            <mat-error *ngIf="form.get('accessToken').hasError('required')">
+                {{'accessToken.required' | translate}}
+            </mat-error>
+        </mat-form-field>
+
+        <div class="flex flex-col mt-1 p-2 bg-gray-100 rounded-lg">
+            <div class="flex flex-col pt-2"
+                 [ngClass]="{'border-t pt-2': form.get('id')?.value && this.phoneNumberInfo}">
+                <div class="flex flex-col">
+                    <p class="font-bold">
+                        {{'channel.webhook' | translate}}
+                        <a class="text-primary"
+                           [href]="'https://developers.facebook.com/'">{{" "}}{{'meta-website' | translate}}</a>.
+                    </p>
+                </div>
+                <div class="flex flex-col mt-4">
+                    <div class="flex flex-col">
+                        <span class="font-semibold">{{'callback-url' | translate}}</span>
+                        <div class="flex flex-row">
+                            <span>{{this.webhookLink}}</span>
+                            <mat-icon size="16"
+                                      class="text-primary ml-1 content-center cursor-pointer"
+                                      svgIcon="mat:content_copy"
+                                      (click)="this.onCopy(this.webhookLink)">
+                            </mat-icon>
+                        </div>
+                    </div>
+                    <div class="flex flex-col mt-2">
+                        <span class="font-semibold">{{'verify-token' | translate}}</span>
+                        <div class="flex flex-row">
+                            <span>{{this.webhookVerifyToken}}</span>
+                            <mat-icon size="16"
+                                      class="text-primary ml-1 content-center cursor-pointer"
+                                      svgIcon="mat:content_copy"
+                                      (click)="this.onCopy(this.webhookVerifyToken)">
+                            </mat-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button
+                mat-dialog-close=""
+                type="button">{{'cancel' | translate}}
+        </button>
+        <button color="primary"
+                mat-button
+                type="submit"
+                *ngIf="!form.get('id').value"
+                [disabled]="form.invalid">{{'create' | translate}}
+        </button>
+    </mat-dialog-actions>
+</form>

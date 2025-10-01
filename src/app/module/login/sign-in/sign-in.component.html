@@ -1,0 +1,57 @@
+<div class="flex flex-row w-full h-full">
+  <div class="overflow-hidden w-full self-center card-login">
+    <div class="text-left pl-6 mt-2">
+      <h2 class="m-0 font-semibold">{{ 'login.title' | translate }}</h2>
+      <h4 class="body-2 text-secondary m-0">{{ 'login.sub-title' | translate }}</h4>
+    </div>
+
+    <form [formGroup]="form" class="flex flex-col p-6" (ngSubmit)="this.onSignIn()">
+      <div class="flex flex-col">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'email' | translate }}</mat-label>
+          <input formControlName="email" matInput required />
+          <mat-error *ngIf="form.get('email').hasError('required')">
+            {{ 'email.required' | translate }}
+          </mat-error>
+          <mat-error *ngIf="form.get('email').hasError('email')">
+            {{ 'email.invalid' | translate }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'password' | translate }}</mat-label>
+          <input
+            [type]="inputType"
+            formControlName="password"
+            matInput
+            required
+          />
+          <mat-error *ngIf="form.get('password').hasError('required')">
+            {{ 'password.required' | translate }}
+          </mat-error>
+          <button
+            (click)="this.onToggleVisibility()"
+            mat-icon-button
+            matSuffix
+            type="button"
+          >
+            <mat-icon *ngIf="visible" [svgIcon]="'mat:visibility'"></mat-icon>
+            <mat-icon *ngIf="!visible" [svgIcon]="'mat:visibility_off'"></mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <button color="primary" mat-raised-button type="submit" [disabled]="form.invalid">
+        {{ 'login.sign-in' | translate }}
+      </button>
+
+      <a href="/login/forgot-password" class="mt-2">
+        <h4 class="body-2 text-secondary">{{ 'login.forgot.password' | translate }}</h4>
+      </a>
+    </form>
+  </div>
+  <div class="content-img">
+    <img [src]="'assets/img/orbetalk/orbetalk-logo-white.svg'" alt="">
+    <h2 class="text-white font-bold">{{ 'login.orbe.title' | translate }}</h2>
+    <h4 class="text-white">{{ 'login.orbe.sub-title' | translate }}</h4>
+  </div>
+</div>

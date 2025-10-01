@@ -1,0 +1,60 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="flex flex-row items-center justify-between"mat-dialog-title>
+        <h2 *ngIf="!form.get('id').value" class="headline m-0">{{'contact.new' | translate}}</h2>
+        <h2 *ngIf="form.get('id').value" class="headline m-0">{{'contact.edit' | translate}}</h2>
+
+        <button class="text-secondary" mat-dialog-close="" mat-icon-button type="button">
+            <mat-icon svgIcon="mat:close"></mat-icon>
+        </button>
+    </div>
+
+    <mat-divider class="text-border"></mat-divider>
+
+    <mat-dialog-content class="flex flex-col">
+        <mat-form-field class="flex-auto" appearance="outline">
+            <mat-label>{{'name' | translate}}</mat-label>
+            <input formControlName="name" matInput required>
+            <mat-error *ngIf="form.get('name').hasError('required')">
+                {{'name.required' | translate}}
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="flex-auto" appearance="outline">
+            <mat-label>{{'email' | translate}}</mat-label>
+            <input formControlName="email" matInput>
+            <mat-error *ngIf="form.get('email').hasError('email')">
+                {{'email.invalid' | translate}}
+            </mat-error>
+        </mat-form-field>
+        <div class="flex flex-row">
+            <mat-form-field class="w-6/12" appearance="outline">
+                <mat-label>{{'ddi' | translate}}</mat-label>
+                <input formControlName="ddi" matInput required>
+                <mat-error *ngIf="form.get('ddi').hasError('required')">
+                    {{'ddi.required' | translate}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="ml-1 w-6/12" appearance="outline">
+                <mat-label>{{'number' | translate}}</mat-label>
+                <input formControlName="number" matInput required [mask]="this.phoneMask">
+                <mat-error *ngIf="form.get('number').hasError('required')">
+                    {{'number.required' | translate}}
+                </mat-error>
+                <mat-error *ngIf="form.get('number').hasError('mask')">
+                    {{'number.invalid' | translate}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <mat-form-field class="flex-auto" appearance="outline">
+            <mat-label>{{'address' | translate}}</mat-label>
+            <input formControlName="address" matInput>
+        </mat-form-field>
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close="" type="button">{{'cancel' | translate}}</button>
+        <button color="primary" mat-button type="submit" *ngIf="!form.get('id').value"
+                [disabled]="form.invalid">{{'create' | translate}}</button>
+        <button color="primary" mat-button type="submit" *ngIf="form.get('id').value"
+                [disabled]="form.invalid">{{'edit' | translate}}</button>
+    </mat-dialog-actions>
+</form>

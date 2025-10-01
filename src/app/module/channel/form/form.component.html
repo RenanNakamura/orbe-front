@@ -1,0 +1,249 @@
+<vex-page-layout mode="card">
+  <!--HEADER-->
+  <vex-page-layout-header class="flex flex-col pb-16 items-center justify-center">
+    <div class="w-full flex flex-col sm:flex-row justify-between" [class.container]="'boxed'">
+      <div class="flex items-center justify-center">
+                  <span
+                    class="w-10 h-10 rounded-full text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center bg-primary-600/10">
+                      <mat-icon svgIcon="mat:devices" size="20px"></mat-icon>
+                  </span>
+        <h1 class="title font-semibold">{{ 'channel.edit' | translate }}</h1>
+      </div>
+    </div>
+  </vex-page-layout-header>
+  <!--HEADER-->
+
+  <!--CONTENT-->
+  <vex-page-layout-content class="flex flex-col">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" [class.container]="'boxed'">
+      <div class="flex flex-row items-start">
+        <!--CARD INFORMAÇÕES PROFILE WHATSAPP-->
+        <div class="card w-4/12">
+          <!--Informações do canal-->
+          <div class="flex flex-col px-6 py-4 items-center">
+            <div class="flex flex-row items-center my-2">
+              <div
+                class="flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-400 rounded-full text-xs font-medium">
+                <span>WhatsApp</span>
+              </div>
+              <div *ngIf="isCreatedFromFacebook"
+                   class="flex items-center space-x-1 px-2 py-1 bg-cyan-100 text-cyan-400 rounded-full text-xs font-medium ml-1">
+                <span>{{ 'channel.embedded-signup' | translate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avatar -->
+          <div class="flex flex-col items-center my-2">
+                        <span class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center my-4">
+                            <img src="assets/img/no-avatar.png" alt="Profile" class="w-full h-full object-cover">
+                        </span>
+
+            <h3 class="text-lg font-semibold m-0">{{ form?.get('verifiedName')?.value }}</h3>
+            <span
+              class="text-gray text-sm">{{ form?.get('displayPhoneNumber')?.value | mask: this.onGetMask(form?.get('displayPhoneNumber')?.value) }}</span>
+          </div>
+
+          <!-- Status Grid -->
+          <div class="flex flex-col my-4">
+            <div class="flex flex-row items-center justify-center h-14">
+              <div class="bg-gray-100 p-2 rounded-lg text-center h-full flex items-center justify-center flex-col w-6/12 ml-1">
+                <div class="text-sm text-gray-400">{{ 'channel.meta-status-label' | translate }}</div>
+                <div class="text-xs space-x-1 px-2 py-1 font-semibold rounded-full" [ngClass]="metaStatusInfo.classes">
+                  {{ metaStatusInfo.labelKey | translate }}
+                </div>
+              </div>
+              <div
+                class="bg-gray-100 p-2 rounded-lg text-center h-full flex items-center justify-center flex-col w-6/12 ml-1 mr-1">
+                <div class="text-sm text-gray-400">{{ 'channel.channel-quality' | translate }}</div>
+                <div class="text-xs space-x-1 px-2 py-1 font-semibold rounded-full" [ngClass]="qualityInfo.classes">
+                  {{ qualityInfo.label | translate }}
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-row items-center justify-center h-14 mt-1">
+              <div
+                class="bg-gray-100 p-2 rounded-lg text-center h-full flex items-center justify-center flex-col w-6/12">
+                <div class="text-sm text-gray-400">{{ 'channel.messaging-tier-label' | translate }}</div>
+                <div class="text-xs text-black font-bold">
+                  {{ messagingTierInfo | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col mt-6 border-t divide-y">
+            <a
+              href="https://business.facebook.com/billing_hub/payment_settings"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center text-xs space-x-1 py-2 px-2 cursor-pointer"
+            >
+              <div class="flex items-center space-x-2 flex-grow">
+                <mat-icon svgIcon="mat:credit_card" size="16px"></mat-icon>
+                <span>{{ 'channel.helpers-button.wa-payment-settings' | translate }}</span>
+              </div>
+              <mat-icon svgIcon="mat:chevron_right" size="16px" class="ml-auto"></mat-icon>
+            </a>
+            <a
+              href="https://business.facebook.com/latest/whatsapp_manager/phone_numbers"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center text-xs space-x-1 py-2 px-2 cursor-pointer"
+            >
+              <div class="flex items-center space-x-2 flex-grow">
+                <mat-icon svgIcon="mat:shopping_bag" size="16px"></mat-icon>
+                <span>{{ 'channel.helpers-button.access-whatsapp-manager' | translate }}</span>
+              </div>
+              <mat-icon svgIcon="mat:chevron_right" size="16px" class="ml-auto"></mat-icon>
+            </a>
+            <a
+              href="https://business.facebook.com/settings/security"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center text-xs space-x-1 py-2 px-2 cursor-pointer"
+            >
+              <div class="flex items-center space-x-2 flex-grow">
+                <mat-icon svgIcon="mat:check_circle" size="16px"></mat-icon>
+                <span>{{ 'channel.helpers-button.company-verification' | translate }}</span>
+              </div>
+              <mat-icon svgIcon="mat:chevron_right" size="16px" class="ml-auto"></mat-icon>
+            </a>
+          </div>
+        </div>
+
+        <!--CARD DE CONFIGURAÇÕES-->
+        <div class="card w-8/12 ml-2">
+          <mat-tab-group>
+            <mat-tab label="Configurações">
+              <ng-template mat-tab-label>
+                <mat-icon svgIcon="mat:settings" size="16px" class="mr-1"></mat-icon>
+                {{ 'channel.tab-channel-settings' | translate }}
+              </ng-template>
+              <div class="flex flex-col px-6 py-4">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'name' | translate }}</mat-label>
+                  <input formControlName="name" matInput required>
+                  <mat-error *ngIf="form.get('name').hasError('required')">
+                    {{ 'name.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'applicationId' | translate }}</mat-label>
+                  <input [readonly]="isCreatedFromFacebook"
+                         formControlName="applicationId"
+                         matInput
+                         required>
+                  <mat-error *ngIf="form.get('applicationId').hasError('required')">
+                    {{ 'applicationId.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'wabaId' | translate }}</mat-label>
+                  <input [readonly]="isCreatedFromFacebook"
+                         formControlName="wabaId"
+                         matInput
+                         required>
+                  <mat-error *ngIf="form.get('wabaId').hasError('required')">
+                    {{ 'wabaId.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'phoneNumberId' | translate }}</mat-label>
+                  <input [readonly]="isCreatedFromFacebook"
+                         formControlName="phoneNumberId"
+                         matInput
+                         required>
+                  <mat-error *ngIf="form.get('phoneNumberId').hasError('required')">
+                    {{ 'phoneNumberId.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'accessToken' | translate }}</mat-label>
+                  <textarea [rows]="3"
+                            [readonly]="isCreatedFromFacebook"
+                            class="no-scroll-horizontal"
+                            formControlName="accessToken"
+                            matInput
+                            required>
+                                    </textarea>
+                  <mat-error *ngIf="form.get('accessToken').hasError('required')">
+                    {{ 'accessToken.required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+
+                <div *ngIf="!isCreatedFromFacebook"
+                     class="flex flex-col mt-1 p-2 bg-gray-light rounded-lg">
+                  <div class="flex flex-col pt-2"
+                       [ngClass]="{'pt-2': form.get('id')?.value}">
+                    <div class="flex flex-col">
+                      <p class="font-bold"> {{ 'channel.webhook' | translate }}
+                        <a class="text-primary-400"
+                           [href]="'https://developers.facebook.com/'">{{ " " }}{{ 'meta-website' | translate }}.
+                        </a>
+                      </p>
+                    </div>
+                    <div class="flex flex-col mt-4">
+                      <div class="flex flex-col">
+                        <span class="font-semibold">{{ 'callback-url' | translate }}</span>
+                        <div class="flex flex-row">
+                          <span>{{ this.webhookLink }}</span>
+                          <mat-icon size="16"
+                                    class="text-primary-400 ml-1 content-center cursor-pointer"
+                                    svgIcon="mat:content_copy"
+                                    (click)="this.onCopy(this.webhookLink)">
+                          </mat-icon>
+                        </div>
+                      </div>
+                      <div class="flex flex-col mt-2">
+                        <span class="font-semibold">{{ 'verify-token' | translate }}</span>
+                        <div class="flex flex-row">
+                          <span>{{ this.webhookVerifyToken }}</span>
+                          <mat-icon class="text-primary-400 ml-1 content-center cursor-pointer"
+                                    svgIcon="mat:content_copy"
+                                    size="16"
+                                    (click)="this.onCopy(this.webhookVerifyToken)">
+                          </mat-icon>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex justify-end p-2">
+                  <button mat-button
+                          type="button"
+                          [disabled]="this.isLoading"
+                          (click)="this.onCancel()">{{ 'cancel' | translate }}
+                  </button>
+                  <button color="primary"
+                          mat-button
+                          type="submit"
+                          class="flex justify-center"
+                          [disabled]="form.invalid">
+                    <span *ngIf="form?.get('id').value && !this.isLoading">{{ 'edit' | translate }}</span>
+                    <mat-progress-spinner
+                      *ngIf="this.isLoading"
+                      mode="indeterminate"
+                      [diameter]="20"
+                      color="primary"></mat-progress-spinner>
+                  </button>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Qualidade do Canal">
+              <ng-template mat-tab-label>
+                <mat-icon svgIcon="mat:check_circle" size="16px" class="mr-1"></mat-icon>
+                {{ 'channel.tab-channel-quality' | translate }}
+              </ng-template>
+              <div class="p-4">
+                <app-channel-health-status [healthStatus]="healthStatus"></app-channel-health-status>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+    </form>
+  </vex-page-layout-content>
+  <!--CONTENT-->
+</vex-page-layout>

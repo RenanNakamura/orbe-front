@@ -1,0 +1,90 @@
+<div class="flex flex-row items-center justify-between" mat-dialog-title>
+  <h2 class="headline m-0">{{ 'contact.select' | translate }}</h2>
+  <button class="text-secondary" (click)="onClose()" mat-icon-button type="button">
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<mat-divider class="text-border"></mat-divider>
+
+<vex-page-layout>
+  <vex-page-layout-content [class.container]="'boxed'" class="pl-0 pr-0">
+
+    <div class="overflow-auto">
+      <div class="flex flex-row items-center bg-app-bar px-6 h-16 border-b sticky left-0">
+        <h2 class="title my-0 ltr:pr-4 rtl:pl-4 ltr:mr-4 rtl:ml-4 ltr:border-r rtl:border-l">
+          <span *ngIf="selected.length"> {{ selected.length }} {{ 'selected' | translate }}</span>
+        </h2>
+
+        <div class="flex flex-row bg-card rounded-full border px-4 items-center bg-white">
+          <mat-icon svgIcon="mat:search" size="20px"></mat-icon>
+          <input [formControl]="searchCtrl"
+                 class="px-4 py-3 border-0 outline-none w-full bg-transparent"
+                 [placeholder]="'search' | translate"
+                 type="search">
+        </div>
+      </div>
+
+      <table [dataSource]="dataSource"
+             (matSortChange)="onSortBy($event)"
+             class="w-full"
+             mat-table
+             matSort>
+
+        <ng-container matColumnDef="checkbox">
+          <th *matHeaderCellDef mat-header-cell>
+            <mat-checkbox (change)="onMasterToggle()"
+                          [checked]="!!selected.length && isAllSelected()"
+                          [indeterminate]="!!selected.length && !isAllSelected()"
+                          color="primary">
+            </mat-checkbox>
+          </th>
+          <td *matCellDef="let row" class="w-4" mat-cell>
+            <mat-checkbox (change)="onToggle(row)"
+                          [checked]="isSelected(row)"
+                          color="primary">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container *ngFor="let column of columns; trackBy: trackByProperty">
+          <ng-container *ngIf="column.type === 'text'" [matColumnDef]="column.property">
+            <th *matHeaderCellDef mat-header-cell
+                mat-sort-header> {{ column.label | translate }}
+            </th>
+            <td *matCellDef="let row" [ngClass]="column.cssClasses"
+                mat-cell>{{ row[column.property] }}
+            </td>
+          </ng-container>
+          <ng-container *ngIf="column.type === 'phone'" [matColumnDef]="column.property">
+            <th *matHeaderCellDef mat-header-cell
+                mat-sort-header> {{ column.label | translate }}
+            </th>
+            <td *matCellDef="let row" [ngClass]="column.cssClasses"
+                mat-cell>{{ row[column.property] | mask: this.onGetMask(row) }}
+            </td>
+          </ng-container>
+        </ng-container>
+
+        <tr *matHeaderRowDef="visibleColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: visibleColumns;"
+            @fadeInUp
+            class="hover:bg-hover trans-ease-out cursor-pointer"
+            mat-row></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="pageSizeOptions"
+                     [pageSize]="pageSize"
+                     [length]="length"
+                     (page)="onPage($event)"
+                     class="sticky left-0"></mat-paginator>
+    </div>
+
+  </vex-page-layout-content>
+
+</vex-page-layout>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()" type="button">{{ 'cancel' | translate }}</button>
+  <button color="primary" mat-button type="button" (click)="onAdd()">{{ 'advance' | translate }}</button>
+</mat-dialog-actions>

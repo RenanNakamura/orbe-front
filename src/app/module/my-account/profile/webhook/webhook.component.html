@@ -1,0 +1,54 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="flex flex-row items-center justify-between" mat-dialog-title>
+        <h2 class="headline m-0">{{'webhook.title' | translate}}</h2>
+
+        <button class="text-secondary" mat-dialog-close="" mat-icon-button type="button">
+            <mat-icon [svgIcon]="'mat:close'"></mat-icon>
+        </button>
+    </div>
+
+    <mat-divider class="text-border"></mat-divider>
+
+    <mat-dialog-content class="flex flex-col">
+        <mat-form-field class="mt-1 flex-auto" appearance="outline">
+            <mat-label>{{'webhook.link' | translate}}</mat-label>
+            <input formControlName="link" matInput type="text">
+            <mat-hint align="start" *ngIf="!this.form.get('link').value">
+                {{'webhook.link.hint' | translate}}
+            </mat-hint>
+        </mat-form-field>
+        <div class="flex flex-row mt-1">
+            <mat-form-field class="w-full" appearance="outline">
+                <mat-label>{{'webhook.verifyToken' | translate}}</mat-label>
+                <input formControlName="verifyToken" matInput required type="text">
+                <mat-hint align="start">
+                    {{'webhook.verifyToken.hint' | translate}}
+                </mat-hint>
+                <mat-error *ngIf="form.get('verifyToken').hasError('required')">
+                    {{'webhook.verifyToken.required' | translate}}
+                </mat-error>
+                <div class="flex flex-row btn-action">
+                    <button color="primary"
+                            type="button"
+                            mat-icon-button
+                            [matTooltip]="'webhook.verifyToken.generate' | translate"
+                            (click)="this.onGenerateVerifyToken()">
+                        <mat-icon [svgIcon]="'mat:refresh'"></mat-icon>
+                    </button>
+                    <button color="primary"
+                            type="button"
+                            mat-icon-button
+                            [matTooltip]="'webhook.verifyToken.copy' | translate"
+                            (click)="this.onCopyVerifyToken()">
+                        <mat-icon [svgIcon]="'mat:content_copy'"></mat-icon>
+                    </button>
+                </div>
+            </mat-form-field>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close="" type="button">{{'cancel' | translate}}</button>
+        <button color="primary" mat-button type="submit" [disabled]="form.invalid">{{'save' | translate}}</button>
+    </mat-dialog-actions>
+</form>

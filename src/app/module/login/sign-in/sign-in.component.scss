@@ -1,0 +1,25 @@
+.content-img {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 60%;
+  height: 100%;
+  background: radial-gradient(circle at bottom, #1a1a40, #0d0d26, #03050a);
+  align-items: center;
+
+  img {
+    width: 500px;
+  }
+}
+
+.card-login {
+  margin: 8rem;
+
+  @media (max-width: 1536px) {
+    margin: 4rem;
+  }
+
+  @media (max-width: 1280px) {
+    margin: 2.5rem;
+  }
+}

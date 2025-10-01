@@ -1,0 +1,90 @@
+<div class="flex flex-row w-full h-full">
+  <div class="overflow-hidden w-full self-center card-login">
+    <div class="text-left pl-6 mt-4">
+      <h2 class="m-0 font-semibold">{{ 'login.onboarding.title' | translate }}</h2>
+      <h4 class="body-2 text-secondary m-0">{{ 'login.onboarding.subtitle' | translate }}</h4>
+    </div>
+
+    <form [formGroup]="form"
+          (ngSubmit)="onSubmit()"
+          class="p-6 flex flex-col text-center">
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'name' | translate }}</mat-label>
+        <input formControlName="name" matInput required>
+        <mat-error *ngIf="form.get('name').hasError('required')">
+          {{ 'name.required' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'email' | translate }}</mat-label>
+        <input formControlName="email" matInput required type="email">
+        <mat-error *ngIf="form.get('email').hasError('required')">
+          {{ 'email.required' | translate }}
+        </mat-error>
+        <mat-error *ngIf="form.get('email').hasError('email')">
+          {{ 'email.invalid' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="flex flex-row">
+        <mat-form-field class="w-6/12" appearance="outline">
+          <mat-label>{{ 'phone' | translate }}</mat-label>
+          <input formControlName="phone" matInput required>
+          <mat-error *ngIf="form.get('phone').hasError('required')">
+            {{ 'phone.required' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-6/12 ml-2" appearance="outline">
+          <mat-label>{{ 'language' | translate }}</mat-label>
+          <mat-select formControlName="language" required>
+            <mat-option
+              *ngFor="let language of languages | keyvalue"
+              [value]="language.key"
+              class="example-radio-button">
+              {{ language.value | translate }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('language').hasError('required')">
+            {{ 'language.required' | translate }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'password' | translate }}</mat-label>
+        <input formControlName="password" matInput required type="password">
+        <mat-error *ngIf="form.get('password').hasError('required')">
+          {{ 'password.required' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'confirm-password' | translate }}</mat-label>
+        <input formControlName="confirmPassword" matInput required type="password">
+        <mat-error *ngIf="form.get('confirmPassword').hasError('required')">
+          {{ 'confirm-password.required' | translate }}
+        </mat-error>
+        <mat-error *ngIf="form.get('confirmPassword').hasError('passwordNotMatch')">
+          {{ 'confirm-password.notEqual' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <button class="mt-2" color="primary" mat-raised-button type="submit"
+              [disabled]="form.invalid || this.isSuccess">
+        {{ 'finish' | translate }}
+      </button>
+
+      <div *ngIf="isSuccess" class="body-2 text-secondary mt-4">
+        <b>{{ 'login.onboarding.success' | translate }}</b>
+      </div>
+    </form>
+  </div>
+  <div class="content-img">
+    <img [src]="'assets/img/orbetalk/orbetalk-logo-white.svg'" alt="">
+    <h2 class="text-white font-bold">{{ 'login.orbe.title' | translate }}</h2>
+    <h4 class="text-white">{{ 'login.orbe.sub-title' | translate }}</h4>
+  </div>
+</div>
