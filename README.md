@@ -1,4 +1,4 @@
-# buddy-front
+# orbe-front
   
 Quando der problema no react deixar as duas versoes iguais
 
