@@ -1,0 +1,27 @@
+<form [formGroup]="form" (submit)="onSubmit()">
+  <div mat-dialog-title class="flex flex-row justify-between items-center">
+    <div>{{ _data?.header | translate }}</div>
+    <button type="button" mat-icon-button mat-dialog-close tabindex="-1">
+      <mat-icon svgIcon="mat:close"></mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="text-border"></mat-divider>
+
+  <mat-dialog-content>
+    <div class="flex flex-row">
+      <mat-form-field class="flex-auto w-full" appearance="outline">
+        <mat-label>{{ this._data?.inputLabel | translate }}</mat-label>
+        <input formControlName="value" [required]="this._data?.required" matInput/>
+        <mat-error *ngIf="form?.get('value').hasError('required')">
+          {{ this._data?.messageRequired | translate }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>{{ 'no' | translate }}</button>
+    <button mat-button color="primary" type="submit" [disabled]="form.invalid">{{ 'yes' | translate }}</button>
+  </mat-dialog-actions>
+</form>

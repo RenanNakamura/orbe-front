@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { LayoutComponent } from './layouts/layout/layout.component';
-import { AuthGuardService } from './service/guard/auth-guard.service';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {LayoutComponent} from './layouts/layout/layout.component';
+import {AuthGuardService} from './service/guard/auth-guard.service';
 // import {AuthGuardService} from './service/guard/auth-guard.service';
 // import {HomeComponent} from './module/home/home.component';
 
@@ -61,11 +61,11 @@ const routes: Routes = [
           ),
         title: 'templates'
       },
-      // {
-      //     path: 'campaign',
-      //     loadChildren: () => import('./module/campaign/campaign.module').then((m) => m.CampaignModule),
-      //     data: {title: 'campaigns'}
-      // },
+      {
+        path: 'campaign',
+        loadChildren: () => import('./module/campaign/campaign.module').then((m) => m.CampaignModule),
+        title: 'campaigns'
+      },
       {
         path: 'channel',
         loadChildren: () =>
@@ -84,9 +84,9 @@ const routes: Routes = [
       //     loadChildren: () => import('./module/calendar/calendar.module').then((m) => m.CalendarModule),
       // },
       {
-          path: '',
-          redirectTo: '/analytics',
-          pathMatch: 'full'
+        path: '',
+        redirectTo: '/analytics',
+        pathMatch: 'full'
       }
     ]
   }
@@ -101,4 +101,5 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+}

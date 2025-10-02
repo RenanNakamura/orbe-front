@@ -1,0 +1,87 @@
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fw-600 {
+  font-weight: 600;
+}
+
+.progress-card {
+  width: 100%;
+  border-radius: 10px;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+
+  .header {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .progress {
+    width: 100%;
+  }
+
+  .progress-hint {
+    width: 100%;
+  }
+}
+
+.total-message-content {
+  width: 90%;
+  background: rgba(245, 245, 248, 0.5);
+  border-radius: 10px;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.waiting {
+  color: #696a6b;
+  font-weight: 500;
+  background-color: rgba(#f1f2f4, 0.5);
+}
+
+.sending {
+  color: #f2af04;
+  font-weight: 500;
+  background-color: rgba(#fce2a1, 0.1);
+}
+
+.sent {
+  color: #308c2e;
+  font-weight: 500;
+  background-color: rgba(#90da8e, 0.1);
+}
+
+.delivered {
+  color: #3ca6f8;
+  font-weight: 500;
+  background-color: rgba(#8dc8f8, 0.1);
+}
+
+.read {
+  color: #0388f8;
+  font-weight: 500;
+  background-color: rgba(#008afc, 0.1);
+}
+
+.error {
+  color: #f1194b;
+  font-weight: 500;
+  background-color: rgba(#f6a5b8, 0.1);
+}
+
+.failed {
+  color: #78797a;
+  font-weight: 500;
+  background-color: rgba(#c0c2c4, 0.1);
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+}

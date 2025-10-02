@@ -1,0 +1,483 @@
+<vex-page-layout mode="card">
+
+  <vex-page-layout-header class="flex flex-col pb-16 items-center justify-center">
+    <div class="w-full flex flex-col sm:flex-row justify-between" [class.container]="'boxed'">
+      <div class="flex items-center justify-center">
+                  <span
+                    class="w-10 h-10 rounded-full text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center bg-primary-600/10">
+                      <mat-icon svgIcon="mat:whatshot"></mat-icon>
+                  </span>
+        <h1 class="title font-semibold">{{ 'campaign.new' | translate }}</h1>
+      </div>
+    </div>
+  </vex-page-layout-header>
+
+  <vex-page-layout-content class="flex flex-col"  [class.container]="'boxed'">
+    <div @fadeInUp class="card overflow-hidden">
+      <mat-horizontal-stepper [linear]="true">
+        <ng-template matStepperIcon="edit">
+          <mat-icon svgIcon="mat:done_all"></mat-icon>
+        </ng-template>
+
+        <ng-template matStepperIcon="done">
+          <mat-icon svgIcon="mat:done_all"></mat-icon>
+        </ng-template>
+
+        <mat-step [stepControl]="this.formStep1">
+          <form [formGroup]="this.formStep1">
+            <ng-template matStepLabel>{{ 'campaign.data' | translate }}</ng-template>
+
+            <div class="title m-0">{{ 'campaign.data.sub-title' | translate }}</div>
+            <div class="sub-title text-xs">{{ 'campaign.data.info' | translate }}</div>
+
+            <div class="flex flex-row mt-2 space-x-1">
+              <mat-form-field class="w-3/12" appearance="outline">
+                <mat-label>{{ 'channel.title' | translate }}</mat-label>
+                <mat-select formControlName="selectedChannel" required>
+                  <mat-option
+                    *ngFor="let channel of this.channels"
+                    [value]="channel"
+                    class="example-radio-button">
+                    {{ channel.name || '' }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="this.formStep1?.get('selectedChannel').hasError('required')">
+                  {{ 'channel.required' | translate }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field class="w-3/12" appearance="outline">
+                <mat-label>{{ 'scheduling' | translate }}</mat-label>
+                <mat-select formControlName="type" required>
+                  <mat-option
+                    *ngFor="let type of sendTypes | keyvalue"
+                    [value]="type.key"
+                    class="example-radio-button">
+                    {{ this.onGetSendTypeI18n(type.value) | translate }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="w-2/12" appearance="outline" *ngIf="this.isScheduling()">
+                <mat-label>{{ 'campaign.choose-day' | translate }}</mat-label>
+                <input [matDatepicker]="picker" formControlName="date" matInput readonly required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+
+                <mat-error *ngIf="this.formStep1?.get('date').hasError('required')">
+                  {{ 'date.required' | translate }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field class="w-2/12" appearance="outline" *ngIf="this.isScheduling()">
+                <mat-label>{{ 'campaign.choose-time' | translate }}</mat-label>
+                <input formControlName="time" type="time" matInput required>
+
+                <mat-error *ngIf="this.formStep1?.get('time').hasError('required')">
+                  {{ 'time.required' | translate }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="flex flex-row">
+              <mat-form-field class="w-full" appearance="outline">
+                <mat-label>{{ 'name' | translate }}</mat-label>
+                <input formControlName="name" matInput required>
+                <mat-error *ngIf="this.formStep1?.get('name').hasError('required')">
+                  {{ 'name.required' | translate }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="actions flex flex-row items-center justify-end">
+              <button [disabled]="this.formStep1.invalid" color="primary" mat-button
+                      matStepperNext>
+                {{ 'next' | translate }}
+              </button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="this.formStep2">
+          <form [formGroup]="this.formStep2">
+            <ng-template matStepLabel>{{ 'campaign.target-audience' | translate }}</ng-template>
+            <div class="title m-0">{{ 'campaign.target-audience.sub-title' | translate }}</div>
+            <div class="sub-title text-xs">{{ 'campaign.target-audience.info' | translate }}</div>
+
+            <div class="flex flex-row">
+              <mat-radio-group class="mt-2 mat-r-g" formControlName="type">
+                <mat-radio-button class="radio"
+                                  *ngFor="let type of this.targetAudienceTypes | keyvalue; let i = index"
+                                  [ngClass]="{
+                                                        'mat-r-b-l': this.formStep2.get('type')?.value === type.key && i === 0,
+                                                        'mat-r-b-r': this.formStep2.get('type')?.value === type.key && i !== 0,
+                                                        'mat-radio-hover-l': this.formStep2.get('type')?.value !== type.key && i === 0,
+                                                        'mat-radio-hover-r': this.formStep2.get('type')?.value !== type.key && i !== 0
+                                                  }"
+                                  [value]="type.key"
+                                  color="primary">
+                  {{ this.onGetTargetAudienceTypeI18n(type.value) | translate }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <ng-container [ngSwitch]="this.strategyType">
+              <ng-container *ngSwitchCase="'FILE'">
+                <div class="flex flex-col">
+                  <div class="flex flex-col mt-6">
+                    <div class="mb-6">
+                      <h4 class="font-bold">{{ 'instructions' | translate }}</h4>
+                      <div class="flex flex-col text-sm text-gray">
+                        <p [innerHTML]="'upload-file.instruction-1' | translate"></p>
+                        <p [innerHTML]="'upload-file.instruction-2' | translate"></p>
+                        <p [innerHTML]="'upload-file.instruction-3' | translate"></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-row justify-start">
+                    <div class="w-4/12">
+                      <upload-file (changeFile)="this.onChangeSelectedTargetAudienceFile($event)">
+                      </upload-file>
+                    </div>
+                    <div class="w-8/12 ml-12">
+                      <div *ngIf="this.formStep2.get('columns')"
+                           class="flex flex-row bg-gray-100 rounded-md p-4 self-start mb-5"
+                           formArrayName="columns">
+                        <div class="flex flex-row w-full justify-around items-center">
+                          <div class="w-7/12 space-y-2">
+                            <span class="font-bold">{{ 'campaign.columns-mapping' | translate }}</span>
+                            <div *ngFor="let column of columns.controls; let i = index"
+                                 [formGroupName]="i">
+                              <mat-form-field class="w-full" appearance="outline">
+                                <mat-label>{{ this.onGetLabelColumn(column.get('type').value) | translate }}</mat-label>
+                                <mat-select formControlName="index"
+                                            [required]="column.get('index').hasError('required')">
+                                  <mat-option
+                                    *ngFor="let header of selectedTargetAudienceFile?.headers"
+                                    [value]="header.index"
+                                    class="example-radio-button">
+                                    {{ header.name }}
+                                  </mat-option>
+                                </mat-select>
+                                <mat-error
+                                  *ngIf="column.get('index').hasError('required')">
+                                  {{ this.onGetLabelColumnRequired(column.get('type').value) | translate }}
+                                </mat-error>
+                              </mat-form-field>
+                            </div>
+                          </div>
+                          <div class="w-4/12">
+                            <div class="min-h-40 bg-primary-500 rounded-xl flex flex-col justify-center">
+                              <div class="text-center text-white flex flex-col">
+                                <span class="text-3xl font-bold">{{ this.amountOfRecords || 0 }}</span>
+                                <span class="text-xl">{{ 'recordsFound' | translate }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'FILTER'">
+                <div class="mt-6">
+                  <h4 class="font-bold">{{ 'instructions' | translate }}</h4>
+
+                  <div class="flex flex-col text-sm text-gray">
+                    <p [innerHTML]="'contact-filter.instruction-1' | translate"></p>
+                    <p [innerHTML]="'contact-filter.instruction-2' | translate"></p>
+                  </div>
+
+                  <div class="flex flex-row operation">
+                    <div class="mr-2">
+                      <h5>{{ 'contact-filter.operation' | translate }}</h5>
+                    </div>
+                    <mat-form-field class="w-300" appearance="outline">
+                      <mat-select formControlName="operation" required>
+                        <mat-option *ngFor="let operation of operations | keyvalue"
+                                    [value]="operation.key"
+                                    class="example-radio-button">
+                          {{ this.onGetOperationI18n(operation.value) | translate }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="flex flex-row">
+                  <div class="flex flex-row rounded-md p-4 bg-gray-100 mb-5 w-full">
+                    <div class="flex flex-row flex-wrap w-10/12">
+                      <div *ngFor="let condition of this.conditions.controls; let i = index">
+                        <div class="w-full">
+                          <div class="conditions p-3 mr-2">
+                            <span
+                              class="field">{{ this.onGetFieldI18n(condition.get('field').value) | translate }}</span>
+                            <span class="type">{{ this.onGetTypeI18n(condition.get('type').value) | translate }}</span>
+                            <span class="value">{{ condition.get('valueDescription').value }}</span>
+                            <span class="icon" (click)="this.onRemoveCondition(i)">
+                              <mat-icon svgIcon="mat:close"></mat-icon>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="w-2/12">
+                        <button color="primary"
+                                mat-button
+                                type="button"
+                                (click)="this.onAddCondition()"
+                        >{{ 'add-condition' | translate }}
+                        </button>
+                      </div>
+
+                    </div>
+
+                    <div class="min-h-40 bg-primary-500 rounded-xl flex flex-col justify-center w-300">
+                      <div class="text-center text-white flex flex-col">
+                        <span class="text-3xl font-bold">{{ this.amountOfRecords }}</span>
+                        <span class="text-xl">{{ 'recordsFound' | translate }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <div class="flex flex-row items-center justify-end actions">
+              <button [disabled]="this.formStep2.invalid" color="primary" mat-button
+                      matStepperNext>
+                {{ 'next' | translate }}
+              </button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="this.formStep3">
+          <form [formGroup]="this.formStep3">
+            <ng-template matStepLabel>{{ 'campaign.config.template' | translate }}</ng-template>
+
+            <div class="title m-0">{{ 'campaign.config.template.sub-title' | translate }}</div>
+            <div class="sub-title text-xs" [innerHTML]="'campaign.config.template.info' | translate"></div>
+
+            <div class="flex flex-row mt-4">
+              <mat-form-field class="w-6/12" appearance="outline">
+                <mat-label>{{ 'template.template' | translate }}</mat-label>
+                <mat-select formControlName="template">
+                  <mat-option>
+                    <ngx-mat-select-search
+                      [placeholderLabel]="'search' | translate"
+                      [noEntriesFoundLabel]="'template.not-found' | translate"
+                      [preventHomeEndKeyPropagation]="true"
+                      [formControl]="this.templateFilter">
+                      <mat-icon svgIcon="mat:close" ngxMatSelectSearchClear></mat-icon>
+                    </ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let template of templates | async" [value]="template.id">
+                    {{ template.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="this.formStep3?.get('template').hasError('required')">
+                  {{ 'template.required' | translate }}
+                </mat-error>
+                <mat-hint align="start" [innerHTML]="'campaign.config.template.hint' | translate">
+                </mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="flex flex-row py-4 justify-start" *ngIf="this.isTemplateSelected()">
+              <div class="variable-content w-8/12">
+                <div class="flex flex-col">
+                  <div class="px-4 py-4">
+                    <div class="title m-0">{{ 'campaign.parameter.sub-title' | translate }}</div>
+                    <div class="sub-title text-xs"
+                         [innerHTML]="'campaign.parameter.info' | translate"></div>
+                  </div>
+                  <div class="text-center" *ngIf="!parameters?.length">
+                    <div class="italic m-32 text-lg">{{ 'campaign.parameter.empty' | translate }}</div>
+                  </div>
+
+                  <div formArrayName="parameters" class="flex flex-col pb-1">
+                    <!-- Renderizar Headers Primeiro -->
+                    <div>
+                      <div *ngIf="headerParameters?.length"
+                           class="pl-4 subheading-2 font-bold">{{ 'template.header' | translate }}
+                      </div>
+                      <div *ngFor="let parameter of headerParameters; let i = index"
+                           [formGroupName]="parameters.controls.indexOf(parameter)">
+                        <div *ngIf="isParameterFormatEquals(parameter, 'TEXT')">
+                          <mat-form-field class="w-full pl-4 pr-4" appearance="outline">
+                            <mat-label>{{ onGetVariableLabel(parameter.get('number').value) }}</mat-label>
+                            <input formControlName="text"
+                                   matInput
+                                   required
+                                   #inputElement
+                            >
+                            <mat-hint align="start"
+                                      [innerHTML]="onGetParameterHint(parameter.get('number').value)">
+                            </mat-hint>
+                            <mat-error *ngIf="parameter.get('text').hasError('required')"
+                                       [innerHTML]="onGetParameterError(parameter.get('number').value)">
+                            </mat-error>
+                            <div class="absolute flex flex-row bottom-0 right-0">
+                              <button type="button"
+                                      color="primary"
+                                      mat-icon-button
+                                      #variableTrigger="matMenuTrigger"
+                                      [matMenuTriggerFor]="variableMenu"
+                                      [matTooltip]="'variable.add' | translate">
+                                <mat-icon svgIcon="mat:code"></mat-icon>
+                              </button>
+                              <button type="button"
+                                      color="primary"
+                                      mat-icon-button
+                                      #emojiTrigger="matMenuTrigger"
+                                      [matMenuTriggerFor]="emojiMenu"
+                                      [matTooltip]="'emoji.add' | translate">
+                                <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
+                              </button>
+                            </div>
+
+                            <mat-menu #variableMenu="matMenu"
+                                      class="variable-menu max-w-unset shadow bg-white w-48 z-10 p-1"
+                                      xPosition="before"
+                                      yPosition="above">
+                              <div (click)="$event.stopPropagation()">
+                                <list-variable
+                                  (onSelect)="this.onSelectVariable($event, parameter, inputElement, variableTrigger)">
+                                </list-variable>
+                              </div>
+                            </mat-menu>
+
+                            <mat-menu #emojiMenu="matMenu"
+                                      class="-mb-2 bg-transparent shadow-none max-w-unset"
+                                      xPosition="before"
+                                      yPosition="above">
+                              <div (click)="$event.stopPropagation()">
+                                <emoji-mart [isNative]="true"
+                                            [showPreview]="false"
+                                            [enableSearch]="false"
+                                            [style]="{ width: '100%', height: 'auto' }"
+                                            (emojiSelect)="this.onSelectEmoji($event, parameter, inputElement, emojiTrigger)"></emoji-mart>
+                              </div>
+                            </mat-menu>
+                          </mat-form-field>
+                        </div>
+
+                        <div *ngIf="isParameterFormatNotEquals(parameter, 'TEXT')">
+                          <div class="pl-4 pr-4 pt-2">
+                            <app-file-upload
+                              class="max-w-full"
+                              [selectedFile]="selectedFile"
+                              [format]="mapToComponentFormat(parameter)"
+                              (fileSelectedOutput)="onFileSelected($event)">
+                            </app-file-upload>
+                            <span class="mat-hint"
+                                  style="font-size: 75%">{{ 'campaign.parameter.media.hint' | translate }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Renderizar Bodies Depois -->
+                    <div class="mt-1">
+                      <div *ngIf="bodyParameters?.length"
+                           class="pl-4 subheading-2 font-bold">{{ 'template.body' | translate }}
+                      </div>
+                      <div *ngFor="let parameter of bodyParameters; let i = index"
+                           [formGroupName]="parameters.controls.indexOf(parameter)">
+                        <div class="flex flex-col parameter mb-2"
+                             *ngIf="isParameterFormatEquals(parameter, 'TEXT')">
+                          <mat-form-field class="w-full pl-4 pr-4" appearance="outline">
+                            <mat-label>{{ onGetVariableLabel(parameter.get('number').value) }}</mat-label>
+                            <input formControlName="text"
+                                   matInput
+                                   required
+                                   #inputElement
+                            >
+                            <mat-hint align="start"
+                                      [innerHTML]="onGetParameterHint(parameter.get('number').value)">
+                            </mat-hint>
+                            <mat-error *ngIf="parameter.get('text').hasError('required')"
+                                       [innerHTML]="onGetParameterError(parameter.get('number').value)">
+                            </mat-error>
+                            <div class="absolute flex flex-row bottom-0 right-0">
+                              <button type="button"
+                                      color="primary"
+                                      mat-icon-button
+                                      #variableTrigger="matMenuTrigger"
+                                      [matMenuTriggerFor]="variableMenu"
+                                      [matTooltip]="'variable.add' | translate">
+                                <mat-icon svgIcon="mat:code"></mat-icon>
+                              </button>
+                              <button type="button"
+                                      color="primary"
+                                      mat-icon-button
+                                      #emojiTrigger="matMenuTrigger"
+                                      [matMenuTriggerFor]="emojiMenu"
+                                      [matTooltip]="'emoji.add' | translate">
+                                <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
+                              </button>
+
+                              <mat-menu #variableMenu="matMenu"
+                                        class="variable-menu max-w-unset shadow bg-white w-48 z-10 p-1"
+                                        xPosition="before"
+                                        yPosition="above">
+                                <div (click)="$event.stopPropagation()">
+                                  <list-variable
+                                    (onSelect)="this.onSelectVariable($event, parameter, inputElement, variableTrigger)"></list-variable>
+                                </div>
+                              </mat-menu>
+
+                              <mat-menu #emojiMenu="matMenu"
+                                        class="-mb-2 bg-transparent shadow-none max-w-unset"
+                                        xPosition="before"
+                                        yPosition="above">
+                                <div (click)="$event.stopPropagation()">
+                                  <emoji-mart [isNative]="true"
+                                              [showPreview]="false"
+                                              [enableSearch]="false"
+                                              [style]="{ width: '100%', height: 'auto' }"
+                                              (emojiSelect)="this.onSelectEmoji($event, parameter, inputElement, emojiTrigger)"></emoji-mart>
+                                </div>
+                              </mat-menu>
+                            </div>
+                          </mat-form-field>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="w-4/12 ml-12">
+                <template-message
+                  [header]="this.onGetTemplateHeader()"
+                  [body]="this.onGetTemplateBody()"
+                  [footer]="this.onGetTemplateFooter()"
+                  [button]="this.onGetTemplateButton()"
+                  [fileUrl]="this.onGetSelectedFileUrl()"
+                ></template-message>
+              </div>
+            </div>
+
+            <div class="flex flex-row items-center justify-end actions">
+              <button [disabled]="this.formStep1.invalid || this.formStep2.invalid || this.formStep3.invalid"
+                      color="primary"
+                      class="flex justify-center"
+                      mat-button
+                      (click)="this.onSubmit()">
+                                <span *ngIf="!this.isLoading">
+                                    {{ 'start' | translate }}
+                                </span>
+                <mat-progress-spinner
+                  *ngIf="this.isLoading"
+                  mode="indeterminate"
+                  [diameter]="20"
+                  color="primary"></mat-progress-spinner>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>

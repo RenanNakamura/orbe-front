@@ -11,27 +11,27 @@ export class LabelStatusColorPipe implements PipeTransform {
 
         switch (value) {
             case 'BANNED':
-                return 'bg-red-100 text-red-400';
+                return 'bg-red-100 text-red-500';
             case 'CONNECTED':
-                return 'bg-green-100 text-green-400';
+                return 'bg-green-100 text-green-500';
             case 'DELETED':
-                return 'bg-red-100 text-red-400';
+                return 'bg-red-100 text-red-500';
             case 'DISCONNECTED':
-                return 'bg-gray-100 text-gray-400';
+                return 'bg-gray-100 text-gray-500';
             case 'FLAGGED':
-                return 'bg-amber-100 text-amber-400';
+                return 'bg-amber-100 text-amber-500';
             case 'MIGRATED':
-                return 'bg-purple-100 text-purple-400';
+                return 'bg-purple-100 text-purple-500';
             case 'PENDING':
-                return 'bg-amber-100 text-amber-400';
+                return 'bg-amber-100 text-amber-500';
             case 'RATE_LIMITED':
-                return 'bg-orange-100 text-orange-400';
+                return 'bg-orange-100 text-orange-500';
             case 'RESTRICTED':
-                return 'bg-orange-100 text-orange-400';
+                return 'bg-orange-100 text-orange-500';
             case 'UNKNOWN':
-                return 'bg-gray-100 text-gray-400';
+                return 'bg-gray-100 text-gray-500';
             case 'UNVERIFIED':
-                return 'bg-amber-100 text-amber-400';
+                return 'bg-amber-100 text-amber-500';
             default:
                 return '';
         }

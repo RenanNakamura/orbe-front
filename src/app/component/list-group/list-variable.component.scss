@@ -1,0 +1,13 @@
+.title {
+  color: darkgrey;
+  border-bottom-width: 1px;
+}
+
+.item {
+  text-align: start;
+}
+
+.item:hover {
+  background-color: rgb(var(--vex-color-primary-600) / 0.2);
+  border-radius: 8px;
+}

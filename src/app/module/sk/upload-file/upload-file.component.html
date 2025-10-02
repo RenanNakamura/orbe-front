@@ -1,33 +1,33 @@
 <div class="flex flex-col col-span-2 sm:col-span-1">
-    <div class="container-upload">
+    <div class="container-upload relative w-full h-full p-8 text-center rounded-md cursor-pointer">
         <input type="file" #fileInput (change)="onSelectFile($event)" [accept]="this.accepts"/>
 
-        <mat-icon svgIcon="mat:upload" color="primary" class="w-6"></mat-icon>
+        <mat-icon svgIcon="mat:upload" class="text-5xl w-12 h-12 text-primary-500"></mat-icon>
 
         <div class="mb-5">
-            <span class="drop">{{ 'upload-file.drop' | translate }}</span>
+            <span class="font-medium">{{ 'upload-file.drop' | translate }}</span>
             <span class="text-xs block">{{ 'upload-file.accept' | translate }}: {{ this.onGetAcceptFiles() }}</span>
         </div>
 
-        <span class="select-file">{{ 'upload-file.select-file' | translate }}</span>
+        <span class="select-file rounded-md bg-primary-500 font-medium">{{ 'upload-file.select-file' | translate }}</span>
     </div>
-    <div class="selected-file" *ngIf="this.isFileSelected()">
-        <div class="single-file">
+    <div class="mt-2 w-full" *ngIf="this.isFileSelected()">
+        <div class="flex flex-grow rounded-md p-2 mb-2 justify-between items-center bg-primary-500">
 
             <div class="m-2">
-                <mat-icon svgIcon="mat:insert_drive_file" class="w-6"></mat-icon>
+                <mat-icon svgIcon="mat:insert_drive_file" class="w-6 text-white"></mat-icon>
             </div>
 
             <div class="w-full">
-                <h4 class="name">
+                <h4 class="name text-sm font-medium text-white m-0">
                     {{ file?.name }}
                 </h4>
-                <p class="size">
+                <p class="text-xs font-medium text-white">
                     {{ this.onFormatBytes(file?.size) }}
                 </p>
             </div>
 
-            <div class="delete" (click)="onDeleteFile()">
+            <div class="flex ml-2 cursor-pointer self-end text-xl" (click)="onDeleteFile()">
                 <svg xmlns="http://www.w3.org/2000/svg" color="white" width="14" height="18" viewBox="0 0 14 18">
                     <path fill="#fff" fill-rule="nonzero"
                           d="M1 16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v10zm3.17-7.83a.996.996 0 0 1 1.41 0L7 9.59l1.42-1.42a.996.996 0 1 1 1.41 1.41L8.41 11l1.42 1.42a.996.996 0 1 1-1.41 1.41L7 12.41l-1.42 1.42a.996.996 0 1 1-1.41-1.41L5.59 11 4.17 9.58a.996.996 0 0 1 0-1.41zM10.5 1L9.79.29C9.61.11 9.35 0 9.09 0H4.91c-.26 0-.52.11-.7.29L3.5 1H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z"/>

@@ -1,0 +1,14 @@
+<div mat-dialog-title class="flex flex-row justify-between items-center">
+  <div>{{ 'code' | translate }}: {{ _data.code }}</div>
+  <button type="button" mat-icon-button mat-dialog-close tabindex="-1">
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <p>{{ _data?.details }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="primary" (click)="onClose()">{{ 'close' | translate }}</button>
+</mat-dialog-actions>

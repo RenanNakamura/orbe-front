@@ -5,7 +5,7 @@
       <div class="flex items-center justify-center">
                   <span
                     class="w-10 h-10 rounded-full text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center bg-primary-600/10">
-                      <mat-icon svgIcon="mat:devices" size="20px"></mat-icon>
+                      <mat-icon svgIcon="mat:devices"></mat-icon>
                   </span>
         <h1 class="title font-semibold">{{ 'channel.edit' | translate }}</h1>
       </div>
@@ -23,11 +23,11 @@
           <div class="flex flex-col px-6 py-4 items-center">
             <div class="flex flex-row items-center my-2">
               <div
-                class="flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-400 rounded-full text-xs font-medium">
+                class="flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-500 rounded-full text-xs font-medium">
                 <span>WhatsApp</span>
               </div>
               <div *ngIf="isCreatedFromFacebook"
-                   class="flex items-center space-x-1 px-2 py-1 bg-cyan-100 text-cyan-400 rounded-full text-xs font-medium ml-1">
+                   class="flex items-center space-x-1 px-2 py-1 bg-cyan-100 text-cyan-500 rounded-full text-xs font-medium ml-1">
                 <span>{{ 'channel.embedded-signup' | translate }}</span>
               </div>
             </div>
@@ -80,10 +80,10 @@
               class="flex items-center text-xs space-x-1 py-2 px-2 cursor-pointer"
             >
               <div class="flex items-center space-x-2 flex-grow">
-                <mat-icon svgIcon="mat:credit_card" size="16px"></mat-icon>
+                <mat-icon svgIcon="mat:credit_card"></mat-icon>
                 <span>{{ 'channel.helpers-button.wa-payment-settings' | translate }}</span>
               </div>
-              <mat-icon svgIcon="mat:chevron_right" size="16px" class="ml-auto"></mat-icon>
+              <mat-icon svgIcon="mat:chevron_right" class="ml-auto"></mat-icon>
             </a>
             <a
               href="https://business.facebook.com/latest/whatsapp_manager/phone_numbers"
@@ -92,10 +92,10 @@
               class="flex items-center text-xs space-x-1 py-2 px-2 cursor-pointer"
             >
               <div class="flex items-center space-x-2 flex-grow">
-                <mat-icon svgIcon="mat:shopping_bag" size="16px"></mat-icon>
+                <mat-icon svgIcon="mat:shopping_bag"></mat-icon>
                 <span>{{ 'channel.helpers-button.access-whatsapp-manager' | translate }}</span>
               </div>
-              <mat-icon svgIcon="mat:chevron_right" size="16px" class="ml-auto"></mat-icon>
+              <mat-icon svgIcon="mat:chevron_right" class="ml-auto"></mat-icon>
             </a>
             <a
               href="https://business.facebook.com/settings/security"
@@ -104,10 +104,10 @@
               class="flex items-center text-xs space-x-1 py-2 px-2 cursor-pointer"
             >
               <div class="flex items-center space-x-2 flex-grow">
-                <mat-icon svgIcon="mat:check_circle" size="16px"></mat-icon>
+                <mat-icon svgIcon="mat:check_circle"></mat-icon>
                 <span>{{ 'channel.helpers-button.company-verification' | translate }}</span>
               </div>
-              <mat-icon svgIcon="mat:chevron_right" size="16px" class="ml-auto"></mat-icon>
+              <mat-icon svgIcon="mat:chevron_right" class="ml-auto"></mat-icon>
             </a>
           </div>
         </div>
@@ -117,7 +117,7 @@
           <mat-tab-group>
             <mat-tab label="Configurações">
               <ng-template mat-tab-label>
-                <mat-icon svgIcon="mat:settings" size="16px" class="mr-1"></mat-icon>
+                <mat-icon svgIcon="mat:settings" class="mr-1"></mat-icon>
                 {{ 'channel.tab-channel-settings' | translate }}
               </ng-template>
               <div class="flex flex-col px-6 py-4">
@@ -188,8 +188,7 @@
                         <span class="font-semibold">{{ 'callback-url' | translate }}</span>
                         <div class="flex flex-row">
                           <span>{{ this.webhookLink }}</span>
-                          <mat-icon size="16"
-                                    class="text-primary-400 ml-1 content-center cursor-pointer"
+                          <mat-icon class="text-primary-400 ml-1 content-center cursor-pointer"
                                     svgIcon="mat:content_copy"
                                     (click)="this.onCopy(this.webhookLink)">
                           </mat-icon>
@@ -201,7 +200,6 @@
                           <span>{{ this.webhookVerifyToken }}</span>
                           <mat-icon class="text-primary-400 ml-1 content-center cursor-pointer"
                                     svgIcon="mat:content_copy"
-                                    size="16"
                                     (click)="this.onCopy(this.webhookVerifyToken)">
                           </mat-icon>
                         </div>
@@ -233,7 +231,7 @@
             </mat-tab>
             <mat-tab label="Qualidade do Canal">
               <ng-template mat-tab-label>
-                <mat-icon svgIcon="mat:check_circle" size="16px" class="mr-1"></mat-icon>
+                <mat-icon svgIcon="mat:check_circle" class="mr-1"></mat-icon>
                 {{ 'channel.tab-channel-quality' | translate }}
               </ng-template>
               <div class="p-4">
