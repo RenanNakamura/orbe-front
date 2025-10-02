@@ -15,6 +15,11 @@
     opacity: 0;
   }
 
+  &:hover {
+    background-color: rgb(var(--vex-color-primary-100));
+    cursor: pointer;
+  }
+
   label {
     white-space: nowrap;
     overflow: hidden;

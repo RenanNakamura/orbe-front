@@ -6,10 +6,6 @@ import { AuthGuardService } from './service/guard/auth-guard.service';
 // import {HomeComponent} from './module/home/home.component';
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   component: LayoutComponent
-  // },
   {
     path: 'login',
     loadChildren: () =>
@@ -77,7 +73,7 @@ const routes: Routes = [
             (m) => m.ChannelModule
           ),
         title: 'channels'
-      }
+      },
       // {
       //     path: 'flow',
       //     loadChildren: () => import('./module/flow/flow.module').then((m) => m.FlowModule),
@@ -87,11 +83,11 @@ const routes: Routes = [
       //     path: 'calendar',
       //     loadChildren: () => import('./module/calendar/calendar.module').then((m) => m.CalendarModule),
       // },
-      // {
-      //     path: '',
-      //     redirectTo: '/analytics',
-      //     pathMatch: 'full'
-      // }
+      {
+          path: '',
+          redirectTo: '/analytics',
+          pathMatch: 'full'
+      }
     ]
   }
 ];

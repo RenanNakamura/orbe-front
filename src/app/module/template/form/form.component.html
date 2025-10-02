@@ -5,7 +5,7 @@
       <div class="flex items-center">
                   <span
                     class="w-10 h-10 rounded-full text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center bg-primary-600/10">
-                      <mat-icon svgIcon="mat:message" size="20px"></mat-icon>
+                      <mat-icon svgIcon="mat:message"></mat-icon>
                   </span>
         <h1 class="title m-0" *ngIf="!form?.get('id').value">{{ 'template.new' | translate }}</h1>
         <h1 class="title m-0" *ngIf="form?.get('id').value">{{ 'template.edit' | translate }}</h1>
@@ -35,7 +35,7 @@
               </mat-hint>
             </mat-form-field>
 
-            <mat-form-field class="w-5/12" appearance="outline">
+            <mat-form-field class="w-4/12" appearance="outline">
               <mat-label>{{ 'name' | translate }}</mat-label>
               <input formControlName="name"
                      matInput
@@ -52,7 +52,7 @@
               </mat-hint>
             </mat-form-field>
 
-            <mat-form-field class="w-2/12" appearance="outline">
+            <mat-form-field class="w-3/12" appearance="outline">
               <mat-label>{{ 'category' | translate }}</mat-label>
               <mat-select formControlName="category"
                           required>
@@ -102,7 +102,7 @@
             <div class="flex flex-row items-center w-3/12">
               <div @scaleIn
                    class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <mat-icon svgIcon="mat:message" size="20px"></mat-icon>
+                <mat-icon svgIcon="mat:message"></mat-icon>
               </div>
 
               <div @fadeInRight>
@@ -140,7 +140,7 @@
               <div *ngIf="!hasRejectedReason()" class="flex flex-row">
                 <div @scaleIn
                      class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                  <mat-icon svgIcon="mat:category" size="20px"></mat-icon>
+                  <mat-icon svgIcon="mat:category"></mat-icon>
                 </div>
 
                 <div @fadeInRight>
@@ -152,7 +152,7 @@
             <div class="flex flex-row items-center w-3/12">
               <div @scaleIn
                    class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <mat-icon svgIcon="mat:language" size="20px"></mat-icon>
+                <mat-icon svgIcon="mat:language"></mat-icon>
               </div>
 
               <div @fadeInRight>
@@ -163,7 +163,7 @@
             <div class="flex flex-row items-center w-3/12">
               <div @scaleIn
                    class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <mat-icon svgIcon="mat:outlined_flag" size="20px"></mat-icon>
+                <mat-icon svgIcon="mat:outlined_flag"></mat-icon>
               </div>
 
               <div @fadeInRight>
@@ -178,7 +178,7 @@
       <div class="card mt-4" *ngIf="hasRejectedReason()">
         <div class="flex flex-row bg-orange-100 rounded text-orange-400 shadow">
           <div class="flex flex-col rejected-reason-icon">
-            <mat-icon svgIcon="mat:warning" size="40px"></mat-icon>
+            <mat-icon svgIcon="mat:warning"></mat-icon>
           </div>
           <div class="flex flex-col px-6 py-4">
             <div class="flex flex-row">
