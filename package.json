@@ -47,6 +47,7 @@
     "apexcharts": "~5.3.5",
     "axios": "^1.6.7",
     "date-fns": "~2.30.0",
+    "echarts": "^6.0.0",
     "emoji-mart": "^5.5.2",
     "formik": "^2.4.6",
     "google-libphonenumber": "^3.2.32",

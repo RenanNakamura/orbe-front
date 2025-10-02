@@ -69,7 +69,7 @@ import {VexPageLayoutContentDirective} from "@vex/components/vex-page-layout/vex
     VexPageLayoutHeaderDirective,
     VexPageLayoutComponent,
     VexPageLayoutContentDirective,
-    DateMomentPipeModule,
+    DateMomentPipeModule
   ],
   providers: []
 })

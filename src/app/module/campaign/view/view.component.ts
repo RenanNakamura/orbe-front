@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Campaign, CampaignContact, CampaignDashboard, CampaignParams} from '../../../model/Campaign';
 import {TargetAudienceType} from '../form/form.component';
@@ -21,6 +29,7 @@ import {PhoneUtil} from '../../../util/phone.util';
 import {MatDialog} from '@angular/material/dialog';
 import {InfoErrorDialogComponent} from '../../sk/info-error-dialog/info-error-dialog.component';
 import {LanguageService} from 'src/app/service/sk/language.service';
+import * as echarts from 'echarts';
 
 @Component({
   selector: 'vex-view',
@@ -42,7 +51,9 @@ import {LanguageService} from 'src/app/service/sk/language.service';
     }
   ]
 })
-export class ViewComponent implements OnInit {
+export class ViewComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('pieChart', {static: true}) pieChart!: ElementRef<HTMLDivElement>;
 
   campaign: Campaign;
   sentCount = 0;
@@ -59,19 +70,7 @@ export class ViewComponent implements OnInit {
   triggeredMessagesCount = 0;
   progress = 0;
 
-  pieChartLabels: string[];
-  pieChartData: number[];
-  pieChartType = 'pie';
-  chartColors: any[] = [
-    {
-      backgroundColor: ['#f1f2f4', '#fce2a1', '#90da8e', '#8dc8f8', '#008afc', '#f6a5b8', '#c0c2c4']
-    }
-  ];
-
-  chartOptions =
-    {
-      responsive: false
-    };
+  chartInstance: echarts.ECharts | null = null;
 
   pageSize = 10;
   pageIndex = 0;
@@ -113,6 +112,13 @@ export class ViewComponent implements OnInit {
     this.searchCtrl.valueChanges
       .pipe(debounceTime(600))
       .subscribe(() => this.loadContacts(this.campaign?.id));
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.chartInstance = echarts.init(this.pieChart.nativeElement);
+      this.loadPieConfig();
+    }, 100);
   }
 
   get visibleColumns() {
@@ -182,8 +188,8 @@ export class ViewComponent implements OnInit {
     const error = this._translate.instant('totalMessagesError');
     const failed = this._translate.instant('totalMessagesFailed');
 
-    this.pieChartLabels = [waiting, sending, sent, delivered, read, error, failed];
-    this.pieChartData = [
+    const labels = [waiting, sending, sent, delivered, read, error, failed];
+    const data = [
       this.waitingCount,
       this.sendingCount,
       this.sentCount,
@@ -192,6 +198,49 @@ export class ViewComponent implements OnInit {
       this.errorCount,
       this.failedCount
     ];
+
+    const option: echarts.EChartsOption = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c} ({d}%)'
+      },
+      legend: {
+        top: '5%',
+        left: 'center',
+        data: labels
+      },
+      series: [
+        {
+          name: this._translate.instant('totalMessages'),
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          data: labels.map((label, i) => ({value: data[i], name: label})),
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 40,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+        }
+      ],
+      color: ['#f1f2f4', '#fce2a1', '#90da8e', '#8dc8f8', '#008afc', '#f6a5b8', '#c0c2c4']
+    };
+
+    this.chartInstance?.setOption(option);
   }
 
   private loadDashboard(id: string) {

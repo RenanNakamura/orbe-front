@@ -109,14 +109,7 @@
         </div>
       </div>
       <div class="card flex flex-row items-center w-6/12 p-6">
-<!--        <canvas baseChart-->
-<!--                [data]="pieChartData"-->
-<!--                [labels]="pieChartLabels"-->
-<!--                [colors]="chartColors"-->
-<!--                [options]="chartOptions"-->
-<!--                [height]="400"-->
-<!--                [width]="500"-->
-<!--                [chartType]="pieChartType"></canvas>-->
+        <div #pieChart style="width: 600px; height: 400px;"></div>
       </div>
     </div>
 
@@ -156,9 +149,9 @@
                                       {{ row[column.property] | translate }}
                                 </span>
                 <mat-icon svgIcon="mat:info"
-                         class="text-warn-400 ml-2"
-                         *ngIf="this.hasError(row)"
-                         (click)="this.onShowError(row)">
+                          class="text-warn-400 ml-2"
+                          *ngIf="this.hasError(row)"
+                          (click)="this.onShowError(row)">
                 </mat-icon>
               </div>
             </td>
