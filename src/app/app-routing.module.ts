@@ -74,11 +74,11 @@ const routes: Routes = [
           ),
         title: 'channels'
       },
-      // {
-      //     path: 'flow',
-      //     loadChildren: () => import('./module/flow/flow.module').then((m) => m.FlowModule),
-      //     data: {title: 'flows'}
-      // },
+      {
+        path: 'flow',
+        loadChildren: () => import('./module/flow/flow.module').then((m) => m.FlowModule),
+        title: 'flows'
+      },
       // {
       //     path: 'calendar',
       //     loadChildren: () => import('./module/calendar/calendar.module').then((m) => m.CalendarModule),

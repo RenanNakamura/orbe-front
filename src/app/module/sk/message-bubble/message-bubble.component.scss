@@ -1,0 +1,44 @@
+.bubble {
+  color: black;
+  position: relative;
+  z-index: 1;
+  white-space: pre-line;
+  min-height: 2.5rem;
+  border-radius: 10px;
+  display: inline-block;
+  word-wrap: break-word;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12);
+
+  .date {
+    color: grey;
+    font-size: 10px;
+  }
+
+  .icon-grey {
+    color: grey;
+    margin-left: 0.1rem;
+  }
+
+  .icon-blue {
+    color: #3897f8;
+    margin-left: 0.1rem;
+  }
+
+  .icon-red {
+    color: red;
+    margin-left: 0.1rem;
+  }
+}
+
+.command {
+  background-color: #cbf2ee;
+}
+
+.sent {
+  background-color: #d9fdd3;
+}
+
+.button {
+  color: #3897f8;
+  min-height: 2rem;
+}

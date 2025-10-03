@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -27,6 +27,7 @@ import {FileUploadComponent} from './image-upload/file-upload.component';
 import {TemplateMessageComponent} from './template-message/template-message.component';
 import {InfoErrorDialogComponent} from "./info-error-dialog/info-error-dialog.component";
 import {InputDialogComponent} from "./input-dialog/input-dialog.component";
+import {MessageBubbleComponent} from "./message-bubble/message-bubble.component";
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import {InputDialogComponent} from "./input-dialog/input-dialog.component";
     AddConditionComponent,
     InfoErrorDialogComponent,
     FileUploadComponent,
-    // MessageBubbleComponent,
+    MessageBubbleComponent,
     EmbeddedSignupFacebookComponent,
     // StarContainerComponent
   ],
@@ -53,7 +54,7 @@ import {InputDialogComponent} from "./input-dialog/input-dialog.component";
     AddConditionComponent,
     InfoErrorDialogComponent,
     FileUploadComponent,
-    // MessageBubbleComponent,
+    MessageBubbleComponent,
     EmbeddedSignupFacebookComponent,
     // StarContainerComponent
   ],
@@ -75,7 +76,8 @@ import {InputDialogComponent} from "./input-dialog/input-dialog.component";
     MatProgressSpinnerModule,
     NgxMaskPipe,
     VexPageLayoutComponent,
-    VexPageLayoutContentDirective
+    VexPageLayoutContentDirective,
+    NgOptimizedImage
   ],
   providers: [provideNgxMask()]
 })

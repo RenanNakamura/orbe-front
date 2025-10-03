@@ -1,0 +1,46 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="flex flex-row items-center justify-between" mat-dialog-title>
+        <h2 *ngIf="!form.get('id').value"
+            class="headline m-0">{{'flow.new' | translate}}</h2>
+        <h2 *ngIf="form.get('id').value"
+            class="headline m-0">{{'flow.edit' | translate}}</h2>
+
+        <button class="text-secondary" mat-dialog-close="" mat-icon-button type="button">
+            <mat-icon svgIcon="mat:close"></mat-icon>
+        </button>
+    </div>
+
+    <mat-divider class="text-border"></mat-divider>
+
+    <mat-dialog-content class="flex flex-col">
+        <mat-form-field class="flex-auto" appearance="outline">
+            <mat-label>{{'name' | translate}}</mat-label>
+            <input formControlName="name" matInput required>
+            <mat-error *ngIf="form.get('name').hasError('required')">
+                {{'name.required' | translate}}
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="flex-auto" appearance="outline">
+            <mat-label>{{'channel.title' | translate}}</mat-label>
+            <mat-select formControlName="channelId" required>
+                <mat-option
+                        *ngFor="let channel of this.channels"
+                        [value]="channel.id"
+                        class="example-radio-button">
+                    {{ channel.name || '' }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="this.form?.get('channelId').hasError('required')">
+                {{'channel.required' | translate}}
+            </mat-error>
+        </mat-form-field>
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close="" type="button">{{'cancel' | translate}}</button>
+        <button color="primary" mat-button type="submit" *ngIf="!form.get('id').value"
+                [disabled]="form.invalid">{{'create' | translate}}</button>
+        <button color="primary" mat-button type="submit" *ngIf="form.get('id').value"
+                [disabled]="form.invalid">{{'edit' | translate}}</button>
+    </mat-dialog-actions>
+</form>

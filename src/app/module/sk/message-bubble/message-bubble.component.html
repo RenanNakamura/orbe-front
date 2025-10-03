@@ -1,0 +1,60 @@
+<div class="flex flex-col">
+  <div class="bubble w-auto max-w-xs min-w-16 mb-1"
+       [ngClass]="{'bg-white': this.isReceivedEntry(), 'command': this.isCommandEntry(), 'sent': this.isSentEntry()}">
+    <div [ngSwitch]="this.message.type">
+      <div *ngSwitchCase="'IMAGE'">
+        <img [ngSrc]="this.link" alt="" class="rounded-md p-1" fill>
+      </div>
+      <div *ngSwitchCase="'VIDEO'">
+        <video [src]="this.link" class="rounded-md p-1" controls></video>
+      </div>
+      <div *ngSwitchCase="'DOCUMENT'">
+        <iframe [src]="this.link" class="rounded-md p-1 w-full"></iframe>
+      </div>
+      <div *ngSwitchCase="'CONTACT'">
+        <div class="flex flex-row p-3 items-center">
+          <div class="flex flex-row rounded-full bg-gray-400 p-2">
+            <mat-icon svgIcon="mat:person" class="text-white w-6 h-6"></mat-icon>
+          </div>
+          <div class="ml-2 overflow-hidden overflow-ellipsis whitespace-nowrap font-semibold">
+            {{ this.message?.name?.formatted_name }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-2 py-1 min-w-20" *ngIf="message?.body">
+      <span>{{ this.message?.body }}</span>
+    </div>
+
+    <div class="flex flex-row justify-end px-2 pb-1">
+            <span *ngIf="this.createdDate && !this.executedDate" class="cursor-pointer date"
+                  [matTooltip]="this.createdDate | date:'dd/MM/yyyy'">
+                {{ this.createdDate | date:'HH:mm' }}
+            </span>
+      <span *ngIf="this.executedDate" class="cursor-pointer date"
+            [matTooltip]="this.executedDate | date:'dd/MM/yyyy'">
+                {{ this.executedDate | date:'HH:mm' }}
+            </span>
+      <mat-icon *ngIf="this.isSentEntry() && !(this.status === 'ERROR' || this.status === 'FAILED')"
+                [matTooltip]="this.status | translate"
+                [ngClass]="{'icon-blue': this.status === 'READ', 'icon-grey': this.status !== 'READ'}"
+                class="cursor-pointer w-4"
+                [svgIcon]="icStatus"></mat-icon>
+      <mat-icon
+        *ngIf="(this.isSentEntry() || this.isCommandEntry()) && (this.status === 'ERROR' || this.status === 'FAILED')"
+        [matTooltip]="this.error?.code + ' - ' + this.error?.message"
+        class="cursor-pointer icon-red w-4"
+        [svgIcon]="icStatus"></mat-icon>
+    </div>
+  </div>
+
+  <div *ngFor="let button of this.buttons; let first = first; let last = last">
+    <div class="button bg-white flex justify-center p-1 border-b items-center"
+         [ngClass]="{'rounded-t-lg': first, 'rounded-b-lg': last}">
+      <mat-icon *ngIf="button?.icon" [svgIcon]="button?.icon"></mat-icon>
+
+      <span class="ml-1">{{ button?.text }}</span>
+    </div>
+  </div>
+</div>

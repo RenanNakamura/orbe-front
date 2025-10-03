@@ -101,7 +101,7 @@ export class NavigationLoaderService {
             type: 'link',
             label: 'flows',
             route: 'flow',
-            icon: 'mat:smart_toy',
+            icon: 'mat:account_tree',
             roles: [Role.ADMIN, Role.USER],
             plans: [PlanEnum.BASIC, PlanEnum.PRO]
           }

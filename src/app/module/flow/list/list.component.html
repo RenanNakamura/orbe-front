@@ -5,9 +5,9 @@
       <div class="flex items-center justify-center">
                   <span
                     class="w-10 h-10 rounded-full text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center bg-primary-600/10">
-                      <mat-icon svgIcon="mat:person"></mat-icon>
+                      <mat-icon svgIcon="mat:account_tree"></mat-icon>
                   </span>
-        <h1 class="title font-semibold">{{ 'users' | translate }}</h1>
+        <h1 class="title font-semibold">{{ 'flows' | translate }}</h1>
       </div>
     </div>
   </vex-page-layout-header>
@@ -15,8 +15,8 @@
   <vex-page-layout-content [class.container]="'boxed'" class="-mt-6">
 
     <div class="card overflow-auto -mt-16">
-      <div class="flex flex-row items-center justify-between bg-app-bar px-6 h-16 border-b sticky left-0">
-        <div class="flex flex-row items-center bg-card bg-white rounded-full border px-4">
+      <div class="flex flex-row items-center bg-app-bar px-6 h-16 border-b sticky left-0">
+        <div class="flex flex-row bg-card bg-white rounded-full border px-4 items-center">
           <mat-icon svgIcon="mat:search"></mat-icon>
           <input [formControl]="searchCtrl"
                  class="px-4 py-3 border-0 outline-none w-full bg-transparent"
@@ -28,7 +28,7 @@
                 class="flex-none ml-4"
                 color="primary"
                 mat-mini-fab
-                [matTooltip]="'user.new' | translate"
+                [matTooltip]="'flow.new' | translate"
                 type="button">
           <mat-icon svgIcon="mat:add"></mat-icon>
         </button>
@@ -48,12 +48,12 @@
             </th>
             <td *matCellDef="let row" [ngClass]="column.cssClasses" mat-cell>{{ row[column.property] }}</td>
           </ng-container>
-          <ng-container *ngIf="column.type === 'phone'" [matColumnDef]="column.property">
+          <ng-container *ngIf="column.type === 'date'" [matColumnDef]="column.property">
             <th *matHeaderCellDef mat-header-cell
                 mat-sort-header> {{ column.label | translate }}
             </th>
             <td *matCellDef="let row" [ngClass]="column.cssClasses"
-                mat-cell>{{ row[column.property] | mask: this.onGetMask(row) }}
+                mat-cell>{{ row[column.property] | dateMoment }}
             </td>
           </ng-container>
           <ng-container *ngIf="column.type === 'enum'" [matColumnDef]="column.property">
@@ -86,6 +86,7 @@
         <tr *matRowDef="let row; columns: visibleColumns;"
             @fadeInUp
             class="hover:bg-hover trans-ease-out cursor-pointer"
+            (click)="onManage(row)"
             mat-row></tr>
       </table>
 
@@ -101,6 +102,14 @@
 </vex-page-layout>
 <mat-menu #actionsMenu="matMenu" xPosition="before" yPosition="below">
   <ng-template let-row="row" matMenuContent>
+    <button (click)="onManage(row)" mat-menu-item>
+      <mat-icon svgIcon="mat:settings"></mat-icon>
+      <span>{{ 'manage' | translate }}</span>
+    </button>
+    <button (click)="onHistory(row)" mat-menu-item>
+      <mat-icon svgIcon="mat:history"></mat-icon>
+      <span>{{ 'history' | translate }}</span>
+    </button>
     <button (click)="onUpdate(row)" mat-menu-item>
       <mat-icon svgIcon="mat:edit"></mat-icon>
       <span>{{ 'edit' | translate }}</span>
@@ -112,6 +121,10 @@
     <button *ngIf="this.isActive(row)" (click)="onInactivate(row)" mat-menu-item>
       <mat-icon svgIcon="mat:lock"></mat-icon>
       <span>{{ 'inactivate' | translate }}</span>
+    </button>
+    <button (click)="onDelete(row)" mat-menu-item>
+      <mat-icon svgIcon="mat:delete"></mat-icon>
+      <span>{{ 'delete' | translate }}</span>
     </button>
   </ng-template>
 </mat-menu>

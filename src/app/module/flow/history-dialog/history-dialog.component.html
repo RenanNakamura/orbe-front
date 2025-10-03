@@ -1,0 +1,61 @@
+<div class="flex flex-row items-center justify-between" mat-dialog-title>
+
+  <div class="flex-auto headline m-2">
+    <div class="header flex flex-col items-center">
+            <span class="text-xl font-medium cursor-pointer" *ngIf="!this.isIdCopied"
+                  [matTooltip]="this.flowExecution?.id"
+                  (click)="onCopy(this.flowExecution?.id)">{{ this.flowExecution?.contact?.name }}</span>
+      <span class="text-xl font-medium cursor-pointer" *ngIf="this.isIdCopied" [matTooltip]="this.onGetCopiedText()"
+            (click)="onCopy(this.flowExecution?.id)">{{ this.flowExecution?.contact?.name }}</span>
+      <span class="text-sm font-medium text-gray-400">{{ this.flowExecution?.phone }}</span>
+    </div>
+  </div>
+
+  <button class="text-secondary" mat-dialog-close="" mat-icon-button type="button">
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<mat-divider class="text-border"></mat-divider>
+
+<mat-dialog-content class="flex flex-col">
+  <div class="body relative rounded-md mt-6 p-2">
+    <div *ngFor="let log of this.flowExecution?.logs">
+      <div class="flex flex-col m-2">
+        <div *ngFor="let logMessage of log.messages">
+          <div [ngSwitch]="log.entry">
+            <div *ngSwitchCase="'RECEIVED'" class="flex flex-row justify-start">
+              <message-bubble [message]="logMessage.message"
+                              [entry]="log.entry"
+                              [status]="logMessage.status"
+                              [createdDate]="logMessage.createdDate"
+                              [executedDate]="logMessage.executedDate">
+              </message-bubble>
+            </div>
+            <div *ngSwitchCase="'COMMAND'" class="flex flex-row justify-center">
+              <message-bubble [message]="logMessage.message"
+                              [entry]="log.entry"
+                              [status]="logMessage.status"
+                              [createdDate]="logMessage.createdDate"
+                              [executedDate]="logMessage.executedDate">
+              </message-bubble>
+            </div>
+            <div *ngSwitchCase="'SENT'" class="flex flex-row justify-end">
+              <message-bubble [message]="logMessage.message"
+                              [entry]="log.entry"
+                              [status]="logMessage.status"
+                              [error]="this.onBuildLogMessageError(logMessage)"
+                              [createdDate]="logMessage.createdDate"
+                              [executedDate]="logMessage.executedDate">
+              </message-bubble>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close="" type="button">{{ 'close' | translate }}</button>
+</mat-dialog-actions>
