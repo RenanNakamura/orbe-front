@@ -121,10 +121,10 @@ const ButtonNode = (props: NodeProps<any>) => {
 
     return (
         <>
-            <div className={`button-node rounded-md bg-white shadow-4 ${isNodeValid === false ? 'invalid' : ''}`}>
+            <div className={`button-node rounded-md bg-white shadow-md ${isNodeValid === false ? 'invalid' : ''}`}>
                 <Toolbar id={nodeData.id} show={props?.selected}/>
                 <Header icon={MdSmartButton}
-                        iconCss={'bg-primary'}
+                        iconCss={'bg-primary-600'}
                         title={translate?.title}
                         isNodeValid={isNodeValid}
                         alertMessage={translate?.alertMessage}
@@ -132,7 +132,7 @@ const ButtonNode = (props: NodeProps<any>) => {
                 <div className='relative min-h-14 bg-primary-600/20 pl-4 pt-4 pr-4 pb-2'>
                     <div className={'pl-1 pr-1'}>
                         {!nodeData?.text ? (
-                            <div className={'italic text-center'}>{translate?.validationAlert}</div>
+                            <div className={'italic text-center text-gray-500'}>{translate?.validationAlert}</div>
                         ) : (
                             <div>
                                 <Messages messages={[{type: Type.TEXT, body: nodeData?.text}]}

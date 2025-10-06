@@ -136,18 +136,18 @@ const QuestionNode = (props: NodeProps<any>) => {
 
     return (
         <>
-            <div className={`question-node shadow-4 ${isNodeValid === false ? 'invalid' : ''}`}>
+            <div className={`question-node shadow-md rounded-md bg-white ${isNodeValid === false ? 'invalid' : ''}`}>
                 <Toolbar id={nodeData.id} show={props?.selected}/>
                 <Header icon={MdQuestionMark}
-                        iconCss={'bg-primary'}
+                        iconCss={'bg-primary-600'}
                         title={translate?.title}
                         isNodeValid={isNodeValid}
                         alertMessage={translate?.alertMessage}
                 />
-                <div className='body'>
-                    <div className={'messages'}>
+                <div className='relative min-h-14 pl-4 pt-4 pr-4 pb-2 bg-primary-600/20'>
+                    <div className={'pl-1 pr-1'}>
                         {!nodeData?.text ? (
-                            <div className={'empty'}>{translate?.validationMessageNotEmpty}</div>
+                            <div className={'italic text-center text-gray-500'}>{translate?.validationMessageNotEmpty}</div>
                         ) : (
                             <div>
                                 <Messages messages={[{type: Type.TEXT, body: nodeData?.text}]}
@@ -162,14 +162,14 @@ const QuestionNode = (props: NodeProps<any>) => {
                 <MessageBar message={editingMessage} onSend={onAddMessage} maxLength={1024}
                             hideMediaOption={true}></MessageBar>
 
-                <div className={'relative flex xyflow-node-background-color xyflow-border-top-width-1 p-2 items-center'}>
-                    <span className={'italic xyflow-text-dimgray ml-1 mr-2'}>{translate?.saveIn} </span>
+                <div className={'relative flex xyflow-node-background-color border-t p-2 items-center'}>
+                    <span className={'italic text-gray-500 ml-1 mr-2'}>{translate?.saveIn} </span>
                     <SelectGroupList placeholder={translate?.select}
                                      groups={groups}
                                      value={nodeData?.answerField?.field}
                                      onClick={(value) => onSelectAnswerField(value)}></SelectGroupList>
                     <MdHelpOutline
-                        className={'ml-1 cursor-pointer text-gray'}
+                        className={'ml-1 cursor-pointer text-gray-400'}
                         size={16}
                         data-tooltip-id='hint-answer-field'
                         data-tooltip-content={translate?.alertSaveIn}
@@ -177,11 +177,11 @@ const QuestionNode = (props: NodeProps<any>) => {
                     <Tooltip id='hint-answer-field'/>
                 </div>
 
-                <div className={'flex flex-row relative xyflow-node-background-color xyflow-border-top-width-1 p-2 items-center'}>
+                <div className={'flex flex-row relative xyflow-node-background-color border-t p-2 items-center'}>
                     <div className={'flex flex-row'}>
-                        <span className={'italic xyflow-text-dimgray ml-1 mr-2'}>{translate?.answerNotResponse}</span>
+                        <span className={'italic text-gray-500 ml-1 mr-2'}>{translate?.answerNotResponse}</span>
                         <input type='text'
-                               className={'outline-none text-center bg-gray rounded-sm w-6 text-white font-medium'}
+                               className={'outline-none text-center bg-gray-500 rounded-sm w-6 text-white font-medium'}
                                value={time}
                                onChange={handleTimeChange}
                                maxLength={2}/>
@@ -194,7 +194,7 @@ const QuestionNode = (props: NodeProps<any>) => {
                     </div>
 
                     <MdHelpOutline
-                        className={'ml-1 cursor-pointer text-gray'}
+                        className={'ml-1 cursor-pointer text-gray-400'}
                         size={16}
                         data-tooltip-id='hint-answer-field'
                         data-tooltip-content={translate?.alertNotMessage}
@@ -209,9 +209,9 @@ const QuestionNode = (props: NodeProps<any>) => {
                     />
                 </div>
 
-                <div className={'flex flex-row relative xyflow-node-background-color xyflow-border-top-width-1 xyflow-node-border-radius-b-10 p-2 items-center'}>
+                <div className={'flex flex-row relative xyflow-node-background-color border-t xyflow-node-border-radius-b-10 p-2 items-center'}>
                     <div className={'flex flex-row'}>
-                        <span className={'italic xyflow-text-dimgray ml-1 mr-2'}>{translate?.answerInvalid}</span>
+                        <span className={'italic text-gray-500 ml-1 mr-2'}>{translate?.answerInvalid}</span>
                     </div>
 
                     <Handle

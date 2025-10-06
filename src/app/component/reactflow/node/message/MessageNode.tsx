@@ -112,7 +112,7 @@ const MessageNode = (props: NodeProps<any>) => {
 
     return (
         <>
-            <div className={`message-node rounded-md bg-white shadow-4 ${isNodeValid === false ? 'invalid' : ''}`}>
+            <div className={`message-node rounded-md bg-white shadow-md ${isNodeValid === false ? 'invalid' : ''}`}>
                 <Toolbar id={nodeData.id} show={props?.selected}/>
                 <Header icon={MdMessage}
                         iconCss={'bg-primary-600'}
@@ -123,7 +123,7 @@ const MessageNode = (props: NodeProps<any>) => {
                 <div className='relative min-h-14 bg-primary-600/20 pl-4 pt-4 pr-4 pb-2'>
                     <div className={'pl-1 pr-1'}>
                         {!nodeData?.messages || nodeData?.messages?.length === 0 ? (
-                            <div className={'italic text-center'}>{translate?.validationMessageNotEmpty}</div>
+                            <div className={'italic text-center text-gray-500'}>{translate?.validationMessageNotEmpty}</div>
                         ) : (
                             <div>
                                 <Messages messages={nodeData?.messages}

@@ -106,17 +106,17 @@ const ActionNode = (props: NodeProps<any>) => {
 
     return (
         <>
-            <div className={`action-node shadow-4 ${isNodeValid === false ? 'invalid' : ''}`}>
+            <div className={`action-node bg-white shadow-md rounded-md ${isNodeValid === false ? 'invalid' : ''}`}>
                 <Toolbar id={nodeData.id} show={props?.selected}/>
                 <Header title={translate?.title}
                         icon={MdFlashOn}
-                        iconCss={'bg-orange'}
+                        iconCss={'bg-orange-600'}
                         alertMessage={translate?.alertMessage}
                         isNodeValid={isNodeValid}/>
-                <div className='body'>
-                    <div className={'messages'}>
+                <div className='relative min-w-14 pl-4 pt-4 pr-4 pb-2 bg-amber-600/20'>
+                    <div className={'pl-1 pr-1'}>
                         {!nodeData?.actions || nodeData?.actions?.length === 0 ? (
-                            <div className={'empty'}>{translate?.actionsEmpty}</div>
+                            <div className={'italic text-center text-gray-500'}>{translate?.actionsEmpty}</div>
                         ) : (
                             <div>
                                 <Actions actions={nodeData?.actions}
@@ -128,7 +128,7 @@ const ActionNode = (props: NodeProps<any>) => {
                     </div>
                 </div>
                 <div className='flex flex-row justify-end xyflow-node-background-color xyflow-node-border-radius-b-10 p-2'>
-                    <MdAdd className={'text-primary cursor-pointer'}
+                    <MdAdd className={'text-primary-600 cursor-pointer'}
                            size={24}
                            onClick={() => onOpenModal(null)}/>
                 </div>

@@ -1,29 +1,5 @@
-.f-group-list {
-
-  .groups {
-    width: 13rem;
-    position: absolute;
-    background-color: white;
-    border: 1px solid #fff;
-    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-
-    .title {
-      font-size: 14px;
-      font-weight: 500;
-      color: darkgrey;
-      border-bottom-width: 1px;
-    }
-
-    .item {
-      cursor: pointer;
-      padding: 0.25rem;
-    }
-
-    .item:hover {
-      background-color: rgba(var(--color-primary), .2);
-      border-radius: 5px;
-    }
+.groups {
+  .item:hover {
+    background-color: rgb(var(--vex-color-primary-600) / 0.2);
   }
-
 }

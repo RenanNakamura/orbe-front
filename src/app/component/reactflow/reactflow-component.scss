@@ -68,14 +68,6 @@
   border: 1px solid lightgray;
 }
 
-.xyflow-text-dimgray {
-  color: dimgray;
-}
-
-.xyflow-border-b-1 {
-  border-bottom-width: 1px;
-}
-
 .xyflow-handle {
   background: white;
   border: 1px solid rgb(var(--vex-color-primary-600));
@@ -87,16 +79,8 @@
   background-color: rgba(243, 244, 246, 1);
 }
 
-.xyflow-border-radius {
-  border-radius: 1vh;
-}
-
 .xyflow-node-border-radius-b-10 {
   border-radius: 0 0 10px 10px;
-}
-
-.xyflow-border-top-width-1 {
-  border-top-width: 1px;
 }
 
 .xyflow-modal-container {
@@ -138,4 +122,10 @@
 
 .xyflow-modal-footer {
   text-align: right;
+}
+
+.btn-whatsapp {
+  height: 2rem;
+  background: white;
+  color: #00a5f4;
 }

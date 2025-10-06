@@ -191,18 +191,18 @@ const ListNode = (props: NodeProps<any>) => {
 
   return (
     <>
-      <div className={`list-node shadow-4 ${isNodeValid === false ? 'invalid' : ''}`}>
+      <div className={`list-node rounded-md bg-white shadow-md ${isNodeValid === false ? 'invalid' : ''}`}>
         <Toolbar id={nodeData.id} show={props?.selected}/>
         <Header icon={MdFormatListBulleted}
-                iconCss={'bg-primary'}
+                iconCss={'bg-primary-600'}
                 title={translate?.title}
                 isNodeValid={isNodeValid}
                 alertMessage={translate?.alertMessage}
         />
-        <div className='body'>
-          <div className={'messages'}>
+        <div className='relative min-h-14 pl-4 pt-4 pr-4 pb-2 bg-primary-600/20'>
+          <div className={'pl-1 pr-1'}>
             {!nodeData?.body ? (
-              <div className={'empty'}>{translate?.validationAlert}</div>
+              <div className={'italic text-center text-gray-500'}>{translate?.validationAlert}</div>
             ) : (
               <div>
                 <Messages messages={[{type: Type.TEXT, body: nodeData?.body}]}
@@ -220,9 +220,9 @@ const ListNode = (props: NodeProps<any>) => {
                     hideMediaOption={true}
         ></MessageBar>
 
-        <div className={'list-node-button xyflow-node-background-color p-4 border-b'}>
+        <div className={'xyflow-node-background-color p-4 border-b'}>
           <input type='text'
-                 className={'button outline-none text-center w-full nodrag nopan nowheel'}
+                 className={'btn-whatsapp rounded-md outline-none text-center w-full nodrag nopan nowheel'}
                  placeholder={translate?.listNodeButtonPlaceholder}
                  maxLength={20}
                  value={nodeData?.button || ''}
@@ -248,7 +248,7 @@ const ListNode = (props: NodeProps<any>) => {
                          pointerEvents: onRowMaxQuantity(i) ? 'none' : 'auto',
                          opacity: onRowMaxQuantity(i) ? 0.5 : 1
                        }}>
-                    <button className={'f-btn f-btn-primary text-primary'}
+                    <button className={'f-btn f-btn-primary text-primary-600'}
                             onClick={() => onAddRow(i)}>
                       {translate?.addOption}
                     </button>
@@ -261,7 +261,7 @@ const ListNode = (props: NodeProps<any>) => {
         <div
           className='flex flex-row justify-end p-2 xyflow-node-background-color xyflow-node-border-radius-b-10'>
           <MdAdd
-            className={'text-primary cursor-pointer'}
+            className={'text-primary-600 cursor-pointer'}
             size={24}
             onClick={onAddSection}
             style={{

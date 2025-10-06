@@ -197,7 +197,7 @@ const ModalCondition = (props: Props) => {
                         {props.btnCancelLabel ? props.btnCancelLabel : t('cancel')}
                     </button>
                     <button
-                        className='f-btn f-btn-primary text-primary'
+                        className='f-btn f-btn-primary text-primary-600'
                         type='button'
                         onClick={onSubmit}>
                         {props.btnSubmitLabel ? props.btnSubmitLabel : t('add')}
