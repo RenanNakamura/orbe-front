@@ -65,7 +65,6 @@ export class ReactFlowWrapperComponent implements OnDestroy, AfterViewInit {
 
   public onSubmitHandle(flow: UpdateFlowNodes) {
     if (this.onSubmit) {
-      console.log('flow => ', flow)
       this.onSubmit.emit(flow);
     }
   }
