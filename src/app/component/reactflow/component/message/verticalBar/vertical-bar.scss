@@ -1,0 +1,22 @@
+.f-vertical-bar {
+  min-height: 4rem;
+  min-width: 4rem;
+  border-radius: 10px;
+  background-color: white;
+  z-index: 1;
+
+  .option:hover {
+    background-color: rgb(var(--vex-color-primary-600) / 0.2);
+    border-radius: 10px;
+  }
+
+  .line-b {
+    border-bottom-width: 1px;
+  }
+
+  .label {
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+}

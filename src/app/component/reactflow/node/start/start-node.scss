@@ -1,0 +1,60 @@
+.start-node {
+  width: 20rem;
+
+  .hint {
+    position: absolute;
+    top: 3rem;
+    font-size: 8px;
+    right: 0.5rem;
+    color: gray;
+    text-decoration: underline;
+  }
+
+  .config {
+    align-items: center;
+    height: 2.5rem;
+    background-color: rgb(var(--vex-color-primary-600));
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    display: flex;
+    border-radius: 0 0 10px 10px;
+
+    .img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .description {
+      color: white;
+      font-size: 14px;
+      margin-left: 0.5rem;
+
+      span {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .triggers {
+
+    .trigger {
+      padding: 0 10px;
+      margin: 0.3rem;
+      min-height: 2rem;
+      display: flex;
+      align-items: center;
+      border-bottom-width: 1px;
+      justify-content: space-between;
+
+      .description {
+        max-width: 13rem;
+      }
+
+      img {
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+      }
+    }
+  }
+}

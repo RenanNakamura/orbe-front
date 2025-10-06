@@ -1,0 +1,35 @@
+.f-select-node {
+  height: auto;
+  background-color: white;
+  min-height: 10rem;
+  min-width: 15rem;
+  max-width: 23rem;
+  width: 23rem;
+  border-radius: inherit;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+
+  .header {
+    padding: 0.7rem 1rem 0.7rem 1rem;
+    text-align: center;
+    border-bottom-width: 1px;
+
+    .description {
+      color: #a5a5a5;
+      font-size: 12px;
+    }
+  }
+
+  .body {
+
+    .item {
+      min-width: 6.5rem;
+    }
+
+    .title {
+      margin-left: 0.5rem;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+  }
+}

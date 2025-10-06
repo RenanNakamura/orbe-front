@@ -212,7 +212,7 @@ export const themes: VexThemes = {
 };
 
 export default {
-  content: ['./src/**/*.{html,ts}'],
+  content: ['./src/**/*.{html,ts,tsx,jsx}'],
   important: ':root',
   darkMode: ['class', '.dark'],
   theme: {

@@ -1,0 +1,34 @@
+.list-node {
+  width: 20rem;
+  border-radius: inherit;
+  background: white;
+
+  .body {
+    position: relative;
+    min-height: 3.5rem;
+    padding: 1rem 1.5rem 0.5rem;
+    background-color: rgba(var(--color-primary), 0.2);
+
+    .messages {
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+
+      .empty {
+        font-style: italic;
+        text-align: center;
+        color: darkgray;
+      }
+
+    }
+  }
+
+  .list-node-button {
+    .button {
+      background: white;
+      border-radius: 1vh;
+      color: #00a5f4;
+      height: 2rem;
+    }
+  }
+
+}

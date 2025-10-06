@@ -1,0 +1,141 @@
+/* xyflow theme files. Delete these to start from our base */
+
+.react-flow {
+  /* Custom Variables */
+  --xy-theme-selected: rgb(var(--vex-color-primary-600));
+  --xy-theme-hover: rgb(var(--vex-color-primary-600));
+  //--xy-theme-selected: #F57DBD;
+  //--xy-theme-hover: #F57DBD;
+  --xy-theme-edge-hover: black;
+  --xy-theme-color-focus: #E8E8E8;
+
+  --xy-node-border-default: 1px solid #eee;
+
+  --xy-node-border-radius-default: 10px;
+}
+
+/* Customizing Default Theming */
+
+.react-flow__node {
+  border-radius: var(--xy-node-border-radius-default);
+  border: var(--xy-node-border-default);
+}
+
+.react-flow__node.selectable:hover,
+.react-flow__node.draggable:hover {
+  border-color: var(--xy-theme-hover);
+}
+
+.react-flow__node.selectable.selected {
+  border-color: var(--xy-theme-selected);
+  box-shadow: var(--xy-node-boxshadow-default);
+}
+
+/* Toolbar Node */
+
+.react-flow__node-toolbar {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.react-flow__node-toolbar button {
+  cursor: pointer;
+  border: none;
+  padding: 0.25rem;
+  margin: 0.25rem;
+  border-radius: 50%;
+  box-shadow: var(--xy-node-boxshadow-default);
+}
+
+.react-flow__node-toolbar button:hover {
+  background: #4d4d4d;
+}
+
+.xyflow-controls {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.xyflow-controls button {
+  border-radius: 0.25rem;
+  margin-bottom: 0.1rem;
+  border: 1px solid lightgray;
+}
+
+.react-flow__controls-button:last-child {
+  border: 1px solid lightgray;
+}
+
+.xyflow-text-dimgray {
+  color: dimgray;
+}
+
+.xyflow-border-b-1 {
+  border-bottom-width: 1px;
+}
+
+.xyflow-handle {
+  background: white;
+  border: 1px solid rgb(var(--vex-color-primary-600));
+  height: 1.1rem;
+  width: 1.1rem;
+}
+
+.xyflow-node-background-color {
+  background-color: rgba(243, 244, 246, 1);
+}
+
+.xyflow-border-radius {
+  border-radius: 1vh;
+}
+
+.xyflow-node-border-radius-b-10 {
+  border-radius: 0 0 10px 10px;
+}
+
+.xyflow-border-top-width-1 {
+  border-top-width: 1px;
+}
+
+.xyflow-modal-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.32);
+  z-index: 1;
+}
+
+.xyflow-modal {
+  border-radius: 5px;
+  padding: 1rem;
+  background-color: white;
+  width: 50em;
+}
+
+.xyflow-modal-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 2rem;
+  align-items: center;
+}
+
+.xyflow-modal-divider {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  border-bottom-width: 1px
+}
+
+.xyflow-modal-content {
+  margin-bottom: 2rem;
+}
+
+.xyflow-modal-footer {
+  text-align: right;
+}

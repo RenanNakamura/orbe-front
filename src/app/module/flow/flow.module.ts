@@ -21,7 +21,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {DateMomentPipeModule} from '../../pipe/date-moment.pipe';
 import {StatusColorPipeModule} from './pipe/label-status-color.pipe';
 import {FormComponent} from './form/form.component';
-// import {ReactFlowWrapperComponent} from '../../component/reactflow/ReactFlowWrapperComponent';
+import {ReactFlowWrapperComponent} from '../../component/reactflow/ReactFlowWrapperComponent';
 import {DialogComponent} from './dialog/dialog.component';
 import {HistoryListComponent} from './history-list/history-list.component';
 import {HistoryDialogComponent} from './history-dialog/history-dialog.component';
@@ -34,7 +34,7 @@ import {VexPageLayoutContentDirective} from "@vex/components/vex-page-layout/vex
   declarations: [
     ListComponent,
     FormComponent,
-    // ReactFlowWrapperComponent,
+    ReactFlowWrapperComponent,
     DialogComponent,
     HistoryListComponent,
     HistoryDialogComponent

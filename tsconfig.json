@@ -2,6 +2,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "jsx": "react-jsx",
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -10,6 +11,7 @@
     "sourceMap": true,
     "declaration": false,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",

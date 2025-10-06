@@ -1,0 +1,33 @@
+.f-btn {
+  font-weight: 500;
+  box-sizing: border-box;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  text-align: center;
+  min-width: 64px;
+  line-height: 36px;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.f-btn-primary {
+  &:hover {
+    background-color: rgb(var(--vex-color-primary-600) / 0.05);
+  }
+}
+
+.f-btn-cancel {
+  &:hover {
+    background-color: rgba(#0000, 0.05);
+  }
+}
+
+.f-input {
+  border-radius: 4px;
+  border: 1px solid hsl(0, 0%, 80%);
+  min-height: 32px;
+  padding: 8px;
+  box-sizing: border-box;
+}
