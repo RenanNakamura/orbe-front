@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {UntypedFormBuilder} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
 import {fadeInRight400ms} from '@vex/animations/fade-in-right.animation';
 import {scaleIn400ms} from '@vex/animations/scale-in.animation';
@@ -13,7 +12,7 @@ import {StorageService} from '../../../service/storage/storage.service';
 import {FileUtil} from '../../../util/file.util';
 import {AlertService} from '../../../service/sk/alert.service';
 import {TranslateService} from '@ngx-translate/core';
-// import {ReactFlowWrapperComponent} from '../../../component/reactflow/ReactFlowWrapperComponent';
+import {ReactFlowWrapperComponent} from '../../../component/reactflow/ReactFlowWrapperComponent';
 
 @Component({
   selector: 'vex-form',
@@ -28,16 +27,14 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class FormComponent implements OnInit {
 
-  // @ViewChild(ReactFlowWrapperComponent)
-  // reactFlowComp!: ReactFlowWrapperComponent;
+  @ViewChild(ReactFlowWrapperComponent)
+  reactFlowComp!: ReactFlowWrapperComponent;
 
   flow: Flow;
   fileNamesUploaded = [];
   isLoading = false;
 
-  constructor(private _fb: UntypedFormBuilder,
-              private _router: Router,
-              private _service: FlowService,
+  constructor(private _service: FlowService,
               private _activatedRoute: ActivatedRoute,
               private _storageService: StorageService,
               private _alertService: AlertService,
@@ -76,7 +73,7 @@ export class FormComponent implements OnInit {
   }
 
   async onSave() {
-    // this.reactFlowComp.triggerSave();
+    this.reactFlowComp.triggerSave();
   }
 
   private async _processNodes(flow: UpdateFlowNodes) {
