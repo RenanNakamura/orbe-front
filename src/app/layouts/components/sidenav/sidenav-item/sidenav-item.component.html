@@ -1,5 +1,5 @@
 <a
-  *ngIf="isLink(item) && !isFunction(item.route)"
+  *ngIf="isLink(item) && !isFunction(item.route) && onHasRole(item)"
   [fragment]="item.fragment"
   [routerLinkActiveOptions]="item.routerLinkActiveOptions || { exact: false }"
   [routerLink]="item.route"
@@ -22,7 +22,7 @@
 
 <div
   (click)="item.route()"
-  *ngIf="isLink(item) && isFunction(item.route)"
+  *ngIf="isLink(item) && isFunction(item.route) && onHasRole(item)"
   class="vex-sidenav-item"
   matRipple
   matRippleColor="var(--vex-sidenav-item-ripple-color)"

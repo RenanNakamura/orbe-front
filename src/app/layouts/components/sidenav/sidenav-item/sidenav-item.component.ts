@@ -15,21 +15,18 @@ import {
   NavigationItem,
   NavigationLink
 } from '../../../../core/navigation/navigation-item.interface';
-import { dropdownAnimation } from '@vex/animations/dropdown.animation';
-import {
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterLinkActive
-} from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { NavigationService } from '../../../../core/navigation/navigation.service';
+import {dropdownAnimation} from '@vex/animations/dropdown.animation';
+import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
+import {filter} from 'rxjs/operators';
+import {NavigationService} from '../../../../core/navigation/navigation.service';
 
-import { MatIconModule } from '@angular/material/icon';
-import { MatRippleModule } from '@angular/material/core';
-import { NgClass, NgFor, NgIf } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
+import {MatIconModule} from '@angular/material/icon';
+import {MatRippleModule} from '@angular/material/core';
+import {NgClass, NgFor, NgIf} from '@angular/common';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TranslateModule} from '@ngx-translate/core';
+import {RoleUtil} from "../../../../util/role.util";
+import {UserStorage} from "../../../../storage/user/user.storage";
 
 @Component({
   selector: 'vex-sidenav-item',
@@ -50,8 +47,8 @@ import { TranslateModule } from '@ngx-translate/core';
   ]
 })
 export class SidenavItemComponent implements OnInit, OnChanges {
-  @Input({ required: true }) item!: NavigationItem;
-  @Input({ required: true }) level!: number;
+  @Input({required: true}) item!: NavigationItem;
+  @Input({required: true}) level!: number;
   isOpen: boolean = false;
   isActive: boolean = false;
 
@@ -64,8 +61,10 @@ export class SidenavItemComponent implements OnInit, OnChanges {
   constructor(
     private router: Router,
     private cd: ChangeDetectorRef,
-    private navigationService: NavigationService
-  ) {}
+    private navigationService: NavigationService,
+    private _userStorage: UserStorage,
+  ) {
+  }
 
   @HostBinding('class')
   get levelClass() {
@@ -158,5 +157,9 @@ export class SidenavItemComponent implements OnInit, OnChanges {
 
   isFunction(prop: NavigationLink['route']): boolean {
     return prop instanceof Function;
+  }
+
+  onHasRole(item: NavigationLink) {
+    return RoleUtil.hasRole(item?.roles, this._userStorage.get()?.role);
   }
 }
