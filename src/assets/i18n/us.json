@@ -509,6 +509,8 @@
   "NOT_VERIFIED": "Not verified",
   "EXPIRED": "Expired",
   "about": "About",
+  "ADMIN": "Admin",
+  "USER": "User",
   "facebook": {
     "continue-with-facebook": "Continue with Facebook"
   },
