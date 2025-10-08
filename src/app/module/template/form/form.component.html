@@ -402,10 +402,16 @@
                 </button>
               </div>
 
-              <div formArrayName="buttons" class="mt-4">
+              <div formArrayName="buttons" class="mt-4"
+                   cdkDropList
+                   (cdkDropListDropped)="onDropButton($event)">
                 <div *ngFor="let button of buttons.controls; let i = index"
-                     [formGroupName]="i">
+                     [formGroupName]="i"
+                     cdkDrag>
                   <div class="flex flex-row space-x-1 space-y-1">
+                    <div cdkDragHandle class="cursor-move text-gray-400 hover:text-primary-600 mt-3">
+                      <mat-icon svgIcon="mat:drag_indicator"></mat-icon>
+                    </div>
                     <mat-form-field class="w-3/12" appearance="outline">
                       <mat-label>{{ 'template.button.type' | translate }}</mat-label>
                       <mat-select formControlName="type" (selectionChange)="this.onChangeButtonType(i)">

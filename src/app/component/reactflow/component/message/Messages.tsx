@@ -71,7 +71,7 @@ function Messages(props: Props) {
 
             {
               msg?.type === 'TEXT' && (
-                <div className={'mt-auto break-words'}>{msg?.body}</div>
+                <div className={'mt-auto break-words whitespace-pre-line'}>{msg?.body}</div>
               )
             }
             {

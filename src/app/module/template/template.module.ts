@@ -22,6 +22,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
 import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
+import {CdkDrag, CdkDragHandle, CdkDropList} from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [ListComponent, FormComponent],
@@ -45,7 +46,10 @@ import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page
     MatProgressSpinnerModule,
     VexPageLayoutHeaderDirective,
     VexPageLayoutContentDirective,
-    VexPageLayoutComponent
+    VexPageLayoutComponent,
+    CdkDragHandle,
+    CdkDrag,
+    CdkDropList
   ]
 })
 export class TemplateModule {}

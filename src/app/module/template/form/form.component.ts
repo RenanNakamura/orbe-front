@@ -1,5 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {
+  FormArray,
+  FormGroup,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import {
   Body,
   Button,
@@ -30,6 +38,7 @@ import {LoadingService} from '../../../service/sk/loading.service';
 import languages from 'src/assets/json/language.json';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {StringUtil} from "../../../util/string.util";
+import {CdkDragDrop} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'vex-form',
@@ -154,6 +163,20 @@ export class FormComponent implements OnInit {
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
     const url = buttonGroup.get('url')?.value;
     return url?.length || 0;
+  }
+
+  onDropButton(event: CdkDragDrop<FormGroup[]>) {
+    const buttons = this.buttons as FormArray;
+    if (!buttons) return;
+
+    if (event.previousIndex === event.currentIndex) return;
+
+    const moved = buttons.at(event.previousIndex);
+    buttons.removeAt(event.previousIndex);
+    buttons.insert(event.currentIndex, moved);
+
+    buttons.markAsDirty();
+    this.form.markAsDirty();
   }
 
   onHeaderTextLength(): number {
