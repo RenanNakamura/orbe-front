@@ -88,6 +88,7 @@
         <tr *matRowDef="let row; columns: visibleColumns;"
             @fadeInUp
             class="hover:bg-hover trans-ease-out cursor-pointer"
+            (click)="onUpdate(row)"
             mat-row></tr>
       </table>
 
@@ -103,7 +104,7 @@
 </vex-page-layout>
 <mat-menu #actionsMenu="matMenu" xPosition="before" yPosition="below">
   <ng-template let-row="row" matMenuContent>
-    <button (click)="onUpdate(row)" [disabled]="!this.onCanUpdate(row)" mat-menu-item>
+    <button (click)="onUpdate(row)" mat-menu-item>
       <mat-icon svgIcon="mat:edit"></mat-icon>
       <span>{{ 'edit' | translate }}</span>
     </button>

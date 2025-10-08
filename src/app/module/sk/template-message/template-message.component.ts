@@ -1,22 +1,8 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
-import {
-  Button,
-  ButtonAction,
-  ButtonType,
-  Format,
-  Header,
-  ItemButton
-} from '../../../model/Template';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { LoadingService } from '../../../service/sk/loading.service';
-import { Subscription } from 'rxjs';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Button, ButtonType, Format, Header, ItemButton} from '../../../model/Template';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {LoadingService} from '../../../service/sk/loading.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'template-message',
@@ -47,7 +33,8 @@ export class TemplateMessageComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     public sanitizer: DomSanitizer,
     private _loadingService: LoadingService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadingSubscription = this._loadingService.loading$.subscribe(
@@ -73,23 +60,12 @@ export class TemplateMessageComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  isButtonQuickReply(): boolean {
-    return this.button?.action === ButtonAction.QUICK_REPLY;
-  }
-
-  isButtonCallToAction(): boolean {
-    return this.button?.action === ButtonAction.CALL_TO_ACTION;
-  }
-
-  hasButtonText(): boolean {
-    return (
-      (this.isButtonQuickReply() || this.isButtonCallToAction()) &&
-      !!this.button.buttons.find((button) => button?.text?.length)
-    );
-  }
-
   isButtonPhoneNumber(button: ItemButton) {
     return button.type === ButtonType.PHONE_NUMBER;
+  }
+
+  isButtonQuickReply(button: ItemButton) {
+    return button.type === ButtonType.QUICK_REPLY;
   }
 
   isButtonUrl(button: ItemButton) {

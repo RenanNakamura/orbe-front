@@ -1,8 +1,7 @@
 <div class="template pb-4 flex flex-col">
   <div class="template-content">
     <div class="template-msg">
-      <div class="template-msg-content" [ngClass]="{'isMedia': this.isMedia()}"
-           [class.with-button]="this.hasButtonText()">
+      <div class="template-msg-content" [ngClass]="{'isMedia': this.isMedia()}">
         <!-- HEADER -->
 
         <div class="flex flex-row justify-center template-loading-media" *ngIf="this.isLoading">
@@ -24,36 +23,27 @@
 
         <div *ngIf="this.isHeaderDocumentSelected() && !this.isLoading"
              [ngClass]="{'template-empty-media document': !fileUrl}">
-          <embed *ngIf="fileUrl" class="template-media" [src]="this.safeFileUrl" />
+          <embed *ngIf="fileUrl" class="template-media" [src]="this.safeFileUrl"/>
         </div>
         <!-- HEADER -->
 
         <div class="body">{{ body }}</div>
         <div class="footer">{{ footer }}</div>
       </div>
-      <div *ngIf="this.isButtonQuickReply()">
-        <div class="button-quick-reply">
-          <div *ngFor="let item of this.button.buttons">
-            <div *ngIf="item?.text">
-              <div class="item-button-quick-reply text-item-button">
-                {{ item.text }}
-              </div>
+      <div class="button-quick-reply">
+        <div *ngFor="let item of this.button.buttons">
+          <div *ngIf="item?.text">
+            <div class="item-button-quick-reply text-item-button" *ngIf="this.isButtonQuickReply(item)">
+              <mat-icon svgIcon="mat:reply"></mat-icon>
+              {{ item.text }}
             </div>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="this.isButtonCallToAction()">
-        <div class="button-quick-reply">
-          <div *ngFor="let item of this.button.buttons">
-            <div *ngIf="item?.text">
-              <div class="item-button-quick-reply text-item-button" *ngIf="this.isButtonPhoneNumber(item)">
-                <mat-icon svgIcon="mat:call" size="20px"></mat-icon>
-                {{ item.text }}
-              </div>
-              <div class="item-button-quick-reply text-item-button" *ngIf="this.isButtonUrl(item)">
-                <mat-icon svgIcon="mat:launch" size="20px"></mat-icon>
-                {{ item.text }}
-              </div>
+            <div class="item-button-quick-reply text-item-button" *ngIf="this.isButtonPhoneNumber(item)">
+              <mat-icon svgIcon="mat:call"></mat-icon>
+              {{ item.text }}
+            </div>
+            <div class="item-button-quick-reply text-item-button" *ngIf="this.isButtonUrl(item)">
+              <mat-icon svgIcon="mat:launch"></mat-icon>
+              {{ item.text }}
             </div>
           </div>
         </div>

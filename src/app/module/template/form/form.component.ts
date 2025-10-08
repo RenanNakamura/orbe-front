@@ -1,15 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import {
-  UntypedFormArray,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators
-} from '@angular/forms';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {
   Body,
   Button,
-  ButtonAction,
   ButtonType,
   Category,
   Footer,
@@ -17,26 +10,26 @@ import {
   Header,
   isMediaType,
   ItemButton,
+  Status,
   Template,
   Type
 } from '../../../model/Template';
-import { TemplateService } from '../../../service/template/template.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
-import { fadeInRight400ms } from '@vex/animations/fade-in-right.animation';
-import { scaleIn400ms } from '@vex/animations/scale-in.animation';
-import { stagger40ms } from '@vex/animations/stagger.animation';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { Channel } from '../../../model/Channel';
-import { StorageService } from 'src/app/service/storage/storage.service';
-import { CreateTemplateStrategy } from './strategy/CreateTemplateStrategy';
-import { CreateCustomTemplateStrategy } from './strategy/CreateCustomTemplateStrategy';
-import { TemplateContext } from './strategy/TemplateContext';
-import { FileUtil } from '../../../util/file.util';
-import { LoadingService } from '../../../service/sk/loading.service';
+import {TemplateService} from '../../../service/template/template.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
+import {fadeInRight400ms} from '@vex/animations/fade-in-right.animation';
+import {scaleIn400ms} from '@vex/animations/scale-in.animation';
+import {stagger40ms} from '@vex/animations/stagger.animation';
+import {distinctUntilChanged} from 'rxjs/operators';
+import {Channel} from '../../../model/Channel';
+import {StorageService} from 'src/app/service/storage/storage.service';
+import {CreateTemplateStrategy} from './strategy/CreateTemplateStrategy';
+import {CreateCustomTemplateStrategy} from './strategy/CreateCustomTemplateStrategy';
+import {FileUtil} from '../../../util/file.util';
+import {LoadingService} from '../../../service/sk/loading.service';
 import languages from 'src/assets/json/language.json';
-import { LanguageUtil } from '../../../util/language.util';
-import { MatMenuTrigger } from '@angular/material/menu';
+import {MatMenuTrigger} from '@angular/material/menu';
+import {StringUtil} from "../../../util/string.util";
 
 @Component({
   selector: 'vex-form',
@@ -50,7 +43,6 @@ export class FormComponent implements OnInit {
   form: UntypedFormGroup;
   categorys = Category;
   formats = Format;
-  actions = ButtonAction;
   buttonsType = ButtonType;
 
   maxNameLength = 512;
@@ -73,7 +65,8 @@ export class FormComponent implements OnInit {
     private _storageService: StorageService,
     private _activatedRoute: ActivatedRoute,
     private _loadingService: LoadingService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this._activatedRoute.data.subscribe((param) => {
@@ -82,7 +75,7 @@ export class FormComponent implements OnInit {
     });
   }
 
-  get itensbuttonsControls() {
+  get buttons() {
     return this.form.get('button.buttons') as UntypedFormArray;
   }
 
@@ -102,11 +95,11 @@ export class FormComponent implements OnInit {
     return this.form?.get('body.text') as UntypedFormControl;
   }
 
-  get formControlHeaderFormat(): UntypedFormControl {
+  get headerFormat(): UntypedFormControl {
     return this.form?.get('header.format') as UntypedFormControl;
   }
 
-  get headerFormat(): Format {
+  get headerFormatValue(): Format {
     return this.form?.get('header.format').value as Format;
   }
 
@@ -118,54 +111,53 @@ export class FormComponent implements OnInit {
     this.form?.get('header.example.headerHandle')?.setValue(headerHandle);
   }
 
-  onNameLength(): number {
+  onGetNameLength(): number {
     return this.form?.get('name')?.value?.length;
   }
 
-  onBodyTextLength(): number {
+  onGetBodyTextLength(): number {
     const body = this.form?.get('body');
     return body.get('text')?.value?.length;
   }
 
-  onFooterTextLength(): number {
+  onGetFooterTextLength(): number {
     const footer = this.form?.get('footer');
     return footer.get('text')?.value?.length;
   }
 
   onSelectEmoji(event, trigger: MatMenuTrigger) {
     const emoji = event?.emoji?.native;
-    const index = this.textAreaBody.nativeElement.selectionStart;
-    const text = this.bodyText.value;
-    const newText = text.substr(0, index) + emoji + text.substr(index);
+    const index = this.textAreaBody?.nativeElement?.selectionStart;
+    const text = this.bodyText?.value;
+    const newText = text?.substr(0, index) + emoji + text?.substr(index);
 
     this.bodyText.setValue(newText);
     trigger.closeMenu();
   }
 
   onButtonTextLength(index: number): number {
-    const buttonsArray = this.form?.get('button.buttons') as UntypedFormArray;
+    const buttonsArray = this.buttons;
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
     const buttonText = buttonGroup.get('text')?.value;
-    return buttonText?.length;
+    return buttonText?.length || 0;
   }
 
   onButtonPhoneNumberLength(index: number): number {
-    const buttonsArray = this.form?.get('button.buttons') as UntypedFormArray;
+    const buttonsArray = this.buttons;
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
     const phoneNumber = buttonGroup.get('phoneNumber')?.value;
-    return phoneNumber?.length;
+    return phoneNumber?.length || 0;
   }
 
   onButtonUrlLength(index: number): number {
-    const buttonsArray = this.form?.get('button.buttons') as UntypedFormArray;
+    const buttonsArray = this.buttons;
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
     const url = buttonGroup.get('url')?.value;
-    return url?.length;
+    return url?.length || 0;
   }
 
   onHeaderTextLength(): number {
-    const body = this.form?.get('header');
-    return body.get('text')?.value?.length;
+    return this.headerText?.value?.length;
   }
 
   onGetHeaderValue() {
@@ -173,8 +165,7 @@ export class FormComponent implements OnInit {
   }
 
   onGetBodyValue() {
-    const body = this.form?.get('body');
-    return body.get('text')?.value;
+    return this.bodyText?.value;
   }
 
   onGetFooterValue() {
@@ -231,25 +222,39 @@ export class FormComponent implements OnInit {
   }
 
   hasRejectedReason(): boolean {
-    return (
-      this.form.get('status').value === 'REJECTED' ||
-      (this.form?.get('rejectedReason').value &&
-        this.form?.get('rejectedReason').value !== 'NONE')
-    );
+    return (this.form.get('status').value === 'REJECTED' || (this.form?.get('rejectedReason').value && this.form?.get('rejectedReason').value !== 'NONE'));
   }
 
   isButtonPhoneNumber(index: number): boolean {
-    const buttonsArray = this.form?.get('button.buttons') as UntypedFormArray;
+    const buttonsArray = this.buttons;
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
     const type = buttonGroup.get('type')?.value;
     return type === ButtonType.PHONE_NUMBER;
   }
 
+  isButtonQuickReply(index: number): boolean {
+    const buttonsArray = this.buttons;
+    const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
+    const type = buttonGroup.get('type')?.value;
+    return type === ButtonType.QUICK_REPLY;
+  }
+
   isButtonUrl(index: number): boolean {
-    const buttonsArray = this.form?.get('button.buttons') as UntypedFormArray;
+    const buttonsArray = this.buttons;
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
     const type = buttonGroup.get('type')?.value;
     return type === ButtonType.URL;
+  }
+
+  isButtonTypeDisabled(type: ButtonType): boolean {
+    if (type === ButtonType.PHONE_NUMBER || type === ButtonType.URL) {
+      return this.hasButtonType(type);
+    }
+    return false;
+  }
+
+  hasButtonType(type: ButtonType): boolean {
+    return this.buttons?.value?.some((btn) => btn.type === type);
   }
 
   hasHeaderVariable(): boolean {
@@ -258,6 +263,19 @@ export class FormComponent implements OnInit {
 
   hasBodyVariable(): boolean {
     return !!this.exampleBodyText?.length;
+  }
+
+  onChangeButtonType(index: number): void {
+    const buttonGroup = this.buttons.at(index) as UntypedFormGroup;
+    const currentType = buttonGroup.get('type')?.value;
+    const currentText = buttonGroup.get('text')?.value;
+
+    buttonGroup.reset({
+      type: currentType,
+      text: currentText || ''
+    });
+
+    this.applyButtonValidators(currentType, buttonGroup);
   }
 
   onFileSelected(file: File): void {
@@ -273,35 +291,30 @@ export class FormComponent implements OnInit {
     return this.selectedFileUrl;
   }
 
-  onGetLanguageName(): string {
-    return LanguageUtil.getLanguageName(this.form?.get('language').value);
+  onAddButton() {
+    if (this.isButtonLimit()) {
+      return;
+    }
+
+    this.buttons.push(this.buildFormButton(ButtonType.QUICK_REPLY));
+  }
+
+  isButtonLimit() {
+    return this.buttons?.length >= 10;
+  }
+
+  onDeleteButton(index: number) {
+    this.buttons?.removeAt(index);
   }
 
   private initForm(template: Template) {
-    const header = template?.components?.find(
-      (c) => c.type === Type.HEADER
-    ) as Header;
-    const body = template?.components?.find(
-      (c) => c.type === Type.BODY
-    ) as Body;
-    const footer = template?.components?.find(
-      (c) => c.type === Type.FOOTER
-    ) as Footer;
-    const button = template?.components?.find(
-      (c) => c.type === Type.BUTTONS
-    ) as Button;
-    const buttons =
-      button?.buttons?.map((itemButton) =>
-        this.buildFormGroupButton(itemButton.type, itemButton)
-      ) || [];
-    const headerText =
-      header?.example?.headerText?.map((text) =>
-        this.buildVariableFormGroup(text)
-      ) || [];
-    const bodyText =
-      body?.example?.bodyText?.map((text) =>
-        this.buildVariableFormGroup(text)
-      ) || [];
+    const header = template?.components?.find((c) => c.type === Type.HEADER) as Header;
+    const body = template?.components?.find((c) => c.type === Type.BODY) as Body;
+    const footer = template?.components?.find((c) => c.type === Type.FOOTER) as Footer;
+    const button = template?.components?.find((c) => c.type === Type.BUTTONS) as Button;
+    const buttons = button?.buttons?.map((itemButton) => this.buildFormButton(itemButton.type, itemButton)) || [];
+    const headerText = header?.example?.headerText?.map((text) => this.buildFormVariable(text)) || [];
+    const bodyText = body?.example?.bodyText?.map((text) => this.buildFormVariable(text)) || [];
 
     if (isMediaType(header?.format)) {
       this.loadImage(header?.fileNameOriginal, header?.fileNameStored);
@@ -340,42 +353,70 @@ export class FormComponent implements OnInit {
       }),
       button: this._fb.group({
         type: 'BUTTONS',
-        action: [button?.action || ButtonAction.NONE],
         buttons: this._fb.array(buttons)
       })
     });
 
-    this.buildButtons(button?.action, button?.buttons);
+    this.applyEditPermissions()
 
     this.form.get('name').valueChanges.subscribe((name) => {
       this.form
         .get('name')
-        .setValue(name.replace(/ /g, '_'), { emitEvent: false });
+        .setValue(name.replace(/ /g, '_'), {emitEvent: false});
     });
 
     this.headerText.valueChanges
       .pipe(distinctUntilChanged())
-      .subscribe((text) => this.processHeaderText(text));
+      .subscribe((text) => this.handleHeaderVariables(text));
 
     this.bodyText.valueChanges
       .pipe(distinctUntilChanged())
-      .subscribe((text) => this.processBodyText(text));
+      .subscribe((text) => this.handleBodyVariables(text));
 
-    this.form.get('button.action').valueChanges.subscribe((action) => {
-      this.itensbuttonsControls.clear();
-      this.buildButtons(action);
-    });
+    this.headerFormat
+      .valueChanges
+      .subscribe((value) => {
+        this.changeFormat();
+      });
+  }
 
-    this.formControlHeaderFormat.valueChanges.subscribe((value) => {
-      this.onFormatChange();
-    });
+  private applyEditPermissions(): void {
+    const status = this.form.get('status')?.value as Status;
+
+    const editableComponents = [Status.APPROVED, Status.PAUSED, Status.REJECTED];
+    const fullyEditable = status === Status.REJECTED;
+
+    if (status && !editableComponents.includes(status)) {
+      this.form.disable({emitEvent: false});
+      return;
+    }
+
+    if (status && !fullyEditable) {
+      this.form.get('channelId')?.disable({emitEvent: false});
+      this.form.get('name')?.disable({emitEvent: false});
+      this.form.get('category')?.disable({emitEvent: false});
+      this.form.get('language')?.disable({emitEvent: false});
+    }
+  }
+
+  private applyButtonValidators(currentType: ButtonType, buttonGroup: UntypedFormGroup): void {
+    buttonGroup.get('url')?.clearValidators();
+    buttonGroup.get('phoneNumber')?.clearValidators();
+
+    if (currentType === ButtonType.URL) {
+      buttonGroup.get('url')?.setValidators([Validators.required]);
+    }
+
+    if (currentType === ButtonType.PHONE_NUMBER) {
+      buttonGroup.get('phoneNumber')?.setValidators([Validators.required,]);
+    }
+
+    buttonGroup.get('url')?.updateValueAndValidity();
+    buttonGroup.get('phoneNumber')?.updateValueAndValidity();
   }
 
   private loadImage(fileNameOriginal: string, fileNameStored: string) {
-    if (
-      !this.isStringEmpty(fileNameOriginal) &&
-      !this.isStringEmpty(fileNameStored)
-    ) {
+    if (!StringUtil.isStringEmpty(fileNameOriginal) && !StringUtil.isStringEmpty(fileNameStored)) {
       this._loadingService.setLoading(true);
       this.fileNameStored = fileNameStored;
 
@@ -392,11 +433,7 @@ export class FormComponent implements OnInit {
     }
   }
 
-  private isStringEmpty(str: string | null | undefined): boolean {
-    return !str || str.trim().length === 0;
-  }
-
-  onFormatChange() {
+  private changeFormat() {
     this.setHeaderText = '';
     this.setHeaderHandle = '';
 
@@ -410,60 +447,17 @@ export class FormComponent implements OnInit {
     }
   }
 
-  private buildButtons(action: ButtonAction, buttons?: ItemButton[]) {
-    switch (action) {
-      case ButtonAction.QUICK_REPLY:
-        const buttonsToAdd = 3 - (buttons ? buttons.length : 0);
-
-        for (let i = 0; i < buttonsToAdd; i++) {
-          this.itensbuttonsControls.push(
-            this.buildFormGroupButton(ButtonType.QUICK_REPLY)
-          );
-        }
-        break;
-      case ButtonAction.CALL_TO_ACTION:
-        if (buttons?.length === 2) {
-          return;
-        }
-
-        if (buttons?.length) {
-          const hasPhoneNumberButton = !!buttons.find(
-            (item) => item.type === ButtonType.PHONE_NUMBER
-          );
-          if (!hasPhoneNumberButton) {
-            this.itensbuttonsControls.push(
-              this.buildFormGroupButton(ButtonType.PHONE_NUMBER)
-            );
-          }
-
-          const hasUrlButton = !!buttons.find(
-            (item) => item.type === ButtonType.URL
-          );
-          if (!hasUrlButton) {
-            this.itensbuttonsControls.push(
-              this.buildFormGroupButton(ButtonType.URL)
-            );
-          }
-          return;
-        }
-
-        this.itensbuttonsControls.push(
-          this.buildFormGroupButton(ButtonType.PHONE_NUMBER)
-        );
-        this.itensbuttonsControls.push(
-          this.buildFormGroupButton(ButtonType.URL)
-        );
-        break;
-    }
-  }
-
-  private buildFormGroupButton(type?: ButtonType, itemButton?: ItemButton) {
-    return this._fb.group({
+  private buildFormButton(type: ButtonType, itemButton?: ItemButton) {
+    const buttonGroup = this._fb.group({
       type: [type || ''],
-      text: [itemButton?.text || ''],
+      text: [itemButton?.text || '', Validators.required],
       phoneNumber: [itemButton?.phoneNumber || ''],
       url: [itemButton?.url || '']
     });
+
+    this.applyButtonValidators(type, buttonGroup);
+
+    return buttonGroup;
   }
 
   private insertVariable(componentName: string, index: number) {
@@ -471,14 +465,14 @@ export class FormComponent implements OnInit {
     this.form?.get(componentName)?.patchValue(text);
   }
 
-  private processHeaderText(text: string) {
+  private handleHeaderVariables(text: string) {
     const variables = this.getVariables(text);
 
     if (variables?.length > 1) {
       const maxVariable = Math.max(...variables);
 
       text = text.replace(`{{${maxVariable}}}`, '');
-      this.headerText.setValue(text, { emitEvent: false });
+      this.headerText.setValue(text, {emitEvent: false});
 
       return;
     }
@@ -487,7 +481,7 @@ export class FormComponent implements OnInit {
       const regex = /\{\{(\d+)}}/g;
       this.addVariableHeader();
       text = text.replace(regex, `{{${this.exampleHeaderText?.length}}}`);
-      this.headerText.setValue(text, { emitEvent: false });
+      this.headerText.setValue(text, {emitEvent: false});
     }
 
     if (!variables.length) {
@@ -495,7 +489,7 @@ export class FormComponent implements OnInit {
     }
   }
 
-  private processBodyText(text: string) {
+  private handleBodyVariables(text: string) {
     const variables = this.getVariables(text);
 
     if (variables.length) {
@@ -535,7 +529,7 @@ export class FormComponent implements OnInit {
 
         if (value > 1 && !newVariables.includes(value - 1)) {
           text = text.replace(`{{${value}}}`, `{{${value - 1}}}`);
-          this.bodyText.setValue(text, { emitEvent: false });
+          this.bodyText.setValue(text, {emitEvent: false});
         }
       });
     }
@@ -547,13 +541,13 @@ export class FormComponent implements OnInit {
 
   private addVariableHeader() {
     if (!this.hasHeaderVariable()) {
-      const variable = this.buildVariableFormGroup();
+      const variable = this.buildFormVariable();
       this.exampleHeaderText?.push(variable);
     }
   }
 
   private addVariableBody() {
-    const variable = this.buildVariableFormGroup();
+    const variable = this.buildFormVariable();
     this.exampleBodyText?.push(variable);
   }
 
@@ -565,7 +559,7 @@ export class FormComponent implements OnInit {
     this.exampleBodyText?.clear();
   }
 
-  private buildVariableFormGroup(text?: string) {
+  private buildFormVariable(text?: string) {
     return this._fb.control(text || '', [Validators.required]);
   }
 
@@ -579,21 +573,23 @@ export class FormComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (this.form.valid && !this.isLoading) {
-      try {
-        this.isLoading = true;
-
-        const context: TemplateContext = {
-          form: this.form,
-          selectedFile: this.selectedFile
-        };
-
-        await this.getStrategy().execute(context);
-
-        this._router.navigate(['template']);
-      } finally {
-        this.isLoading = false;
-      }
+    console.log(this.form.disabled);
+    if (this.form.valid && !this.form.disabled && !this.isLoading) {
+      console.log('liberado para editar')
+      // try {
+      //   this.isLoading = true;
+      //
+      //   const context: TemplateContext = {
+      //     form: this.form,
+      //     selectedFile: this.selectedFile
+      //   };
+      //
+      //   await this.getStrategy().execute(context);
+      //
+      //   this._router.navigate(['template']);
+      // } finally {
+      //   this.isLoading = false;
+      // }
     }
   }
 

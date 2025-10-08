@@ -136,10 +136,6 @@ export class ListComponent implements OnInit {
         this.load(params);
     }
 
-    onCanUpdate(row: Template) {
-        return row.status === Status.APPROVED || row.status === Status.REJECTED || row.status === Status.PAUSED;
-    }
-
     trackByProperty<T>(index: number, column: TableColumn<T>) {
         return column.property;
     }
