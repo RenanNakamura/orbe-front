@@ -270,8 +270,13 @@ export class FormComponent implements OnInit {
   }
 
   isButtonTypeDisabled(type: ButtonType): boolean {
-    if (type === ButtonType.PHONE_NUMBER || type === ButtonType.URL) {
+    if (type === ButtonType.PHONE_NUMBER) {
       return this.hasButtonType(type);
+    }
+
+    if (type === ButtonType.URL) {
+      const buttons = this.buttons?.value?.filter((btn) => btn.type === type);
+      return buttons?.length >= 2;
     }
     return false;
   }
@@ -598,7 +603,7 @@ export class FormComponent implements OnInit {
   async onSubmit() {
     console.log(this.form.disabled);
     if (this.form.valid && !this.form.disabled && !this.isLoading) {
-      console.log('liberado para editar')
+      console.log('this.form.value => ', this.form.value);
       // try {
       //   this.isLoading = true;
       //
