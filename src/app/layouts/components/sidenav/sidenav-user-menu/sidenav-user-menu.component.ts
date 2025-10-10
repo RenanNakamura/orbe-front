@@ -7,6 +7,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {TokenStorage} from '../../../../storage/user/token.storage';
 import {RefreshTokenStorage} from '../../../../storage/user/refresh-token.storage';
 import {UserStorage} from '../../../../storage/user/user.storage';
+import {BillingService} from "../../../../service/billing/billing.service";
 
 @Component({
   selector: 'vex-sidenav-user-menu',
@@ -20,7 +21,8 @@ export class SidenavUserMenuComponent implements OnInit {
     private readonly _popoverRef: VexPopoverRef,
     private _tokenStorage: TokenStorage,
     private _refreshTokenStorage: RefreshTokenStorage,
-    private _userStorage: UserStorage
+    private _userStorage: UserStorage,
+    private _billingService: BillingService
   ) {
   }
 
@@ -33,5 +35,14 @@ export class SidenavUserMenuComponent implements OnInit {
     this._userStorage.clear();
     this._popoverRef.close();
     setTimeout(() => this._popoverRef.close(), 250);
+  }
+
+  onManagerSubscription() {
+    this._billingService.manager()
+      .subscribe(response => {
+        if (response?.url) {
+          window.open(response.url, '_blank');
+        }
+      });
   }
 }
