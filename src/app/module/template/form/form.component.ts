@@ -31,14 +31,13 @@ import {stagger40ms} from '@vex/animations/stagger.animation';
 import {distinctUntilChanged} from 'rxjs/operators';
 import {Channel} from '../../../model/Channel';
 import {StorageService} from 'src/app/service/storage/storage.service';
-import {CreateTemplateStrategy} from './strategy/CreateTemplateStrategy';
-import {CreateCustomTemplateStrategy} from './strategy/CreateCustomTemplateStrategy';
 import {FileUtil} from '../../../util/file.util';
 import {LoadingService} from '../../../service/sk/loading.service';
 import languages from 'src/assets/json/language.json';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {StringUtil} from "../../../util/string.util";
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
+import {WhatsAppService} from "../../../service/whatsapp/whatsapp.service";
 
 @Component({
   selector: 'vex-form',
@@ -62,6 +61,7 @@ export class FormComponent implements OnInit {
   maxButtonUrlLength = 2000;
   isLoading = false;
   selectedFile: File | null = null;
+  fileChanged: boolean = false;
   selectedFileUrl: string;
   fileNameStored: string;
   channels: Channel[];
@@ -73,7 +73,8 @@ export class FormComponent implements OnInit {
     private _service: TemplateService,
     private _storageService: StorageService,
     private _activatedRoute: ActivatedRoute,
-    private _loadingService: LoadingService
+    private _loadingService: LoadingService,
+    private _whatsAppService: WhatsAppService,
   ) {
   }
 
@@ -114,6 +115,14 @@ export class FormComponent implements OnInit {
 
   set setHeaderText(text: string) {
     this.form?.get('header.text')?.setValue(text);
+  }
+
+  set setHeaderFileNameStored(filename: string) {
+    this.form?.get('header.fileNameStored')?.setValue(filename);
+  }
+
+  set setHeaderFileNameOriginal(filename: string) {
+    this.form?.get('header.fileNameOriginal')?.setValue(filename);
   }
 
   set setHeaderHandle(headerHandle: string) {
@@ -235,12 +244,12 @@ export class FormComponent implements OnInit {
     return header.get('format').value === Format.TEXT;
   }
 
-  isHeaderMidia(): boolean {
-    const header = this.form?.get('header');
+  isHeaderMedia(): boolean {
+    const header = this.onGetHeaderValue();
     return (
-      header.get('format').value === Format.IMAGE ||
-      header.get('format').value === Format.VIDEO ||
-      header.get('format').value === Format.DOCUMENT
+      header?.format === Format.IMAGE ||
+      header?.format === Format.VIDEO ||
+      header?.format === Format.DOCUMENT
     );
   }
 
@@ -306,9 +315,11 @@ export class FormComponent implements OnInit {
     this.applyButtonValidators(currentType, buttonGroup);
   }
 
-  onFileSelected(file: File): void {
+  onFileSelected(file: File, isChanged: boolean): void {
     this.selectedFile = file;
     this.selectedFileUrl = '';
+
+    this.fileChanged = isChanged;
 
     if (file) {
       this.selectedFileUrl = URL.createObjectURL(file);
@@ -342,6 +353,7 @@ export class FormComponent implements OnInit {
     const button = template?.components?.find((c) => c.type === Type.BUTTONS) as Button;
     const buttons = button?.buttons?.map((itemButton) => this.buildFormButton(itemButton.type, itemButton)) || [];
     const headerText = header?.example?.headerText?.map((text) => this.buildFormVariable(text)) || [];
+    const headerHandle = header?.example?.headerHandle;
     const bodyText = body?.example?.bodyText?.map((text) => this.buildFormVariable(text)) || [];
 
     if (isMediaType(header?.format)) {
@@ -365,7 +377,7 @@ export class FormComponent implements OnInit {
         fileNameStored: [header?.fileNameStored || ''],
         example: this._fb.group({
           headerText: this._fb.array(headerText),
-          headerHandle: ''
+          headerHandle: headerHandle
         })
       }),
       body: this._fb.group({
@@ -448,22 +460,25 @@ export class FormComponent implements OnInit {
       this._loadingService.setLoading(true);
       this.fileNameStored = fileNameStored;
 
-      this._storageService.download(fileNameStored).subscribe({
-        next: (blob) => {
-          const file = FileUtil.blobToFile(blob, fileNameOriginal);
-          this.onFileSelected(file);
-          this._loadingService.setLoading(false);
-        },
-        error: (err) => {
-          this._loadingService.setLoading(false);
-        }
-      });
+      this._storageService.download(fileNameStored)
+        .subscribe({
+          next: (blob) => {
+            const file = FileUtil.blobToFile(blob, fileNameOriginal);
+            this.onFileSelected(file, false);
+            this._loadingService.setLoading(false);
+          },
+          error: (err) => {
+            this._loadingService.setLoading(false);
+          }
+        });
     }
   }
 
   private changeFormat() {
     this.setHeaderText = '';
     this.setHeaderHandle = '';
+    this.setHeaderFileNameStored = '';
+    this.setHeaderFileNameOriginal = '';
 
     if (this.selectedFileUrl) {
       URL.revokeObjectURL(this.selectedFileUrl);
@@ -603,25 +618,35 @@ export class FormComponent implements OnInit {
   async onSubmit() {
     console.log(this.form.disabled);
     if (this.form.valid && !this.form.disabled && !this.isLoading) {
-      console.log('this.form.value => ', this.form.value);
-      // try {
-      //   this.isLoading = true;
-      //
-      //   const context: TemplateContext = {
-      //     form: this.form,
-      //     selectedFile: this.selectedFile
-      //   };
-      //
-      //   await this.getStrategy().execute(context);
-      //
-      //   this._router.navigate(['template']);
-      // } finally {
-      //   this.isLoading = false;
-      // }
+      try {
+        this.isLoading = true;
+        const template = this.form.getRawValue() as Template;
+
+        template.components = [];
+
+        if (this.isHeaderMedia() && this.selectedFile && this.fileChanged) {
+          const fileWhatsAppUploaded = await this._whatsAppService.upload(template.channelId, this.selectedFile);
+          const fileStorageUploaded = await this._storageService.upload(this.selectedFile);
+
+          this.setHeaderHandle = fileWhatsAppUploaded?.h;
+          this.setHeaderFileNameOriginal = this.selectedFile?.name;
+          this.setHeaderFileNameStored = fileStorageUploaded?.filename;
+        }
+
+        template.components.push(this.form?.get('header').value);
+        template.components.push(this.form?.get('body').value);
+        template.components.push(this.form?.get('footer').value);
+        template.components.push(this.form?.get('button').value);
+
+        !this.form.get('id').value
+          ? await this._service.create(template)
+          : await this._service.update(template);
+
+        this._router.navigate(['template']);
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
-  private getStrategy(): CreateTemplateStrategy {
-    return new CreateCustomTemplateStrategy(this._service);
-  }
 }
