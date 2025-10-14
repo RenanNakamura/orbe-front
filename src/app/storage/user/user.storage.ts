@@ -16,7 +16,7 @@ export class UserStorage {
     }
 
     get(): LoggedUser {
-        return JSON.parse(localStorage.getItem(this._key) || '') as LoggedUser;
+        return JSON.parse(localStorage.getItem(this._key)) as LoggedUser;
     }
 
     clear() {
