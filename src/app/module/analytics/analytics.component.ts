@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {WhatsAppService} from '../../service/whatsapp/whatsapp.service';
 import {TranslateService} from '@ngx-translate/core';
 import {MessageData} from 'src/app/model/whatsapp/MessageData';
@@ -13,7 +13,7 @@ import * as echarts from "echarts";
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss'],
 })
-export class AnalyticsComponent implements OnInit {
+export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('lineBarChart', {static: true}) lineBarChart!: ElementRef<HTMLDivElement>;
   @ViewChild('pieBarChart', {static: true}) pieBarChart!: ElementRef<HTMLDivElement>;
@@ -34,6 +34,25 @@ export class AnalyticsComponent implements OnInit {
   ) {
   }
 
+  resizeHandler = () => {
+    this.lineBarInstance?.resize();
+    this.pieBarInstance?.resize();
+  };
+
+  ngAfterViewInit() {
+    const resizeObserver = new ResizeObserver(() => {
+      this.lineBarInstance?.resize();
+      this.pieBarInstance?.resize();
+    });
+
+    resizeObserver.observe(this.lineBarChart.nativeElement);
+    resizeObserver.observe(this.pieBarChart.nativeElement);
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('resize', this.resizeHandler);
+  }
+
   ngOnInit(): void {
     this.form = this.fb.group({
       phoneNumberId: [null],
@@ -48,17 +67,21 @@ export class AnalyticsComponent implements OnInit {
 
       if (this.channels.length > 0) {
         const phoneNumberIdSelected = this.channels[0].phoneNumberId;
+
         this.form.get('phoneNumberId')?.setValue(phoneNumberIdSelected);
-        this.loadDashBoards(
-          phoneNumberIdSelected,
-          this.form.get('periodValue').value
-        );
+
+        this.loadDashBoards(phoneNumberIdSelected, this.form.get('periodValue').value);
       }  else {
         const lastDays = this.form.get('periodValue')?.value || 15;
         const emptyData = this.fillMissingDays([], lastDays);
         this.buildPieBarConfig(emptyData);
         this.buildLineBarConfig(emptyData);
       }
+
+      window.addEventListener('resize', () => {
+        this.pieBarInstance?.resize();
+        this.lineBarInstance?.resize();
+      });
     });
 
     this.form.get('phoneNumberId')?.valueChanges.subscribe((selectedValue) => {
@@ -107,10 +130,6 @@ export class AnalyticsComponent implements OnInit {
       this.lineBarInstance = echarts.init(this.lineBarChart.nativeElement, undefined, {
         renderer: 'canvas',
         useDirtyRect: false
-      });
-
-      window.addEventListener('resize', () => {
-        this.lineBarInstance?.resize();
       });
     } else {
       this.lineBarInstance.clear();
@@ -170,8 +189,6 @@ export class AnalyticsComponent implements OnInit {
     };
 
     this.lineBarInstance?.setOption(option);
-
-    console.log(this.lineBarInstance);
   }
 
   private buildPieBarConfig(datas: MessageData[]) {
@@ -179,10 +196,6 @@ export class AnalyticsComponent implements OnInit {
       this.pieBarInstance = echarts.init(this.pieBarChart.nativeElement, undefined, {
         renderer: 'canvas',
         useDirtyRect: false
-      });
-
-      window.addEventListener('resize', () => {
-        this.pieBarInstance?.resize();
       });
     } else {
       this.pieBarInstance.clear();
