@@ -72,3 +72,25 @@ button {
 .cdk-drag-placeholder {
   opacity: 0;
 }
+
+.button-group-title {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.button-group {
+  border-left: 4px solid transparent;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.call-to-action-group {
+  border-left-color: gray;
+}
+
+.quick-reply-group {
+  border-left-color: rgb(var(--vex-color-primary-600));
+}

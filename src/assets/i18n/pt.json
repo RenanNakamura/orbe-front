@@ -200,7 +200,15 @@
         "required": "O número é obrigatório.",
         "hint": "DDI(Código do pais) + Número"
       },
-      "add": "Adicionar botão"
+      "add": "Adicionar botão",
+      "callToAction": {
+        "label": "Chamada para ação",
+        "hint": "Permite criar botões que incentivam o contato a realizar uma ação, como abrir um link ou fazer uma ligação."
+      },
+      "quickReply": {
+        "label": "Resposta rápida",
+        "hint": "Oferece opções rápidas para o contato responder com apenas um clique."
+      }
     },
     "not-found": "Nenhum modelo de mensagem encontrado",
     "required": "O modelo de mensagem é obrigatório"

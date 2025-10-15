@@ -200,7 +200,15 @@
         "required": "The number is required.",
         "hint": "DDI (Country Code) + Number"
       },
-      "add": "Add button"
+      "add": "Add button",
+      "callToAction": {
+        "label": "Call to Action",
+        "hint": "Allows you to create buttons that encourage the contact to take action, such as opening a link or making a phone call."
+      },
+      "quickReply": {
+        "label": "Quick Reply",
+        "hint": "Provides quick options for the contact to reply with just one click."
+      }
     },
     "not-found": "No message templates found",
     "required": "The message template is required"

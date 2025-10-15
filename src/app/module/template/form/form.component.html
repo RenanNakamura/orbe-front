@@ -322,68 +322,126 @@
                 </button>
               </div>
 
-              <div formArrayName="buttons" class="mt-4"
-                   cdkDropList
-                   (cdkDropListDropped)="onDropButton($event)">
-                <div *ngFor="let button of buttons.controls; let i = index"
-                     [formGroupName]="i"
-                     cdkDrag>
-                  <div class="flex flex-row space-x-1 space-y-1">
-                    <div cdkDragHandle class="cursor-move text-gray-400 hover:text-primary-600 mt-3">
-                      <mat-icon svgIcon="mat:drag_indicator"></mat-icon>
+              <!-- Call to Action Buttons Group -->
+              <div *ngIf="getCallToActionButtons().length > 0" class="button-group call-to-action-group mt-6">
+                <div class="button-group-title">
+                  <label class="subheading-2 m-0 font-bold">{{ 'template.button.callToAction.label' | translate }}</label>
+                  <label class="font-normal text-xs text-gray-500">{{ 'template.button.callToAction.hint' | translate }}</label>
+                </div>
+                <div formArrayName="buttons" class="mt-4"
+                     cdkDropList
+                     cdkDropListData="callToAction"
+                     (cdkDropListDropped)="onDropCallToActionButton($event)">
+                  <div *ngFor="let buttonControl of getCallToActionControls()"
+                       [formGroupName]="buttonControl.index"
+                       cdkDrag>
+                    <div class="flex flex-row space-x-1 space-y-1">
+                      <div cdkDragHandle class="cursor-move text-gray-400 hover:text-primary-600 mt-3">
+                        <mat-icon svgIcon="mat:drag_indicator"></mat-icon>
+                      </div>
+                      <mat-form-field class="w-3/12" appearance="outline">
+                        <mat-label>{{ 'template.button.type' | translate }}</mat-label>
+                        <mat-select formControlName="type" (selectionChange)="this.onChangeButtonType(buttonControl.index)">
+                          <mat-option
+                            *ngFor="let type of buttonsType | keyvalue"
+                            [value]="type.key"
+                            [disabled]="isButtonTypeDisabled(type.value)"
+                            class="example-radio-button">
+                            {{ type.value | translate }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <mat-form-field class="w-3/12" appearance="outline">
+                        <mat-label>{{ 'template.button.text.label' | translate }}</mat-label>
+                        <input formControlName="text" matInput
+                               [maxlength]="this.maxButtonTextLength">
+                        <mat-hint align="end">{{ this.onButtonTextLength(buttonControl.index) }}
+                          / {{ this.maxButtonTextLength }}
+                        </mat-hint>
+                        <mat-error *ngIf="buttonControl.control.get('text')?.hasError('required')">
+                          {{ 'template.button.text.required' | translate }}
+                        </mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field class="w-5/12" appearance="outline"
+                                      *ngIf="this.isButtonPhoneNumber(buttonControl.index)">
+                        <mat-label>{{ 'template.button.phoneNumber.hint' | translate }}</mat-label>
+                        <input formControlName="phoneNumber" matInput
+                               [maxlength]="20">
+                        <mat-hint align="end">{{ this.onButtonPhoneNumberLength(buttonControl.index) }}
+                          / {{ this.maxButtonPhoneNumberLength }}
+                        </mat-hint>
+                        <mat-error *ngIf="buttonControl.control.get('phoneNumber')?.hasError('required')">
+                          {{ 'template.button.phoneNumber.required' | translate }}
+                        </mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field class="w-5/12" appearance="outline"
+                                      *ngIf="this.isButtonUrl(buttonControl.index)">
+                        <mat-label>{{ 'url.label' | translate }}</mat-label>
+                        <input formControlName="url" matInput [maxlength]="2000">
+                        <mat-hint align="end">{{ this.onButtonUrlLength(buttonControl.index) }}
+                          / {{ this.maxButtonUrlLength }}
+                        </mat-hint>
+                        <mat-error *ngIf="buttonControl.control.get('url')?.hasError('required')">
+                          {{ 'url.required' | translate }}
+                        </mat-error>
+                      </mat-form-field>
+
+                      <div class="w-1/12">
+                        <mat-icon svgIcon="mat:delete" class="cursor-pointer text-red-600 mt-2.5" (click)="onDeleteButton(buttonControl.index)"></mat-icon>
+                      </div>
                     </div>
-                    <mat-form-field class="w-3/12" appearance="outline">
-                      <mat-label>{{ 'template.button.type' | translate }}</mat-label>
-                      <mat-select formControlName="type" (selectionChange)="this.onChangeButtonType(i)">
-                        <mat-option
-                          *ngFor="let type of buttonsType | keyvalue"
-                          [value]="type.key"
-                          [disabled]="isButtonTypeDisabled(type.value)"
-                          class="example-radio-button">
-                          {{ type.value | translate }}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
 
-                    <mat-form-field [ngClass]="{ 'w-8/12': this.isButtonQuickReply(i), 'w-3/12': !this.isButtonQuickReply(i) }" appearance="outline">
-                      <mat-label>{{ 'template.button.text.label' | translate }}</mat-label>
-                      <input formControlName="text" matInput
-                             [maxlength]="this.maxButtonTextLength">
-                      <mat-hint align="end">{{ this.onButtonTextLength(i) }}
-                        / {{ this.maxButtonTextLength }}
-                      </mat-hint>
-                      <mat-error *ngIf="button.get('text')?.hasError('required')">
-                        {{ 'template.button.text.required' | translate }}
-                      </mat-error>
-                    </mat-form-field>
+              <!-- Quick Reply Buttons Group -->
+              <div *ngIf="getQuickReplyButtons().length > 0" class="button-group quick-reply-group mt-6">
+                <div class="button-group-title">
+                  <label class="subheading-2 m-0 font-bold">{{ 'template.button.quickReply.label' | translate }}</label>
+                  <label class="font-normal text-xs text-gray-500">{{ 'template.button.quickReply.hint' | translate }}</label>
+                </div>
+                <div formArrayName="buttons" class="mt-4"
+                     cdkDropList
+                     cdkDropListData="quickReply"
+                     (cdkDropListDropped)="onDropQuickReplyButton($event)">
+                  <div *ngFor="let buttonControl of getQuickReplyControls()"
+                       [formGroupName]="buttonControl.index"
+                       cdkDrag>
+                    <div class="flex flex-row space-x-1 space-y-1">
+                      <div cdkDragHandle class="cursor-move text-gray-400 hover:text-primary-600 mt-3">
+                        <mat-icon svgIcon="mat:drag_indicator"></mat-icon>
+                      </div>
+                      <mat-form-field class="w-3/12" appearance="outline">
+                        <mat-label>{{ 'template.button.type' | translate }}</mat-label>
+                        <mat-select formControlName="type" (selectionChange)="this.onChangeButtonType(buttonControl.index)">
+                          <mat-option
+                            *ngFor="let type of buttonsType | keyvalue"
+                            [value]="type.key"
+                            [disabled]="isButtonTypeDisabled(type.value)"
+                            class="example-radio-button">
+                            {{ type.value | translate }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
 
-                    <mat-form-field class="w-5/12" appearance="outline"
-                                    *ngIf="this.isButtonPhoneNumber(i)">
-                      <mat-label>{{ 'template.button.phoneNumber.hint' | translate }}</mat-label>
-                      <input formControlName="phoneNumber" matInput
-                             [maxlength]="20">
-                      <mat-hint align="end">{{ this.onButtonPhoneNumberLength(i) }}
-                        / {{ this.maxButtonPhoneNumberLength }}
-                      </mat-hint>
-                      <mat-error *ngIf="button.get('phoneNumber')?.hasError('required')">
-                        {{ 'template.button.phoneNumber.required' | translate }}
-                      </mat-error>
-                    </mat-form-field>
+                      <mat-form-field class="w-8/12" appearance="outline">
+                        <mat-label>{{ 'template.button.text.label' | translate }}</mat-label>
+                        <input formControlName="text" matInput
+                               [maxlength]="this.maxButtonTextLength">
+                        <mat-hint align="end">{{ this.onButtonTextLength(buttonControl.index) }}
+                          / {{ this.maxButtonTextLength }}
+                        </mat-hint>
+                        <mat-error *ngIf="buttonControl.control.get('text')?.hasError('required')">
+                          {{ 'template.button.text.required' | translate }}
+                        </mat-error>
+                      </mat-form-field>
 
-                    <mat-form-field class="w-5/12" appearance="outline"
-                                    *ngIf="this.isButtonUrl(i)">
-                      <mat-label>{{ 'url.label' | translate }}</mat-label>
-                      <input formControlName="url" matInput [maxlength]="2000">
-                      <mat-hint align="end">{{ this.onButtonUrlLength(i) }}
-                        / {{ this.maxButtonUrlLength }}
-                      </mat-hint>
-                      <mat-error *ngIf="button.get('url')?.hasError('required')">
-                        {{ 'url.required' | translate }}
-                      </mat-error>
-                    </mat-form-field>
-
-                    <div class="w-1/12">
-                      <mat-icon svgIcon="mat:delete" class="cursor-pointer text-red-600 mt-2.5" (click)="onDeleteButton(i)"></mat-icon>
+                      <div class="w-1/12">
+                        <mat-icon svgIcon="mat:delete" class="cursor-pointer text-red-600 mt-2.5" (click)="onDeleteButton(buttonControl.index)"></mat-icon>
+                      </div>
                     </div>
                   </div>
                 </div>

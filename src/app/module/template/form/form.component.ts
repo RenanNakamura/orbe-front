@@ -1,7 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {
   FormArray,
-  FormGroup,
   UntypedFormArray,
   UntypedFormBuilder,
   UntypedFormControl,
@@ -66,6 +65,11 @@ export class FormComponent implements OnInit {
   fileNameStored: string;
   channels: Channel[];
   languagesOptions: { language: string; code: string }[] = languages;
+
+  callToActionButtons: any[] = [];
+  quickReplyButtons: any[] = [];
+  callToActionControls: { control: UntypedFormGroup; index: number }[] = [];
+  quickReplyControls: { control: UntypedFormGroup; index: number }[] = [];
 
   constructor(
     private _fb: UntypedFormBuilder,
@@ -174,20 +178,6 @@ export class FormComponent implements OnInit {
     return url?.length || 0;
   }
 
-  onDropButton(event: CdkDragDrop<FormGroup[]>) {
-    const buttons = this.buttons as FormArray;
-    if (!buttons) return;
-
-    if (event.previousIndex === event.currentIndex) return;
-
-    const moved = buttons.at(event.previousIndex);
-    buttons.removeAt(event.previousIndex);
-    buttons.insert(event.currentIndex, moved);
-
-    buttons.markAsDirty();
-    this.form.markAsDirty();
-  }
-
   onHeaderTextLength(): number {
     return this.headerText?.value?.length;
   }
@@ -264,13 +254,6 @@ export class FormComponent implements OnInit {
     return type === ButtonType.PHONE_NUMBER;
   }
 
-  isButtonQuickReply(index: number): boolean {
-    const buttonsArray = this.buttons;
-    const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
-    const type = buttonGroup.get('type')?.value;
-    return type === ButtonType.QUICK_REPLY;
-  }
-
   isButtonUrl(index: number): boolean {
     const buttonsArray = this.buttons;
     const buttonGroup = buttonsArray.at(index) as UntypedFormGroup;
@@ -302,17 +285,105 @@ export class FormComponent implements OnInit {
     return !!this.exampleBodyText?.length;
   }
 
+  private updateButtonGroups(): void {
+    this.callToActionButtons = this.buttons?.value?.filter(btn => btn.type !== ButtonType.QUICK_REPLY) || [];
+    this.quickReplyButtons = this.buttons?.value?.filter(btn => btn.type === ButtonType.QUICK_REPLY) || [];
+
+    this.callToActionControls = [];
+    this.quickReplyControls = [];
+
+    this.buttons?.controls?.forEach((control, index) => {
+      const buttonType = control.get('type')?.value;
+      if (buttonType !== ButtonType.QUICK_REPLY) {
+        this.callToActionControls.push({control: control as UntypedFormGroup, index});
+      } else {
+        this.quickReplyControls.push({control: control as UntypedFormGroup, index});
+      }
+    });
+  }
+
+  getCallToActionButtons(): any[] {
+    return this.callToActionButtons;
+  }
+
+  getQuickReplyButtons(): any[] {
+    return this.quickReplyButtons;
+  }
+
+  getCallToActionControls(): { control: UntypedFormGroup; index: number }[] {
+    return this.callToActionControls;
+  }
+
+  getQuickReplyControls(): { control: UntypedFormGroup; index: number }[] {
+    return this.quickReplyControls;
+  }
+
+  onDropCallToActionButton(event: CdkDragDrop<string, any, any>) {
+    const buttons = this.buttons as FormArray;
+    if (!buttons) return;
+
+    const callToActionControls = this.getCallToActionControls();
+    const previousIndex = callToActionControls[event.previousIndex]?.index;
+    const currentIndex = callToActionControls[event.currentIndex]?.index;
+
+    if (previousIndex === currentIndex) return;
+
+    const moved = buttons.at(previousIndex);
+    buttons.removeAt(previousIndex);
+    buttons.insert(currentIndex, moved);
+
+    buttons.markAsDirty();
+    this.form.markAsDirty();
+    this.updateButtonGroups();
+  }
+
+  onDropQuickReplyButton(event: CdkDragDrop<string, any, any>) {
+    const buttons = this.buttons as FormArray;
+    if (!buttons) return;
+
+    const quickReplyControls = this.getQuickReplyControls();
+    const previousIndex = quickReplyControls[event.previousIndex]?.index;
+    const currentIndex = quickReplyControls[event.currentIndex]?.index;
+
+    if (previousIndex === currentIndex) return;
+
+    const moved = buttons.at(previousIndex);
+    buttons.removeAt(previousIndex);
+    buttons.insert(currentIndex, moved);
+
+    buttons.markAsDirty();
+    this.form.markAsDirty();
+    this.updateButtonGroups();
+  }
+
   onChangeButtonType(index: number): void {
-    const buttonGroup = this.buttons.at(index) as UntypedFormGroup;
-    const currentType = buttonGroup.get('type')?.value;
+    const buttons = this.buttons as UntypedFormArray;
+    if (!buttons) return;
+
+    const buttonGroup = buttons.at(index) as UntypedFormGroup;
+    const newType = buttonGroup.get('type')?.value as ButtonType;
     const currentText = buttonGroup.get('text')?.value;
 
     buttonGroup.reset({
-      type: currentType,
+      type: newType,
       text: currentText || ''
     });
 
-    this.applyButtonValidators(currentType, buttonGroup);
+    this.applyButtonValidators(newType, buttonGroup);
+
+    buttons.removeAt(index);
+
+    if (newType === ButtonType.QUICK_REPLY) {
+      buttons.push(buttonGroup);
+    } else {
+      const firstQuickIndex = buttons.controls.findIndex(ctrl => ctrl.get('type')?.value === ButtonType.QUICK_REPLY);
+      const insertIndex = firstQuickIndex === -1 ? buttons.length : firstQuickIndex;
+      buttons.insert(insertIndex, buttonGroup);
+    }
+
+    buttons.markAsDirty();
+    this.form.markAsDirty();
+    this.updateButtonGroups();
   }
 
   onFileSelected(file: File, isChanged: boolean): void {
@@ -336,6 +407,7 @@ export class FormComponent implements OnInit {
     }
 
     this.buttons.push(this.buildFormButton(ButtonType.QUICK_REPLY));
+    this.updateButtonGroups();
   }
 
   isButtonLimit() {
@@ -344,6 +416,7 @@ export class FormComponent implements OnInit {
 
   onDeleteButton(index: number) {
     this.buttons?.removeAt(index);
+    this.updateButtonGroups();
   }
 
   private initForm(template: Template) {
@@ -418,6 +491,8 @@ export class FormComponent implements OnInit {
       .subscribe((value) => {
         this.changeFormat();
       });
+
+    this.updateButtonGroups();
   }
 
   private applyEditPermissions(): void {
@@ -616,7 +691,6 @@ export class FormComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.log(this.form.disabled);
     if (this.form.valid && !this.form.disabled && !this.isLoading) {
       try {
         this.isLoading = true;
