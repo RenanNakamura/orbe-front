@@ -475,7 +475,7 @@
     "number-of-messages-sent-with-error": "Messages failed to send",
     "period": "Period",
     "title-messages-overview": "Messages overview",
-    "title-amount-messages": "Messages in the period",
+    "title-amount-messages": "Message Summary",
     "title-messages-sending": "messages in progress",
     "title-messages-delivered-read": "messages delivered/read",
     "title-messages-failed": "messages failed to send",

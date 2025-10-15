@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { WhatsAppService } from '../../service/whatsapp/whatsapp.service';
-import { TranslateService } from '@ngx-translate/core';
-import { MessageData } from 'src/app/model/whatsapp/MessageData';
-import { Channel } from 'src/app/model/Channel';
-import { ActivatedRoute } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { ApexOptions } from '@vex/components/vex-chart/vex-chart.component';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {WhatsAppService} from '../../service/whatsapp/whatsapp.service';
+import {TranslateService} from '@ngx-translate/core';
+import {MessageData} from 'src/app/model/whatsapp/MessageData';
+import {Channel} from 'src/app/model/Channel';
+import {ActivatedRoute} from '@angular/router';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {ApexOptions} from '@vex/components/vex-chart/vex-chart.component';
+import * as echarts from "echarts";
 
 @Component({
   selector: 'vex-analytics',
@@ -13,23 +14,25 @@ import { ApexOptions } from '@vex/components/vex-chart/vex-chart.component';
   styleUrls: ['./analytics.component.scss'],
 })
 export class AnalyticsComponent implements OnInit {
+
+  @ViewChild('lineBarChart', {static: true}) lineBarChart!: ElementRef<HTMLDivElement>;
+  @ViewChild('pieBarChart', {static: true}) pieBarChart!: ElementRef<HTMLDivElement>;
+
+  lineBarInstance: echarts.ECharts | null = null;
+  pieBarInstance: echarts.ECharts | null = null;
+
   form: UntypedFormGroup;
   options: Partial<ApexOptions>;
-  totalMessagesSent = 0;
-  totalMessagesDeliveredAndRead = 0;
-  totalMessagesSending = 0;
-  totalMessagesRead = 0;
-  totalMessagesFailed = 0;
   channels: Channel[];
   periodOptions: any;
-  series: ApexNonAxisChartSeries | ApexAxisChartSeries;
 
   constructor(
-      private _activatedRoute: ActivatedRoute,
-      private fb: UntypedFormBuilder,
-      private _whatsAppService: WhatsAppService,
-      private _translateService: TranslateService
-  ) {}
+    private _activatedRoute: ActivatedRoute,
+    private fb: UntypedFormBuilder,
+    private _whatsAppService: WhatsAppService,
+    private _translateService: TranslateService
+  ) {
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -47,9 +50,14 @@ export class AnalyticsComponent implements OnInit {
         const phoneNumberIdSelected = this.channels[0].phoneNumberId;
         this.form.get('phoneNumberId')?.setValue(phoneNumberIdSelected);
         this.loadDashBoards(
-            phoneNumberIdSelected,
-            this.form.get('periodValue').value
+          phoneNumberIdSelected,
+          this.form.get('periodValue').value
         );
+      }  else {
+        const lastDays = this.form.get('periodValue')?.value || 15;
+        const emptyData = this.fillMissingDays([], lastDays);
+        this.buildPieBarConfig(emptyData);
+        this.buildLineBarConfig(emptyData);
       }
     });
 
@@ -72,18 +80,18 @@ export class AnalyticsComponent implements OnInit {
   }
 
   private loadDashBoards(
-      phoneNumberIdSelected: string,
-      lastDays: string
+    phoneNumberIdSelected: string,
+    lastDays: string
   ): void {
     this._whatsAppService
-        .getMessagesAmountSeries(phoneNumberIdSelected, lastDays)
-        .subscribe((data) => {
-          this.setTotalAmountMessagesSending(data);
-          this.setTotalAmountMessagesSent(data);
-          this.setTotalAmountMessagesDeliveredAndRead(data);
-          this.setTotalAmountMessagesFailed(data);
-          this.buildChartInSeries(data);
-        });
+      .getMessagesAmountSeries(phoneNumberIdSelected, lastDays)
+      .subscribe({
+        next: (result) => {
+          const data = this.fillMissingDays(result, +lastDays);
+          this.buildPieBarConfig(data);
+          this.buildLineBarConfig(data);
+        },
+      });
   }
 
   private onChannelChange(selectedValue: string): void {
@@ -94,91 +102,182 @@ export class AnalyticsComponent implements OnInit {
     this.loadDashBoards(this.form.get('phoneNumberId').value, selectedValue);
   }
 
-  private setTotalAmountMessagesFailed(data: MessageData[]) {
-    this.totalMessagesFailed = data
-        .filter((item) => item.status === 'FAILED')
-        .reduce((total, item) => total + item.amount, 0);
-  }
+  private buildLineBarConfig(datas: MessageData[]) {
+    if (!this.lineBarInstance) {
+      this.lineBarInstance = echarts.init(this.lineBarChart.nativeElement, undefined, {
+        renderer: 'canvas',
+        useDirtyRect: false
+      });
 
-  private setTotalAmountMessagesDeliveredAndRead(data: MessageData[]) {
-    this.totalMessagesDeliveredAndRead = data
-        .filter((item) => item.status === 'DELIVERED' || item.status === 'READ')
-        .reduce((total, item) => total + item.amount, 0);
-  }
-
-  private setTotalAmountMessagesSending(data: MessageData[]) {
-    this.totalMessagesSending = data
-        .filter((item) => item.status === 'SENDING')
-        .reduce((total, item) => total + item.amount, 0);
-  }
-
-  private setTotalAmountMessagesSent(data: MessageData[]) {
-    this.totalMessagesSent = data.reduce(
-        (total, item) => total + item.amount,
-        0
-    );
-  }
-
-  private buildChartInSeries(data: MessageData[]) {
-    const today = new Date();
-    const startDate = new Date();
-    startDate.setDate(today.getDate() - this.form.get('periodValue').value);
-
-    const dataInSeries = this.fillMissingDates(
-        this.transformMessageData(data, 'DELIVERED', 'READ', 'SENT'),
-        startDate,
-        today
-    );
-
-    this.series = [
-      {
-        name: this._translateService.instant(
-            'dashboard.point-of-chart-messages'
-        ),
-        data: dataInSeries
-      }
-    ];
-  }
-
-  // Método para converter MessageData para o formato { x: string, y: number }
-  private transformMessageData(
-      data: MessageData[],
-      ...filterStatuses: string[]
-  ): { x: string; y: number }[] {
-    const groupedData: Record<string, number> = {};
-
-    data
-        .filter(({ status }) => filterStatuses.length === 0 || filterStatuses.includes(status))
-        .forEach(({ dayTime, amount }) => {
-          groupedData[dayTime] = (groupedData[dayTime] || 0) + amount;
-        });
-
-    return Object.entries(groupedData).map(([dayTime, totalAmount]) => {
-      // Converte a data para o formato 'dd/MM/yyyy'
-      const [year, month, day] = dayTime.split('-');
-      const formattedDate = `${day}/${month}/${year}`;
-      return { x: formattedDate, y: totalAmount };
-    });
-  }
-
-  // Preencher as datas ausentes antes de passar os dados para o gráfico
-  private fillMissingDates(data, startDate, endDate) {
-    const filledData = [];
-    const currentDate = new Date(startDate);
-
-    while (currentDate <= new Date(endDate)) {
-      const dateStr = currentDate.toLocaleDateString(); // Formato 'YYYY-MM-DD'
-      const existingData = data.find((d) => d.x === dateStr);
-
-      if (existingData) {
-        filledData.push(existingData);
-      } else {
-        filledData.push({ x: dateStr, y: 0 });
-      }
-
-      currentDate.setDate(currentDate.getDate() + 1); // Próximo dia
+      window.addEventListener('resize', () => {
+        this.lineBarInstance?.resize();
+      });
+    } else {
+      this.lineBarInstance.clear();
     }
 
-    return filledData;
+    const grouped = datas.reduce((acc, curr) => {
+      if (!acc[curr.dayTime]) {
+        acc[curr.dayTime] = {};
+      }
+      if (!acc[curr.dayTime][curr.status]) {
+        acc[curr.dayTime][curr.status] = 0;
+      }
+      acc[curr.dayTime][curr.status] += curr.amount;
+      return acc;
+    }, {} as Record<string, Record<string, number>>);
+
+    const categories = Object.keys(grouped).sort();
+    const allStatuses = Array.from(new Set(datas.map(d => d.status))).sort();
+    const statusColors: Record<string, string> = {
+      SENT: '#90da8e',
+      DELIVERED: '#8dc8f8',
+      READ: '#328afc',
+      FAILED: '#f6a5b8',
+      SENDING: '#fce2a1',
+    };
+
+    const series = allStatuses.map(status => ({
+      name: this._translateService.instant(status),
+      type: 'line',
+      itemStyle: {
+        color: statusColors[status] || '#9E9E9E'
+      },
+      data: categories.map(day => grouped[day][status] || 0)
+    }));
+
+    const option = {
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        top: '5%',
+        left: 'center'
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: categories
+      },
+      yAxis: {type: 'value'},
+      series
+    };
+
+    this.lineBarInstance?.setOption(option);
+
+    console.log(this.lineBarInstance);
   }
+
+  private buildPieBarConfig(datas: MessageData[]) {
+    if (!this.pieBarInstance) {
+      this.pieBarInstance = echarts.init(this.pieBarChart.nativeElement, undefined, {
+        renderer: 'canvas',
+        useDirtyRect: false
+      });
+
+      window.addEventListener('resize', () => {
+        this.pieBarInstance?.resize();
+      });
+    } else {
+      this.pieBarInstance.clear();
+    }
+
+    const statusColors: Record<string, string> = {
+      SENDING: '#fce2a1',
+      SENT: '#90da8e',
+      DELIVERED: '#8dc8f8',
+      READ: '#328afc',
+      FAILED: '#f6a5b8'
+    };
+
+    const grouped = datas.reduce((acc, curr) => {
+      acc[curr.status] = (acc[curr.status] || 0) + curr.amount;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const pieData = Object.keys(grouped).map(status => ({
+      name: this._translateService.instant(status),
+      value: grouped[status],
+      itemStyle: {color: statusColors[status] || '#9E9E9E'}
+    }));
+
+    const option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c} ({d}%)'
+      },
+      legend: {
+        top: '2%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: 'Message Status',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 40,
+              fontWeight: 'bold'
+            }
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          labelLine: {
+            show: false
+          },
+          data: pieData
+        }
+      ]
+    };
+
+    this.pieBarInstance?.setOption(option);
+  }
+
+  private fillMissingDays(datas: MessageData[], lastDays: number): MessageData[] {
+    const result: MessageData[] = [];
+    const today = new Date();
+    const startDate = new Date();
+    startDate.setDate(today.getDate() - lastDays + 1);
+
+    // cria mapa de datas existentes
+    const map = new Map<string, MessageData[]>();
+    datas.forEach(d => {
+      if (!map.has(d.dayTime)) map.set(d.dayTime, []);
+      map.get(d.dayTime)?.push(d);
+    });
+
+    // gerar os dias preenchidos
+    for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+
+      if (map.has(dateStr)) {
+        result.push(...map.get(dateStr)!);
+      } else {
+        result.push({ dayTime: dateStr, status: 'SENT', amount: 0 });
+        result.push({ dayTime: dateStr, status: 'DELIVERED', amount: 0 });
+        result.push({ dayTime: dateStr, status: 'READ', amount: 0 });
+        result.push({ dayTime: dateStr, status: 'FAILED', amount: 0 });
+        result.push({ dayTime: dateStr, status: 'SENDING', amount: 0 });
+      }
+    }
+
+    return result;
+  }
+
 }
