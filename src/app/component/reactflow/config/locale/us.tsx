@@ -170,6 +170,7 @@ const us = {
     phone: 'Phone',
     email: 'Email',
     address: 'Address',
+    note: 'Note',
     timeInterval: 'Time interval',
     seconds: 'Seconds',
     minutes: 'Minutes',

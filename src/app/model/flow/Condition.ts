@@ -19,5 +19,5 @@ export enum Field {
     phone = 'phone',
     email = 'email',
     tag = 'tag',
-    address = 'address',
+    note = 'note',
 }

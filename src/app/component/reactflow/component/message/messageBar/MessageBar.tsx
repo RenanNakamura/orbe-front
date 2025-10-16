@@ -62,7 +62,7 @@ function MessageBar(props: Props) {
           {label: t('name'), value: 'contact_name'},
           {label: t('phone'), value: 'contact_phone'},
           {label: t('email'), value: 'contact_email'},
-          {label: t('address'), value: 'contact_address'},
+          {label: t('note'), value: 'contact_note'},
         ]
       }
     ]);

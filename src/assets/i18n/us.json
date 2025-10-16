@@ -454,6 +454,7 @@
   "copied": "Copied",
   "calendars": "Calendar",
   "address": "Address",
+  "note": "Note",
   "applicationId": "Application ID",
   "applicationId.required": "Application ID is required",
   "accessToken": "Access token",

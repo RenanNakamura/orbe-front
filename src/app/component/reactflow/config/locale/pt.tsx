@@ -170,6 +170,7 @@ const pt = {
     phone: 'Telefone',
     email: 'Email',
     address: 'Endereço',
+    note: 'Observação',
     timeInterval: 'Intervalo de tempo',
     seconds: 'Segundos',
     minutes: 'Minutos',

@@ -86,6 +86,7 @@
         <tr *matRowDef="let row; columns: visibleColumns;"
             @fadeInUp
             class="hover:bg-hover trans-ease-out cursor-pointer"
+            (click)="onUpdate(row)"
             mat-row></tr>
       </table>
 

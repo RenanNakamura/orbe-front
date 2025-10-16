@@ -19,8 +19,8 @@ export class GroupConst {
                         value: 'email',
                     },
                     {
-                        label: t('address'),
-                        value: 'address',
+                        label: t('note'),
+                        value: 'note',
                     },
                 ]
             }

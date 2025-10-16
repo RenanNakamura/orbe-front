@@ -4,7 +4,7 @@ export interface Contact {
     email: string;
     ddi: string;
     number: string;
-    address?: string;
+    note?: string;
 }
 
 export interface ContactParams {

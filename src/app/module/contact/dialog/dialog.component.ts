@@ -46,7 +46,7 @@ export class DialogComponent implements OnInit {
             email: [this._data?.email || '', [Validators.email]],
             ddi: [this._data?.ddi || '', Validators.required],
             number: [this._data?.number || '', Validators.required],
-            address: [this._data?.address || ''],
+            note: [this._data?.note || ''],
         });
 
         this.changePhoneMask(this.form.get('ddi').value);

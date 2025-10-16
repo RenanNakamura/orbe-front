@@ -37,7 +37,7 @@ export class ConditionConst {
             {value: Field.phone, label: 'phone'},
             {value: Field.email, label: 'email'},
             {value: Field.tag, label: 'tag'},
-            {value: Field.address, label: 'address'},
+            {value: Field.note, label: 'note'},
         ];
     }
 }

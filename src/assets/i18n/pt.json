@@ -454,6 +454,7 @@
   "copied": "Copiado",
   "calendars": "Agenda",
   "address": "Endereço",
+  "note": "Observação",
   "applicationId": "ID do aplicativo",
   "applicationId.required": "O ID do aplicativo é obrigatório",
   "accessToken": "Token de acesso",
