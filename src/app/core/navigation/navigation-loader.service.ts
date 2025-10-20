@@ -54,6 +54,14 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
+            label: 'agent',
+            route: 'agent',
+            icon: 'mat:support_agent',
+            roles: [Role.ADMIN, Role.USER],
+            plans: [PlanEnum.BASIC, PlanEnum.PRO]
+          },
+          {
+            type: 'link',
             label: 'contacts',
             route: 'contact',
             icon: 'mat:contacts',
@@ -82,18 +90,11 @@ export class NavigationLoaderService {
         type: 'subheading',
         label: 'services',
         children: [
-          // {
-          //     type: 'link',
-          //     label: 'calendars',
-          //     route: 'calendar',
-          //     icon: icCalendar,
-          //     roles: [Role.ADMIN, Role.USER],
-          // },
           {
             type: 'link',
             label: 'campaigns',
             route: 'campaign',
-            icon: 'mat:local_fire_department',
+            icon: 'mat:campaign',
             roles: [Role.ADMIN, Role.USER],
             plans: [PlanEnum.BASIC, PlanEnum.PRO]
           },
@@ -102,6 +103,14 @@ export class NavigationLoaderService {
             label: 'flows',
             route: 'flow',
             icon: 'mat:account_tree',
+            roles: [Role.ADMIN, Role.USER],
+            plans: [PlanEnum.BASIC, PlanEnum.PRO]
+          },
+          {
+            type: 'link',
+            label: 'chat',
+            route: 'chat',
+            icon: 'mat:forum',
             roles: [Role.ADMIN, Role.USER],
             plans: [PlanEnum.BASIC, PlanEnum.PRO]
           }

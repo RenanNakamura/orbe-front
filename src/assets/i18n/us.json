@@ -541,5 +541,7 @@
   "path": {
     "fallback": "Fallback path executed",
     "fail": "Fail path executed"
-  }
+  },
+  "agent": "Agent",
+  "chat": "Chat"
 }

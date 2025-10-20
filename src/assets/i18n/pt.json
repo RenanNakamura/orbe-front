@@ -541,5 +541,7 @@
   "path": {
     "fallback": "Executado o caminho alternativo",
     "fail": "Executado o caminho de falha"
-  }
+  },
+  "agent": "Atendente",
+  "chat": "Chat"
 }

@@ -12,10 +12,6 @@ import {
     UntypedFormGroup,
     Validators
 } from '@angular/forms';
-import icCampaign from '@iconify/icons-ic/whatshot';
-import icClose from '@iconify/icons-ic/close';
-import icAlternate from '@iconify/icons-ic/code';
-import icEmoji from '@iconify/icons-ic/insert-emoticon';
 import {SelectedFile} from '../../sk/upload-file/upload-file.component';
 import {
     ColumnType,
