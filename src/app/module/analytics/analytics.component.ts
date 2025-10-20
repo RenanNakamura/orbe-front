@@ -62,27 +62,25 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.translatePeriodOptions();
     this.form.get('periodValue')?.setValue(15);
 
-    this._activatedRoute.data.subscribe((param) => {
-      this.channels = param?.['channels']?.content;
+    this._activatedRoute.data
+      .subscribe((param) => {
+        this.channels = param?.['channels']?.content;
 
-      if (this.channels.length > 0) {
-        const phoneNumberIdSelected = this.channels[0].phoneNumberId;
+        if (this.channels.length > 0) {
+          const phoneNumberIdSelected = this.channels[0].phoneNumberId;
 
-        this.form.get('phoneNumberId')?.setValue(phoneNumberIdSelected);
+          this.form.get('phoneNumberId')?.setValue(phoneNumberIdSelected);
 
-        this.loadDashBoards(phoneNumberIdSelected, this.form.get('periodValue').value);
-      }  else {
-        const lastDays = this.form.get('periodValue')?.value || 15;
-        const emptyData = this.fillMissingDays([], lastDays);
-        this.buildPieBarConfig(emptyData);
-        this.buildLineBarConfig(emptyData);
-      }
+          this.loadDashBoards(phoneNumberIdSelected, this.form.get('periodValue').value);
+        } else {
+          this.fillEmptyData();
+        }
 
-      window.addEventListener('resize', () => {
-        this.pieBarInstance?.resize();
-        this.lineBarInstance?.resize();
+        window.addEventListener('resize', () => {
+          this.pieBarInstance?.resize();
+          this.lineBarInstance?.resize();
+        });
       });
-    });
 
     this.form.get('phoneNumberId')?.valueChanges.subscribe((selectedValue) => {
       this.onChannelChange(selectedValue);
@@ -114,6 +112,9 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.buildPieBarConfig(data);
           this.buildLineBarConfig(data);
         },
+        error: (err) => {
+          this.fillEmptyData();
+        }
       });
   }
 
@@ -282,15 +283,22 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (map.has(dateStr)) {
         result.push(...map.get(dateStr)!);
       } else {
-        result.push({ dayTime: dateStr, status: 'SENT', amount: 0 });
-        result.push({ dayTime: dateStr, status: 'DELIVERED', amount: 0 });
-        result.push({ dayTime: dateStr, status: 'READ', amount: 0 });
-        result.push({ dayTime: dateStr, status: 'FAILED', amount: 0 });
-        result.push({ dayTime: dateStr, status: 'SENDING', amount: 0 });
+        result.push({dayTime: dateStr, status: 'SENT', amount: 0});
+        result.push({dayTime: dateStr, status: 'DELIVERED', amount: 0});
+        result.push({dayTime: dateStr, status: 'READ', amount: 0});
+        result.push({dayTime: dateStr, status: 'FAILED', amount: 0});
+        result.push({dayTime: dateStr, status: 'SENDING', amount: 0});
       }
     }
 
     return result;
+  }
+
+  private fillEmptyData() {
+    const lastDays = this.form.get('periodValue')?.value || 15;
+    const emptyData = this.fillMissingDays([], lastDays);
+    this.buildPieBarConfig(emptyData);
+    this.buildLineBarConfig(emptyData);
   }
 
 }

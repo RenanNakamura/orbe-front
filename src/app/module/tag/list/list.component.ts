@@ -49,6 +49,12 @@ export class ListComponent implements OnInit {
       visible: true,
       cssClasses: ['font-medium']
     },
+    {
+      label: 'color',
+      property: 'color',
+      type: 'color',
+      visible: true,
+    },
     { label: 'actions', property: 'actions', type: 'button', visible: true }
   ];
 

@@ -48,7 +48,7 @@ const ActionNode = (props: NodeProps<any>) => {
                     const map = response.data
                         .content
                         .map(tag => {
-                            return {value: tag.id, label: tag.description};
+                            return {value: tag.id, label: tag.description, color: tag.color};
                         });
                     setGroups(map);
                 }

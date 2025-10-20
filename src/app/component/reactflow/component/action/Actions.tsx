@@ -7,7 +7,7 @@ import {MdOutlineMoreHoriz} from 'react-icons/md';
 
 export interface Props {
   actions: Action[];
-  groups: { label: string, value: string }[];
+  groups: { label: string, value: string, color: string }[];
   onRemove: (index: number) => void;
   onEdit: (index: number) => void;
 }
@@ -90,8 +90,17 @@ function Actions(props: Props) {
             </div>
           </div>
           <div>
-            <div className={'text-xs text-gray-400'}>
-              {action.values.map((value) => groupName(value)).join(', ')}
+            <div className='flex flex-wrap gap-1 mt-1'>
+              {action.values.map((value, i) => {
+                const group = groups.find(g => g.value === value);
+                return (
+                  <span
+                    key={i}
+                    className='px-2 py-1 text-white text-xs rounded'
+                    style={{backgroundColor: group?.color || '#6b7280'}}
+                  >{group?.label || translate?.notFound}</span>
+                );
+              })}
             </div>
           </div>
         </div>

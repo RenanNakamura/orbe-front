@@ -49,6 +49,19 @@
             </th>
             <td *matCellDef="let row" [ngClass]="column.cssClasses" mat-cell>{{ row[column.property] }}</td>
           </ng-container>
+
+          <ng-container *ngIf="column.type === 'color'" [matColumnDef]="column.property">
+            <th *matHeaderCellDef mat-header-cell>
+              {{ column.label | translate }}
+            </th>
+            <td *matCellDef="let row" mat-cell>
+              <div
+                class="w-6 h-6 rounded border"
+                [style.background]="row[column.property]"
+                [matTooltip]="row[column.property]">
+              </div>
+            </td>
+          </ng-container>
         </ng-container>
 
         <ng-container matColumnDef="actions">
