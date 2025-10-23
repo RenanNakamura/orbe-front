@@ -530,6 +530,7 @@
   "about": "About",
   "ADMIN": "Admin",
   "USER": "User",
+  "PENDING_INVITE": "Pending invite",
   "manager-subscription": "Manage subscription",
   "facebook": {
     "continue-with-facebook": "Continue with Facebook"
@@ -542,6 +543,10 @@
     "fallback": "Fallback path executed",
     "fail": "Fail path executed"
   },
-  "agent": "Agent",
+  "agent": {
+    "new": "New agent",
+    "delete": "Do you want to delete the agent: "
+  },
+  "agents": "Agents",
   "chat": "Chat"
 }

@@ -53,7 +53,7 @@ export class UserService {
             {},
             {
                 headers: {
-                    Authorization: token,
+                    Authorization: `Bearer ${token}`,
                 },
                 observe: 'response'
             }

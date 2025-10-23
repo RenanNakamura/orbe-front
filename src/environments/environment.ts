@@ -11,6 +11,7 @@ export const environment = {
     flow: 'http://localhost:8082',
     calendar: 'http://localhost:8092',
     whatsappService: 'http://localhost:9000',
+    chat: 'http://localhost:8091',
     receptcha: {
         sitekey: '6LdsZT0pAAAAACxAmMHdH5grjNUDJSQ6rdfdBE04'
     },

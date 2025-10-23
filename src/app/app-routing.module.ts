@@ -75,6 +75,14 @@ const routes: Routes = [
         title: 'channels'
       },
       {
+        path: 'agent',
+        loadChildren: () =>
+          import('./module/agent/agent.module').then(
+            (m) => m.AgentModule
+          ),
+        title: 'agents'
+      },
+      {
         path: 'flow',
         loadChildren: () => import('./module/flow/flow.module').then((m) => m.FlowModule),
         title: 'flows'

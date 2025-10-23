@@ -54,7 +54,7 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'agent',
+            label: 'agents',
             route: 'agent',
             icon: 'mat:support_agent',
             roles: [Role.ADMIN, Role.USER],

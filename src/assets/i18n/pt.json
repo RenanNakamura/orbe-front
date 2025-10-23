@@ -530,6 +530,7 @@
   "about": "Sobre",
   "ADMIN": "Administrador",
   "USER": "Usuário",
+  "PENDING_INVITE": "Convite pendente",
   "manager-subscription": "Gerenciar assinatura",
   "facebook": {
     "continue-with-facebook": "Continuar com o Facebook"
@@ -542,6 +543,10 @@
     "fallback": "Executado o caminho alternativo",
     "fail": "Executado o caminho de falha"
   },
-  "agent": "Atendente",
+  "agent": {
+    "new": "Novo atendente",
+    "delete": "Deseja excluir o atendente: "
+  },
+  "agents": "Atendentes",
   "chat": "Chat"
 }

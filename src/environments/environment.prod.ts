@@ -7,6 +7,7 @@ export const environment = {
   flow: 'https://api.orbetalk.com/workflow',
   calendar: 'http://localhost:8092',
   whatsappService: 'https://api.orbetalk.com/whatsapp',
+  chat: 'https://api.orbetalk.com/chat',
   receptcha: {
     sitekey: '6Ld-R5UqAAAAAOFwUurtIj-KVO2XZti8aw72m3SM'
   },
