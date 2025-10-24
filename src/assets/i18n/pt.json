@@ -549,5 +549,6 @@
     "delete": "Deseja excluir o atendente: "
   },
   "agents": "Atendentes",
-  "chat": "Chat"
+  "chat": "Chat",
+  "resend-email": "Reenviar e-mail"
 }
