@@ -545,6 +545,7 @@
   },
   "agent": {
     "new": "Novo atendente",
+    "edit": "Editar atendente",
     "delete": "Deseja excluir o atendente: "
   },
   "agents": "Atendentes",

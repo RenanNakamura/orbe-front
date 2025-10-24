@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {UntypedFormControl} from '@angular/forms';
 import {TableColumn} from '@vex/interfaces/table-column.interface';
 import {MatTableDataSource} from '@angular/material/table';
 import {Contact} from '../../../model/Contact';
-import {PageEvent} from '@angular/material/paginator';
+import {MatPaginator} from '@angular/material/paginator';
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
 import {stagger40ms} from '@vex/animations/stagger.animation';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions} from '@angular/material/form-field';
@@ -14,6 +14,7 @@ import {AgentService} from "../../../service/agent/agent.service";
 import {AgentStatus, ListAgentResponse} from "../../../model/chat/agent";
 import {QuestionDialogComponent} from "../../sk/question-dialog/question-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
+import {MatSort} from "@angular/material/sort";
 
 @Component({
   selector: 'vex-list',
@@ -30,6 +31,10 @@ import {TranslateService} from "@ngx-translate/core";
   ]
 })
 export class ListComponent implements OnInit {
+
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+
   pageSize = 10;
   pageIndex = 0;
   sortBy = 'createdDate,desc';
@@ -63,6 +68,12 @@ export class ListComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+
+    this.searchCtrl
+      .valueChanges
+      .subscribe((value) => {
+        this.dataSource.filter = value?.trim().toLowerCase() || '';
+      });
   }
 
   get visibleColumns() {
@@ -114,20 +125,6 @@ export class ListComponent implements OnInit {
       });
   }
 
-  onPage(event: PageEvent) {
-    this.pageSize = event.pageSize;
-    this.pageIndex = event.pageIndex;
-  }
-
-  // onSortBy(event: Sort) {
-  //   this.sortBy =
-  //     event.active && event.direction && event.active !== 'actions'
-  //       ? Object.values(event).join(',')
-  //       : '';
-  //   const params = this.getDefaultParams();
-  //   this.load(params);
-  // }
-
   trackByProperty<T>(index: number, column: TableColumn<T>) {
     return column.property;
   }
@@ -148,7 +145,17 @@ export class ListComponent implements OnInit {
     this._service.list()
       .subscribe((data) => {
         this.dataSource.data = data;
-        this.length = data?.length;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.length = data?.length ?? 0;
+
+        this.dataSource.filterPredicate = (data: ListAgentResponse, filter: string) => {
+          const lowerFilter = filter.trim().toLowerCase();
+          return (
+            data.name?.toLowerCase().includes(lowerFilter) ||
+            data.email?.toLowerCase().includes(lowerFilter)
+          );
+        };
       });
   }
 

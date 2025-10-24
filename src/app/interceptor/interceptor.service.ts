@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {
-    HttpErrorResponse,
-    HttpEvent,
-    HttpHandler,
-    HttpInterceptor,
-    HttpRequest,
-    HttpResponse
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse
 } from '@angular/common/http';
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {catchError, filter, switchMap, take} from 'rxjs/operators';
@@ -19,122 +19,122 @@ import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../service/sk/language.service';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class InterceptorService implements HttpInterceptor {
 
-    private isRefreshing = false;
-    private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-    constructor(
-        private _alert: AlertService,
-        private _userService: UserService,
-        private _userStorage: UserStorage,
-        private _tokenStorage: TokenStorage,
-        private _refreshTokenStorage: RefreshTokenStorage,
-        private _translate: TranslateService,
-        private _router: Router,
-        private _languageService: LanguageService
-    ) {
+  constructor(
+    private _alert: AlertService,
+    private _userService: UserService,
+    private _userStorage: UserStorage,
+    private _tokenStorage: TokenStorage,
+    private _refreshTokenStorage: RefreshTokenStorage,
+    private _translate: TranslateService,
+    private _router: Router,
+    private _languageService: LanguageService
+  ) {
+  }
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (req.url.includes('/refresh-token')) {
+      return next.handle(req);
     }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (req.url.includes('/refresh-token')) {
-            return next.handle(req);
-        }
-
-        if (!req.headers.has('Authorization')) {
-            req = this.addTokenHeader(req, this._tokenStorage.get() || '');
-        }
-
-        req = req.clone({
-            headers: req.headers.set('Accept-Language', this.getLocale())
-        });
-
-        return next.handle(req)
-            .pipe(
-                catchError((response: HttpErrorResponse) => {
-                    const data = {
-                        status: response.status,
-                        messages: response.error?.messages || response.error?.error
-                    };
-
-                    if (data.status === 401) {
-                        return this.handle401Error(req, next);
-                    } else if (data.status >= 400 && data.status < 500) {
-                        if (Array.isArray(data.messages)) {
-                            data.messages.forEach(msg => this._alert.warning(msg));
-                        } else {
-                            this._alert.warning(data.messages);
-                        }
-                    } else {
-                        this._alert.error(response.message);
-                    }
-
-                    return throwError(() => response);
-                })
-            );
+    if (!req.headers.has('Authorization')) {
+      req = this.addTokenHeader(req, this._tokenStorage.get() || '');
     }
 
-    private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const refreshToken = this._refreshTokenStorage.get();
+    req = req.clone({
+      headers: req.headers.set('Accept-Language', this.getLocale())
+    });
 
-        if (!this.isRefreshing && refreshToken) {
-            this.isRefreshing = true;
-            this.refreshTokenSubject.next(null);
+    return next.handle(req)
+      .pipe(
+        catchError((response: HttpErrorResponse) => {
+          const data = {
+            status: response.status,
+            messages: response.error?.messages || response.error?.error
+          };
 
-            return this._userService.refreshToken(refreshToken).pipe(
-                switchMap((response: HttpResponse<void>) => {
-                    this.isRefreshing = false;
+          if (data.status === 401) {
+            return this.handle401Error(req, next);
+          } else if (data.status >= 400 && data.status < 500) {
+            if (Array.isArray(data.messages)) {
+              data.messages.forEach(msg => this._alert.warning(msg));
+            } else {
+              this._alert.warning(data.messages);
+            }
+          } else {
+            this._alert.error(response.message);
+          }
 
-                    const newAccessToken = response.headers.get('Access-Token');
-                    const newRefreshToken = response.headers.get('Refresh-Token');
+          return throwError(() => response);
+        })
+      );
+  }
 
-                    this._tokenStorage.set(newAccessToken);
-                    this._refreshTokenStorage.set(newRefreshToken);
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const refreshToken = this._refreshTokenStorage.get();
 
-                    const plan = this._tokenStorage.getClaim('plan');
-                    this._userStorage.set({...this._userStorage.get(), plan});
+    if (!this.isRefreshing && refreshToken) {
+      this.isRefreshing = true;
+      this.refreshTokenSubject.next(null);
 
-                    this.refreshTokenSubject.next(newAccessToken);
+      return this._userService.refreshToken(refreshToken).pipe(
+        switchMap((response: HttpResponse<void>) => {
+          this.isRefreshing = false;
 
-                    return next.handle(this.addTokenHeader(request, newAccessToken));
-                }),
-                catchError((err) => {
-                    this.isRefreshing = false;
-                    this.logout();
-                    return throwError(() => err);
-                })
-            );
-        }
+          const newAccessToken = response.headers.get('Access-Token');
+          const newRefreshToken = response.headers.get('Refresh-Token');
 
-        return this.refreshTokenSubject.pipe(
-            filter(token => token !== null),
-            take(1),
-            switchMap((token) => next.handle(this.addTokenHeader(request, token)))
-        );
+          this._tokenStorage.set(newAccessToken);
+          this._refreshTokenStorage.set(newRefreshToken);
+
+          const plan = this._tokenStorage.getClaim('plan');
+          this._userStorage.set({...this._userStorage.get(), plan});
+
+          this.refreshTokenSubject.next(newAccessToken);
+
+          return next.handle(this.addTokenHeader(request, newAccessToken));
+        }),
+        catchError((err) => {
+          this.isRefreshing = false;
+          this.logout();
+          return throwError(() => err);
+        })
+      );
     }
 
-    private addTokenHeader(request: HttpRequest<any>, token: string): HttpRequest<any> {
-        return request.clone({
-            setHeaders: {
-                Authorization: token || '',
-            },
-        });
-    }
+    return this.refreshTokenSubject.pipe(
+      filter(token => token !== null),
+      take(1),
+      switchMap((token) => next.handle(this.addTokenHeader(request, token)))
+    );
+  }
 
-    private getLocale(): string {
-        return this._languageService.isPtBR() ? 'pt-BR' : 'en-US';
-    }
+  private addTokenHeader(request: HttpRequest<any>, token: string): HttpRequest<any> {
+    return request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}` || '',
+      },
+    });
+  }
 
-    private logout() {
-        this._tokenStorage.clear();
-        this._refreshTokenStorage.clear();
-        this._userStorage.clear();
+  private getLocale(): string {
+    return this._languageService.isPtBR() ? 'pt-BR' : 'en-US';
+  }
 
-        this._translate.get('user.session.expired')
-            .subscribe(value => this._alert.warning(value));
+  private logout() {
+    this._tokenStorage.clear();
+    this._refreshTokenStorage.clear();
+    this._userStorage.clear();
 
-        this._router.navigate(['/login']);
-    }
+    this._translate.get('user.session.expired')
+      .subscribe(value => this._alert.warning(value));
+
+    this._router.navigate(['/login']);
+  }
 }

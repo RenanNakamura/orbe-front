@@ -1,11 +1,9 @@
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
     <div class="flex flex-row items-center justify-between" mat-dialog-title>
         <h2 *ngIf="this.isNew()"
-            class="headline m-0"
-            fxFlex="auto">{{'user.new' | translate}}</h2>
+            class="headline m-0">{{'agent.new' | translate}}</h2>
         <h2 *ngIf="!this.isNew()"
-            class="headline m-0"
-            fxFlex="auto">{{'user.edit' | translate}}</h2>
+            class="headline m-0">{{'agent.edit' | translate}}</h2>
 
         <button class="text-secondary" mat-dialog-close="" mat-icon-button type="button">
             <mat-icon svgIcon="mat:close"></mat-icon>
@@ -32,32 +30,6 @@
                 {{'email.invalid' | translate}}
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="flex-auto" appearance="outline" *ngIf="this.isNew()">
-            <mat-label>{{'password' | translate}}</mat-label>
-            <input formControlName="password" matInput required>
-            <mat-error *ngIf="form.get('password').hasError('required')">
-                {{'password.required' | translate}}
-            </mat-error>
-        </mat-form-field>
-        <div class="flex flex-row">
-            <mat-form-field class="flex-auto" appearance="outline">
-                <mat-label>{{'ddi' | translate}}</mat-label>
-                <input formControlName="ddi" matInput required>
-                <mat-error *ngIf="form.get('ddi').hasError('required')">
-                    {{'ddi.required' | translate}}
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field class="flex-auto ml-2" appearance="outline">
-                <mat-label>{{'number' | translate}}</mat-label>
-                <input formControlName="number" matInput required [mask]="this.phoneMask">
-                <mat-error *ngIf="form.get('number').hasError('required')">
-                    {{'number.required' | translate}}
-                </mat-error>
-                <mat-error *ngIf="form.get('number').hasError('mask')">
-                    {{'number.invalid' | translate}}
-                </mat-error>
-            </mat-form-field>
-        </div>
 
         <mat-form-field appearance="outline">
             <mat-label>{{'language' | translate}}</mat-label>

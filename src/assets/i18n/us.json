@@ -545,6 +545,7 @@
   },
   "agent": {
     "new": "New agent",
+    "edit": "Edit agent",
     "delete": "Do you want to delete the agent: "
   },
   "agents": "Agents",

@@ -8,6 +8,7 @@ export interface CreateAgentRequest {
 export interface UpdateAgentRequest {
   name?: string;
   status?: AgentStatus;
+  language: string;
 }
 
 export interface ListAgentResponse {
@@ -18,6 +19,7 @@ export interface ListAgentResponse {
   email: string;
   role: AgentRole;
   status: AgentStatus;
+  language: string;
 }
 
 export interface GetAgentResponse {
@@ -29,6 +31,7 @@ export interface GetAgentResponse {
   role: AgentRole;
   status: AgentStatus;
   password: string;
+  language: string;
 }
 
 export enum AgentStatus {

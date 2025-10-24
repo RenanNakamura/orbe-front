@@ -3,7 +3,7 @@
        [ngClass]="{'bg-white': this.isReceivedEntry(), 'command': this.isCommandEntry(), 'sent': this.isSentEntry()}">
     <div [ngSwitch]="this.message.type">
       <div *ngSwitchCase="'IMAGE'">
-        <img [ngSrc]="this.link" alt="" class="rounded-md p-1" fill>
+        <img [src]="this.link" alt="" class="rounded-md p-1">
       </div>
       <div *ngSwitchCase="'VIDEO'">
         <video [src]="this.link" class="rounded-md p-1" controls></video>
