@@ -45,10 +45,15 @@ export class DialogComponent implements OnInit {
   }
 
   private initForm() {
+    const isEdit = !!this._data?.id;
+
     this.form = this._fb.group({
       id: [this._data?.id],
       name: [this._data?.name || '', Validators.required],
-      email: [this._data?.email || '', [Validators.required, Validators.email]],
+      email: [
+        { value: this._data?.email || '', disabled: isEdit },
+        [Validators.required, Validators.email]
+      ],
       role: [this._data?.role || 'AGENT', [Validators.required]],
       status: [this._data?.status || 'ACTIVE', [Validators.required]],
       language: [this._data?.language || Language.PORTUGUESE_BRAZIL, Validators.required],
