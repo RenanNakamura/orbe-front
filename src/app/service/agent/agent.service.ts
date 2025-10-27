@@ -18,6 +18,10 @@ export class AgentService {
     return this._http.post<void>(`${environment.chat}${this._api}`, request);
   }
 
+  resendEmail(id: string): Observable<void> {
+    return this._http.post<void>(`${environment.chat}${this._api}/${id}/resend-email`, {});
+  }
+
   update(id: string, request: UpdateAgentRequest): Observable<void> {
     return this._http.patch<void>(`${environment.chat}${this._api}/${id}`, request);
   }
