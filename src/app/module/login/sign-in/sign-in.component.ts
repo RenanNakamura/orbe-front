@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../../service/user/user.service';
-import {take} from 'rxjs/operators';
 import {TokenStorage} from '../../../storage/user/token.storage';
 import {Router} from '@angular/router';
 import {UserStorage} from '../../../storage/user/user.storage';
@@ -9,6 +8,9 @@ import {environment} from 'src/environments/environment';
 import {RefreshTokenStorage} from '../../../storage/user/refresh-token.storage';
 import {LanguageService} from '../../../service/sk/language.service';
 import {LanguageUtil} from '../../../util/language.util';
+import {HttpResponse} from "@angular/common/http";
+import {LoggedUser} from "../../../model/User";
+import {take} from "rxjs/operators";
 
 declare var grecaptcha: any;
 
@@ -23,6 +25,7 @@ export class SignInComponent implements OnInit {
 
   inputType = 'password';
   visible = false;
+  isLoading = false;
 
   constructor(private _router: Router,
               private _formBuilder: UntypedFormBuilder,
@@ -54,27 +57,36 @@ export class SignInComponent implements OnInit {
   }
 
   onSignIn() {
-    if (this.form.valid) {
+    if (this.form.valid && !this.isLoading) {
+      this.isLoading = true;
+
       grecaptcha.ready(() => {
         grecaptcha.execute(environment.receptcha.sitekey, {action: 'LOGIN'}).then((token) => {
           this._userService.login(token, this.form.value)
             .pipe(take(1))
-            .subscribe(response => {
-              this._tokenStorage.set(response.headers.get('Access-Token'));
-              this._refreshTokenStorage.set(response.headers.get('Refresh-Token'));
+            .subscribe({
+              next: (response: HttpResponse<LoggedUser>) => {
+                this._tokenStorage.set(response.headers.get('Access-Token'));
+                this._refreshTokenStorage.set(response.headers.get('Refresh-Token'));
 
-              const plan = this._tokenStorage.getClaim('plan');
+                const plan = this._tokenStorage.getClaim('plan');
 
-              this._userStorage.set({...response.body, plan});
+                this._userStorage.set({...response.body, plan});
 
-              const userLogged = this._userStorage?.get();
+                const userLogged = this._userStorage?.get();
 
-              if (userLogged) {
-                const lang = LanguageUtil.toLang(userLogged.language);
-                this._languageService.changeLang(lang);
+                if (userLogged) {
+                  const lang = LanguageUtil.toLang(userLogged.language);
+                  this._languageService.changeLang(lang);
+                }
+
+                this.isLoading = false;
+
+                this._router.navigate(['/']);
+              },
+              error: () => {
+                this.isLoading = false;
               }
-
-              this._router.navigate(['/']);
             });
         });
       });

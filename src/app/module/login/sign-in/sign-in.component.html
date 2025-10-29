@@ -40,8 +40,16 @@
         </mat-form-field>
       </div>
 
-      <button color="primary" mat-raised-button type="submit" [disabled]="form.invalid">
-        {{ 'login.sign-in' | translate }}
+      <button color="primary"
+              mat-raised-button
+              type="submit"
+              [disabled]="form.invalid || this.isLoading">
+        <span *ngIf="!this.isLoading">{{ 'login.sign-in' | translate }}</span>
+        <mat-progress-spinner
+          *ngIf="this.isLoading"
+          mode="indeterminate"
+          [diameter]="20"
+          color="primary"></mat-progress-spinner>
       </button>
 
       <a href="/login/forgot-password" class="mt-2">

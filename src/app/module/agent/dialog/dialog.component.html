@@ -31,21 +31,6 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>{{'language' | translate}}</mat-label>
-            <mat-select formControlName="language" required>
-                <mat-option
-                        *ngFor="let language of languages | keyvalue"
-                        [value]="language.key"
-                        class="example-radio-button">
-                    {{ language.value | translate}}
-                </mat-option>
-            </mat-select>
-            <mat-error *ngIf="form.get('language').hasError('required')">
-                {{'language.required' | translate}}
-            </mat-error>
-        </mat-form-field>
-
     </mat-dialog-content>
     <mat-dialog-actions align="end">
         <button mat-button mat-dialog-close="" type="button">{{'cancel' | translate}}</button>

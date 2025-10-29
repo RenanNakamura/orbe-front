@@ -72,9 +72,17 @@
         </mat-error>
       </mat-form-field>
 
-      <button class="mt-2" color="primary" mat-raised-button type="submit"
-              [disabled]="form.invalid || this.isSuccess">
-        {{ 'finish' | translate }}
+      <button class="mt-2"
+              color="primary"
+              mat-raised-button
+              type="submit"
+              [disabled]="form.invalid || this.isSuccess || this.isLoading">
+        <span *ngIf="!this.isLoading">{{ 'finish' | translate }}</span>
+        <mat-progress-spinner
+          *ngIf="this.isLoading"
+          mode="indeterminate"
+          [diameter]="20"
+          color="primary"></mat-progress-spinner>
       </button>
 
       <div *ngIf="isSuccess" class="body-2 text-secondary mt-4">

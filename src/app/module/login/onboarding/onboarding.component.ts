@@ -30,6 +30,7 @@ export class OnboardingComponent implements OnInit {
   isSuccess = false;
   token = '';
   onboardingId = '';
+  isLoading = false;
 
   constructor(private readonly fb: UntypedFormBuilder,
               private _service: OnboardingService,
@@ -50,7 +51,9 @@ export class OnboardingComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (this.form.valid) {
+    if (this.form.valid && !this.isLoading) {
+      this.isLoading = true;
+
       const user: FinishOnboarding = {
         name: this.form.get('name').value,
         language: this.form.get('language').value,
@@ -61,12 +64,18 @@ export class OnboardingComponent implements OnInit {
         grecaptcha.execute(environment.receptcha.sitekey, {action: 'ONBOARDING'})
           .then((token) => {
             this._service.finish(this.onboardingId, this.token, token, user)
-              .subscribe(() => {
-                this.isSuccess = true;
+              .subscribe({
+                next: () => {
+                  this.isSuccess = true;
+                  this.isLoading = false;
 
-                setTimeout(() => {
-                  this._router.navigate(['/login']);
-                }, 3000);
+                  setTimeout(() => {
+                    this._router.navigate(['/login']);
+                  }, 3000);
+                },
+                error: () => {
+                  this.isLoading = false;
+                }
               });
           });
       });

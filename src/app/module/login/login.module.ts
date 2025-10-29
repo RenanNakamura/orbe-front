@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RecoverPasswordComponent } from './recover-password/recover-password.component';
 import { OnboardingComponent } from './onboarding/onboarding.component';
 import { MatSelectModule } from '@angular/material/select';
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -20,15 +21,16 @@ import { MatSelectModule } from '@angular/material/select';
     RecoverPasswordComponent,
     OnboardingComponent
   ],
-  imports: [
-    CommonModule,
-    LoginRoutingModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatIconModule,
-    TranslateModule,
-    MatButtonModule,
-    MatSelectModule,
-  ]
+    imports: [
+        CommonModule,
+        LoginRoutingModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatIconModule,
+        TranslateModule,
+        MatButtonModule,
+        MatSelectModule,
+        MatProgressSpinner,
+    ]
 })
 export class LoginModule {}
