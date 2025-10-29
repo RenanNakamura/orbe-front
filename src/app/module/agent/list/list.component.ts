@@ -108,12 +108,6 @@ export class ListComponent implements OnInit {
       .subscribe(() => this.load());
   }
 
-  async onResendEmail(row) {
-    this._service
-      .resendEmail(row.id)
-      .subscribe(() => this.load());
-  }
-
   async onDelete(row) {
     const msg = this._translate.instant('agent.delete');
     const questionConfig = {
