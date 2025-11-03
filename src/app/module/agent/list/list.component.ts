@@ -11,10 +11,11 @@ import {MatDialog} from '@angular/material/dialog';
 import {User} from '../../../model/User';
 import {DialogComponent} from '../dialog/dialog.component';
 import {AgentService} from "../../../service/agent/agent.service";
-import {AgentStatus, ListAgentResponse} from "../../../model/chat/agent";
+import {AgentRole, AgentStatus, ListAgentResponse} from "../../../model/chat/agent";
 import {QuestionDialogComponent} from "../../sk/question-dialog/question-dialog.component";
 import {TranslateService} from "@ngx-translate/core";
 import {MatSort} from "@angular/material/sort";
+import {AlertService} from "../../../service/sk/alert.service";
 
 @Component({
   selector: 'vex-list',
@@ -51,6 +52,7 @@ export class ListComponent implements OnInit {
       visible: true,
       cssClasses: ['font-medium']
     },
+    {label: 'role', property: 'role', type: 'enum', visible: true},
     {label: 'name', property: 'name', type: 'text', visible: true},
     {label: 'email', property: 'email', type: 'text', visible: true},
     {label: 'status', property: 'status', type: 'enum', visible: true},
@@ -62,7 +64,8 @@ export class ListComponent implements OnInit {
   constructor(
     private _service: AgentService,
     private _dialog: MatDialog,
-    private _translate: TranslateService
+    private _translate: TranslateService,
+    private _alertService: AlertService,
   ) {
   }
 
@@ -87,6 +90,15 @@ export class ListComponent implements OnInit {
       .open(DialogComponent, {width: '600px'})
       .afterClosed()
       .subscribe(() => this.load());
+  }
+
+  async onResendEmail(row) {
+    this._service
+      .resendEmail(row.id)
+      .subscribe(() => {
+        const msg = this._translate.instant('resend-email-requested');
+        this._alertService.success(msg);
+      });
   }
 
   onUpdate(row) {
@@ -139,6 +151,10 @@ export class ListComponent implements OnInit {
 
   isPendingInvite(row: ListAgentResponse) {
     return row.status === AgentStatus.PENDING_INVITE;
+  }
+
+  isAdmin(row: ListAgentResponse) {
+    return row.role === AgentRole.ADMIN;
   }
 
   private load() {

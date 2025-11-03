@@ -1,32 +1,27 @@
-import {
-  Component,
-  DestroyRef,
-  HostBinding,
-  inject,
-  OnInit
-} from '@angular/core';
-import { VexLayoutService } from '@vex/services/vex-layout.service';
-import { VexConfigService } from '@vex/config/vex-config.service';
-import { filter, map, startWith } from 'rxjs/operators';
-import { NavigationService } from '../../../core/navigation/navigation.service';
-import { VexPopoverService } from '@vex/components/vex-popover/vex-popover.service';
-import { Observable } from 'rxjs';
-import { NavigationComponent } from '../navigation/navigation.component';
-import { ToolbarUserComponent } from './toolbar-user/toolbar-user.component';
-import { NavigationItemComponent } from '../navigation/navigation-item/navigation-item.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { NavigationItem } from '../../../core/navigation/navigation-item.interface';
-import { checkRouterChildsData } from '@vex/utils/check-router-childs-data';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
-import { LanguageUtil } from '../../../util/language.util';
-import { UserService } from '../../../service/user/user.service';
-import { UserStorage } from '../../../storage/user/user.storage';
-import { LanguageService } from '../../../service/sk/language.service';
+import {Component, DestroyRef, HostBinding, inject, OnInit} from '@angular/core';
+import {VexLayoutService} from '@vex/services/vex-layout.service';
+import {VexConfigService} from '@vex/config/vex-config.service';
+import {filter, map, startWith} from 'rxjs/operators';
+import {NavigationService} from '../../../core/navigation/navigation.service';
+import {Observable} from 'rxjs';
+import {NavigationComponent} from '../navigation/navigation.component';
+import {ToolbarUserComponent} from './toolbar-user/toolbar-user.component';
+import {NavigationItemComponent} from '../navigation/navigation-item/navigation-item.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {NavigationEnd, Router, RouterLink} from '@angular/router';
+import {AsyncPipe, NgFor, NgIf} from '@angular/common';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {NavigationItem} from '../../../core/navigation/navigation-item.interface';
+import {checkRouterChildsData} from '@vex/utils/check-router-childs-data';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TranslateModule} from '@ngx-translate/core';
+import {LanguageUtil} from '../../../util/language.util';
+import {UserService} from '../../../service/user/user.service';
+import {UserStorage} from '../../../storage/user/user.storage';
+import {LanguageService} from '../../../service/sk/language.service';
+import {TokenStorage} from "../../../storage/user/token.storage";
+import {AgentService} from "../../../service/agent/agent.service";
 
 @Component({
   selector: 'vex-toolbar',
@@ -76,17 +71,20 @@ export class ToolbarComponent implements OnInit {
   isDesktop$: Observable<boolean> = this.layoutService.isDesktop$;
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   selectedEmojine = 'flag:united-states';
+  isUserToken = true;
 
   constructor(
     private readonly layoutService: VexLayoutService,
     private readonly configService: VexConfigService,
     private readonly navigationService: NavigationService,
-    private readonly popoverService: VexPopoverService,
     private readonly router: Router,
     private _userService: UserService,
     private _userStorage: UserStorage,
+    private _tokenStorage: TokenStorage,
+    private _agentService: AgentService,
     private _languageService: LanguageService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.router.events
@@ -102,6 +100,7 @@ export class ToolbarComponent implements OnInit {
         );
       });
 
+    this.isUserToken = this._tokenStorage.isUserToken();
     this.loadDefaultLang();
   }
 
@@ -110,17 +109,18 @@ export class ToolbarComponent implements OnInit {
   }
 
   async onChangeLang(lang, emojine) {
-    this._languageService.changeLang(lang);
-
     const language = LanguageUtil.toLanguage(lang);
-    try {
-      await this._userService.changeLanguage({ language });
-    } catch (e) {
-      console.error(e);
+
+    if (this.isUserToken) {
+      await this._userService.changeLanguage({language});
+    } else {
+      await this._agentService.changeLanguage({language});
     }
 
+    this._languageService.changeLang(lang);
+
     const userLogged = this._userStorage.get();
-    this._userStorage.set(Object.assign(userLogged, { language }));
+    this._userStorage.set(Object.assign(userLogged, {language}));
 
     this.selectedEmojine = emojine;
   }

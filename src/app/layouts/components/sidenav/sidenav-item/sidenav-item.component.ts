@@ -13,7 +13,8 @@ import {
 import {
   NavigationDropdown,
   NavigationItem,
-  NavigationLink
+  NavigationLink,
+  NavigationSubheading
 } from '../../../../core/navigation/navigation-item.interface';
 import {dropdownAnimation} from '@vex/animations/dropdown.animation';
 import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
@@ -26,7 +27,7 @@ import {NgClass, NgFor, NgIf} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslateModule} from '@ngx-translate/core';
 import {RoleUtil} from "../../../../util/role.util";
-import {UserStorage} from "../../../../storage/user/user.storage";
+import {TokenStorage} from "../../../../storage/user/token.storage";
 
 @Component({
   selector: 'vex-sidenav-item',
@@ -62,7 +63,7 @@ export class SidenavItemComponent implements OnInit, OnChanges {
     private router: Router,
     private cd: ChangeDetectorRef,
     private navigationService: NavigationService,
-    private _userStorage: UserStorage,
+    private _tokenStorage: TokenStorage,
   ) {
   }
 
@@ -159,7 +160,8 @@ export class SidenavItemComponent implements OnInit, OnChanges {
     return prop instanceof Function;
   }
 
-  onHasRole(item: NavigationLink) {
-    return RoleUtil.hasRole(item?.roles, this._userStorage.get()?.role);
+  onHasRole(item: NavigationLink | NavigationSubheading) {
+    const role = this._tokenStorage.getClaim('role');
+    return RoleUtil.hasRole(item?.roles, role);
   }
 }

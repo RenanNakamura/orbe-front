@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {fadeInUp400ms} from '../../../../@vex/animations/fade-in-up.animation';
-import {fadeInRight400ms} from '../../../../@vex/animations/fade-in-right.animation';
-import {scaleIn400ms} from '../../../../@vex/animations/scale-in.animation';
-import {stagger40ms} from '../../../../@vex/animations/stagger.animation';
+import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
+import {fadeInRight400ms} from '@vex/animations/fade-in-right.animation';
+import {scaleIn400ms} from '@vex/animations/scale-in.animation';
+import {stagger40ms} from '@vex/animations/stagger.animation';
 import {Router} from '@angular/router';
 import icPhone from '@iconify/icons-mdi/phone';
 import icMeta from '@iconify/icons-simple-icons/meta';
@@ -92,15 +92,10 @@ export class ConnectWhatsappComponent implements OnInit {
             return false;
         }
 
-        if (this.selectedOptionHowConnect === 'provider' && this.twoFactorDisabledProvider && this.hasBusinessManagerAccess) {
-            return false;
-        }
-
-        return true;
+        return !(this.selectedOptionHowConnect === 'provider' && this.twoFactorDisabledProvider && this.hasBusinessManagerAccess);
     }
 
     async onSubmit() {
-        console.log(this.form);
         if (this.form.valid) {
             await this._service.create(this.form.value);
             this.onToGoBackChannel();

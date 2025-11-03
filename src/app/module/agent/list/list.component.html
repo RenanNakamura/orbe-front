@@ -103,15 +103,19 @@
       <mat-icon svgIcon="mat:edit"></mat-icon>
       <span>{{ 'edit' | translate }}</span>
     </button>
-    <button *ngIf="this.isInactive(row)" (click)="onActivate(row)" mat-menu-item>
+    <button *ngIf="this.isInactive(row) && !this.isAdmin(row)" (click)="onActivate(row)" mat-menu-item>
       <mat-icon svgIcon="mat:lock_open"></mat-icon>
       <span>{{ 'activate' | translate }}</span>
     </button>
-    <button *ngIf="this.isActive(row)" (click)="onInactivate(row)" mat-menu-item>
+    <button *ngIf="this.isActive(row) && !this.isAdmin(row)" (click)="onInactivate(row)" mat-menu-item>
       <mat-icon svgIcon="mat:lock"></mat-icon>
       <span>{{ 'inactivate' | translate }}</span>
     </button>
-    <button (click)="onDelete(row)" mat-menu-item>
+    <button *ngIf="this.isPendingInvite(row) && !this.isAdmin(row)" (click)="onResendEmail(row)" mat-menu-item>
+      <mat-icon svgIcon="mat:mail"></mat-icon>
+      <span>{{ 'resend-email' | translate }}</span>
+    </button>
+    <button *ngIf="!this.isAdmin(row)" (click)="onDelete(row)" mat-menu-item>
       <mat-icon svgIcon="mat:delete"></mat-icon>
       <span>{{ 'delete' | translate }}</span>
     </button>

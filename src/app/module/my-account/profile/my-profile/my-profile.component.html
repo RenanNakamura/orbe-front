@@ -1,6 +1,6 @@
 <div class="mt-6 flex flex-col md:flex-row md:items-start">
   <div class="flex-auto">
-    <div class="card">
+    <div class="card" *ngIf="this.isUser">
       <div class="px-6 py-4 border-b">
         <h2 class="title m-0">{{ 'about' | translate }}</h2>
       </div>
@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <div class="flex-auto mt-6">
+    <div class="flex-auto mt-6" *ngIf="this.isUser">
       <div class="card">
         <div class="px-6 py-4 border-b">
           <h2 class="title m-0">{{ 'whatsAppConfig' | translate }}</h2>

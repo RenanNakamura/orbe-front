@@ -37,4 +37,5 @@ export interface NavigationSubheading {
   type: 'subheading';
   label: string;
   children: Array<NavigationLink | NavigationDropdown>;
+  roles?: Role[];
 }

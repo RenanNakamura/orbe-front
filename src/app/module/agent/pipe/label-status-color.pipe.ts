@@ -16,6 +16,10 @@ export class LabelStatusColorPipe implements PipeTransform {
                 return 'bg-red-100 text-red-500';
             case 'PENDING_INVITE':
                 return 'bg-cyan-100 text-cyan-500';
+            case 'AGENT':
+                return 'bg-gray-100 text-gray-500';
+            case 'ADMIN':
+                return 'bg-primary-100 text-primary-500';
             default:
                 return '';
         }

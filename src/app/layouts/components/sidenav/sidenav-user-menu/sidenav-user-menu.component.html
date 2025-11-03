@@ -10,6 +10,7 @@
     <div class="vex-user-menu-item__label">{{ 'my-account' | translate }}</div>
   </a>
   <a
+    *ngIf="this.isUserToken"
     (click)="this.onManagerSubscription()"
     class="vex-user-menu-item"
     matRipple

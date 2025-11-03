@@ -9,8 +9,9 @@ import {RefreshTokenStorage} from '../../../storage/user/refresh-token.storage';
 import {LanguageService} from '../../../service/sk/language.service';
 import {LanguageUtil} from '../../../util/language.util';
 import {HttpResponse} from "@angular/common/http";
-import {LoggedUser} from "../../../model/User";
+import {LoggedUser, Role} from "../../../model/User";
 import {take} from "rxjs/operators";
+import {NavigationLoaderService} from "../../../core/navigation/navigation-loader.service";
 
 declare var grecaptcha: any;
 
@@ -34,7 +35,8 @@ export class SignInComponent implements OnInit {
               private _refreshTokenStorage: RefreshTokenStorage,
               private _userStorage: UserStorage,
               private _changeDetectorRef: ChangeDetectorRef,
-              private _languageService: LanguageService) {
+              private _languageService: LanguageService,
+              private _navigationLoaderService: NavigationLoaderService) {
   }
 
   ngOnInit(): void {
@@ -82,7 +84,13 @@ export class SignInComponent implements OnInit {
 
                 this.isLoading = false;
 
-                this._router.navigate(['/']);
+                this._navigationLoaderService.loadNavigation();
+
+                if (userLogged.role === Role.AGENT) {
+                  this._router.navigate(['/chat']);
+                } else {
+                  this._router.navigate(['']);
+                }
               },
               error: () => {
                 this.isLoading = false;

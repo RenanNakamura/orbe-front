@@ -87,10 +87,11 @@ const routes: Routes = [
         loadChildren: () => import('./module/flow/flow.module').then((m) => m.FlowModule),
         title: 'flows'
       },
-      // {
-      //     path: 'calendar',
-      //     loadChildren: () => import('./module/calendar/calendar.module').then((m) => m.CalendarModule),
-      // },
+      {
+        path: 'chat',
+        loadChildren: () => import('./module/chat/chat.module').then((m) => m.ChatModule),
+        title: 'chat'
+      },
       {
         path: '',
         redirectTo: '/analytics',

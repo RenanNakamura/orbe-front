@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { NavigationItem } from './navigation-item.interface';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { PlanEnum, Role } from '../../model/User';
+import {Injectable} from '@angular/core';
+import {NavigationItem} from './navigation-item.interface';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {PlanEnum, Role} from '../../model/User';
+import {TokenStorage} from "../../storage/user/token.storage";
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +15,46 @@ export class NavigationLoaderService {
     return this._items.asObservable();
   }
 
-  constructor() {
+  constructor(private _tokenStorage: TokenStorage) {
     this.loadNavigation();
   }
 
   loadNavigation(): void {
+    const isUser = this._tokenStorage.isUserToken();
+
+    if (isUser) {
+      this.buildNavigation();
+    } else {
+      this.buildAgentNavigation();
+    }
+  }
+
+  private buildAgentNavigation() {
+    this._items.next([
+      {
+        type: 'subheading',
+        label: 'services',
+        roles: [Role.ADMIN, Role.USER, Role.AGENT],
+        children: [
+          {
+            type: 'link',
+            label: 'chat',
+            route: 'chat',
+            icon: 'mat:forum',
+            roles: [Role.ADMIN, Role.USER, Role.AGENT],
+            plans: [PlanEnum.BASIC, PlanEnum.PRO]
+          }
+        ]
+      }
+    ]);
+  }
+
+  private buildNavigation() {
     this._items.next([
       {
         type: 'subheading',
         label: 'dashboard.name',
+        roles: [Role.ADMIN, Role.USER],
         children: [
           {
             type: 'link',
@@ -36,6 +68,7 @@ export class NavigationLoaderService {
       {
         type: 'subheading',
         label: 'records',
+        roles: [Role.ADMIN, Role.USER],
         children: [
           {
             type: 'link',
@@ -89,6 +122,7 @@ export class NavigationLoaderService {
       {
         type: 'subheading',
         label: 'services',
+        roles: [Role.ADMIN, Role.USER, Role.AGENT],
         children: [
           {
             type: 'link',
@@ -111,7 +145,7 @@ export class NavigationLoaderService {
             label: 'chat',
             route: 'chat',
             icon: 'mat:forum',
-            roles: [Role.ADMIN, Role.USER],
+            roles: [Role.ADMIN, Role.USER, Role.AGENT],
             plans: [PlanEnum.BASIC, PlanEnum.PRO]
           }
         ]

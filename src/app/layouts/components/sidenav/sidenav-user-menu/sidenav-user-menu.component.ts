@@ -8,15 +8,19 @@ import {TokenStorage} from '../../../../storage/user/token.storage';
 import {RefreshTokenStorage} from '../../../../storage/user/refresh-token.storage';
 import {UserStorage} from '../../../../storage/user/user.storage';
 import {BillingService} from "../../../../service/billing/billing.service";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'vex-sidenav-user-menu',
   templateUrl: './sidenav-user-menu.component.html',
   styleUrls: ['./sidenav-user-menu.component.scss'],
-  imports: [MatRippleModule, RouterLink, MatIconModule, TranslateModule],
+  imports: [MatRippleModule, RouterLink, MatIconModule, TranslateModule, CommonModule],
   standalone: true
 })
 export class SidenavUserMenuComponent implements OnInit {
+
+  isUserToken = true;
+
   constructor(
     private readonly _popoverRef: VexPopoverRef,
     private _tokenStorage: TokenStorage,
@@ -27,6 +31,7 @@ export class SidenavUserMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isUserToken = this._tokenStorage.isUserToken();
   }
 
   onLogout() {

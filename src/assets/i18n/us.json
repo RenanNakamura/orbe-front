@@ -549,6 +549,9 @@
     "delete": "Do you want to delete the agent: "
   },
   "agents": "Agents",
+  "AGENT": "Agent",
   "chat": "Chat",
-  "resend-email": "Resend Email"
+  "resend-email": "Resend Email",
+  "resend-email-requested": "All set! The email has been resent successfully.",
+  "role": "Role"
 }
