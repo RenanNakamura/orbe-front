@@ -5,7 +5,7 @@
       <h4 class="body-2 text-secondary m-0">{{ 'login.sub-title' | translate }}</h4>
     </div>
 
-    <form [formGroup]="form" class="flex flex-col p-6" (ngSubmit)="this.onSignIn()">
+    <form [formGroup]="form" class="flex flex-col p-6 text-center" (ngSubmit)="this.onSignIn()">
       <div class="flex flex-col">
         <mat-form-field appearance="outline">
           <mat-label>{{ 'email' | translate }}</mat-label>
