@@ -550,8 +550,13 @@
   },
   "agents": "Atendentes",
   "AGENT": "Atendente",
-  "chat": "Chat",
   "resend-email": "Reenviar e-mail",
   "resend-email-requested": "Pronto! O e-mail foi reenviado com sucesso.",
-  "role": "Função"
+  "role": "Função",
+  "chat": {
+    "label": "Chat",
+    "conversations": "Conversas"
+  },
+  "all": "Todas",
+  "unread": "Não lidas"
 }

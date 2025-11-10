@@ -38,7 +38,7 @@ export class NavigationLoaderService {
         children: [
           {
             type: 'link',
-            label: 'chat',
+            label: 'chat.label',
             route: 'chat',
             icon: 'mat:forum',
             roles: [Role.ADMIN, Role.USER, Role.AGENT],
@@ -142,7 +142,7 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'chat',
+            label: 'chat.label',
             route: 'chat',
             icon: 'mat:forum',
             roles: [Role.ADMIN, Role.USER, Role.AGENT],

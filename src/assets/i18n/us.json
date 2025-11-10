@@ -550,8 +550,13 @@
   },
   "agents": "Agents",
   "AGENT": "Agent",
-  "chat": "Chat",
   "resend-email": "Resend Email",
   "resend-email-requested": "All set! The email has been resent successfully.",
-  "role": "Role"
+  "role": "Role",
+  "chat": {
+    "label": "Chat",
+    "conversations": "Conversations"
+  },
+  "all": "All",
+  "unread": "Unread"
 }

@@ -1,35 +1,33 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-  HttpClientModule
-} from '@angular/common/http';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { provideVex } from '@vex/vex.provider';
-import { mergeDeep } from '@vex/utils/merge-deep';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MAT_DATE_LOCALE} from '@angular/material/core';
+import {provideVex} from '@vex/vex.provider';
+import {mergeDeep} from '@vex/utils/merge-deep';
 import deepClone from '@vex/utils/deep-clone';
-import { VexConfigName } from '@vex/config/vex-config.interface';
+import {VexConfigName} from '@vex/config/vex-config.interface';
 import baseConfig from '@vex/config/vex-configs';
-import { provideIcons } from './core/icons/icons.provider';
-import { InterceptorService } from './interceptor/interceptor.service';
-import { MatPaginatorIntl } from '@angular/material/paginator';
-import { CustomPaginatorService } from './service/sk/custom-paginator.service';
-import { TitlePageStrategy } from './service/sk/titlePageStrategy';
-import { TitleStrategy } from '@angular/router';
+import {provideIcons} from './core/icons/icons.provider';
+import {InterceptorService} from './interceptor/interceptor.service';
+import {MatPaginatorIntl} from '@angular/material/paginator';
+import {CustomPaginatorService} from './service/sk/custom-paginator.service';
+import {TitlePageStrategy} from './service/sk/titlePageStrategy';
+import {TitleStrategy} from '@angular/router';
 // import { HomeModule } from './module/home/home.module';
 // import { CustomPaginatorService } from './service/sk/custom-paginator.service';
 // import { TitlePageStrategy } from './service/sk/TitlePageStrategy';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -86,13 +84,15 @@ import { TitleStrategy } from '@angular/router';
         footer: {
           visible: false
         }
-      })}),
+      })
+    }),
     provideIcons(),
-    { provide: TitleStrategy, useClass: TitlePageStrategy }
+    {provide: TitleStrategy, useClass: TitlePageStrategy}
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}
 
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http);

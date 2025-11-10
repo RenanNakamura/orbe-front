@@ -90,7 +90,7 @@ const routes: Routes = [
       {
         path: 'chat',
         loadChildren: () => import('./module/chat/chat.module').then((m) => m.ChatModule),
-        title: 'chat'
+        title: 'chat.label'
       },
       {
         path: '',
