@@ -76,34 +76,40 @@
           </div>
 
           <div class="space-y-1">
-            <ng-container *ngFor="let conversation of conversations$ | async">
-              <a
-                #rla="routerLinkActive"
-                [ngClass]="{
-                  'text-primary-600 bg-primary-50 dark:text-primary-200 dark:bg-primary-700/20':
-                    rla.isActive
-                }"
-                [routerLink]="['./', conversation.id]"
-                class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out"
-                matRipple
-                routerLinkActive>
-                <div
-                  *ngIf="rla.isActive"
-                  class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
+            <ng-container *ngIf="(conversations$ | async) as conversations">
+              <ng-container *ngFor="let conversation of conversations">
+                <a
+                  #rla="routerLinkActive"
+                  [ngClass]="{'text-primary-600 bg-primary-50 dark:text-primary-200 dark:bg-primary-700/20': rla.isActive}"
+                  [routerLink]="['./', conversation.id]"
+                  class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out"
+                  matRipple
+                  routerLinkActive>
+                  <div
+                    *ngIf="rla.isActive"
+                    class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
 
-                <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full flex-none select-none">
-                <div class="flex-1 select-none truncate">
-                  <div class="truncate flex mb-0.5">
-                    <div class="font-medium flex-1">{{ conversation.name }}</div>
-                    <div class="flex-none text-xs text-gray-500">
-                      {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+                  <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full flex-none select-none">
+                  <div class="flex-1 select-none truncate">
+                    <div class="truncate flex mb-0.5">
+                      <div class="font-medium flex-1">{{ conversation.name }}</div>
+                      <div class="flex-none text-xs text-gray-500">
+                        {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+                      </div>
+                    </div>
+                    <div class="text-xs text-gray-500 truncate">
+                      {{ conversation?.messages[0] | lastMessage }}
                     </div>
                   </div>
-                  <div class="text-xs text-gray-500 truncate">
-                    {{ conversation?.messages[0] | lastMessage }}
-                  </div>
-                </div>
-              </a>
+                </a>
+              </ng-container>
+
+              <!-- Mensagem quando não houver nenhuma conversa -->
+              <div
+                *ngIf="!conversations.length && !(loading$ | async)"
+                class="flex justify-center py-8 text-gray-500 text-sm">
+                {{ 'conversation.empty' | translate }}
+              </div>
             </ng-container>
 
             <div *ngIf="loading$ | async" class="flex justify-center py-4">

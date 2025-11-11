@@ -559,7 +559,8 @@
   },
   "conversation": {
     "label": "Conversation",
-    "new": "New conversation"
+    "new": "New conversation",
+    "empty": "No conversations"
   },
   "all": "All",
   "unread": "Unread",
