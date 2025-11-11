@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {scaleFadeIn400ms} from "@vex/animations/scale-fade-in.animation";
-import {Observable, switchMap} from "rxjs";
+import {BehaviorSubject, Observable, switchMap} from "rxjs";
 import {Conversation} from "../../model/chat/conversation";
 import {ChatService} from "../../service/chat/chat.service";
 import {VexLayoutService} from "@vex/services/vex-layout.service";
@@ -16,7 +16,9 @@ import {ConversationService} from "../../service/chat/conversation.service";
 })
 export class ChatComponent implements OnInit {
 
-  conversations$: Observable<Conversation[]>;
+  private conversationsSubject = new BehaviorSubject<Conversation[]>([]);
+
+  conversations$: Observable<Conversation[]> = this.conversationsSubject.asObservable();
   mobileQuery$ = this._layoutService.ltMd$;
   drawerOpen$ = this._chatService.drawerOpen$;
 
@@ -49,7 +51,8 @@ export class ChatComponent implements OnInit {
   }
 
   onScrollEnd(): void {
-    console.log("onScrollEnd");
+    const datetime = this.getLastConversationDate();
+    this.loadConversations(datetime);
   }
 
   private syncSubscribers() {
@@ -80,8 +83,26 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  private loadConversations() {
-    this.conversations$ = this._conversationService.list();
+  private loadConversations(datetime?: string) {
+    this._conversationService.list(datetime)
+      .subscribe(conversations => {
+        const current = this.conversationsSubject.value;
+        const merged = [...current, ...conversations];
+
+        console.log(merged.length);
+
+        this.conversationsSubject.next(merged);
+      });
+  }
+
+  private getLastConversationDate(): string | undefined {
+    const conversations = this.conversationsSubject.value;
+    if (!conversations.length) return undefined;
+
+    const lastConversation = conversations[conversations.length - 1];
+    const lastMessage = lastConversation.messages?.[lastConversation.messages.length - 1];
+
+    return lastMessage?.createdAt;
   }
 
 }

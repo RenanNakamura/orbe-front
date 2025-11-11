@@ -38,35 +38,34 @@
               svgIcon="mat:search"></mat-icon>
             <input matInput
                    [placeholder]="'search' | translate"
-                   type="text" />
+                   type="text"/>
           </mat-form-field>
         </div>
       </div>
 
-      <div class="flex-1 min-h-0" data-simplebar>
+      <div class="flex-1 min-h-0 overflow-auto"
+           infinite-scroll
+           [infiniteScrollDistance]="2"
+           [infiniteScrollThrottle]="150"
+           [scrollWindow]="false"
+           (scrolled)="onScrollEnd()">
         <div class="pt-2">
           <div class="flex items-center px-4 pb-2 gap-2">
             <button
               class="text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-primary-200 hover:dark:bg-primary-700/30 transition flex-1 text-center relative"
               matRipple
               type="button">
-              {{'all' | translate}}
+              {{ 'all' | translate }}
             </button>
             <button
               class="text-gray-400 font-medium text-sm px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-1 text-center relative"
               matRipple
               type="button">
-              {{'unread' | translate}}
+              {{ 'unread' | translate }}
             </button>
           </div>
 
-          <div class="space-y-1"
-               infinite-scroll
-               [infiniteScrollDistance]="2"
-               [infiniteScrollThrottle]="150"
-               [scrollWindow]="false"
-               (scrolled)="onScrollEnd()"
-          >
+          <div class="space-y-1">
             <ng-container *ngFor="let conversation of conversations$ | async">
               <a
                 #rla="routerLinkActive"
