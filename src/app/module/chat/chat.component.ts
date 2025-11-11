@@ -95,8 +95,6 @@ export class ChatComponent implements OnInit {
         next: (conversations) => {
           const current = this.conversationsSubject.value;
           const merged = [...current, ...conversations];
-
-          console.log(merged.length);
           this.conversationsSubject.next(merged);
         },
         error: (err) => {
