@@ -6,6 +6,7 @@ import {ChatService} from "../../service/chat/chat.service";
 import {VexLayoutService} from "@vex/services/vex-layout.service";
 import {NavigationEnd, Router} from "@angular/router";
 import {filter, startWith} from "rxjs/operators";
+import {ConversationService} from "../../service/chat/conversation.service";
 
 @Component({
   selector: 'vex-chat',
@@ -23,11 +24,31 @@ export class ChatComponent implements OnInit {
     private _router: Router,
     private _cd: ChangeDetectorRef,
     private _chatService: ChatService,
+    private _conversationService: ConversationService,
     private _layoutService: VexLayoutService
   ) {
   }
 
   ngOnInit() {
+    this.syncSubscribers();
+    this.loadConversations();
+  }
+
+  drawerChange(drawerOpen: boolean) {
+    this._chatService.drawerOpen.next(drawerOpen);
+  }
+
+  openDrawer() {
+    this._chatService.drawerOpen.next(true);
+    this._cd.markForCheck();
+  }
+
+  closeDrawer() {
+    this._chatService.drawerOpen.next(false);
+    this._cd.markForCheck();
+  }
+
+  private syncSubscribers() {
     this._router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -55,18 +76,8 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  drawerChange(drawerOpen: boolean) {
-    this._chatService.drawerOpen.next(drawerOpen);
-  }
-
-  openDrawer() {
-    this._chatService.drawerOpen.next(true);
-    this._cd.markForCheck();
-  }
-
-  closeDrawer() {
-    this._chatService.drawerOpen.next(false);
-    this._cd.markForCheck();
+  private loadConversations() {
+    this.conversations$ = this._conversationService.list();
   }
 
 }

@@ -6,6 +6,7 @@ export interface Conversation {
 }
 
 export class Message {
+  id: string;
   createdAt: string;
   senderId: string;
   senderType: SenderType;
@@ -14,13 +15,13 @@ export class Message {
 
 export class MessageContent {
   to: string;
-  messageType: MessageType;
+  type: MessageType;
   text: TextMessage;
 }
 
 export class TextMessage {
   body: string;
-  previewUrl: boolean;
+  previewUrl?: boolean;
 }
 
 export enum SenderType {
@@ -29,4 +30,7 @@ export enum SenderType {
 
 export enum MessageType {
   TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  DOCUMENT = 'DOCUMENT',
 }

@@ -14,6 +14,8 @@ import {MatFormField, MatPrefix} from "@angular/material/form-field";
 import {MatRipple} from "@angular/material/core";
 import {MatInput} from "@angular/material/input";
 import {TranslateModule} from "@ngx-translate/core";
+import {FriendlyDatePipeModule} from "../../pipe/friendly-date.pipe";
+import {LastMessagePipeModule} from "../../pipe/last-message.pipe";
 
 @NgModule({
   declarations: [
@@ -40,6 +42,8 @@ import {TranslateModule} from "@ngx-translate/core";
     MatInput,
     TranslateModule,
     MatPrefix,
+    FriendlyDatePipeModule,
+    LastMessagePipeModule,
   ],
   providers: []
 })

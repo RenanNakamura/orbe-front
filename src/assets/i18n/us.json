@@ -558,5 +558,9 @@
     "conversations": "Conversations"
   },
   "all": "All",
-  "unread": "Unread"
+  "unread": "Unread",
+  "yesterday": "Yesterday",
+  "photo": "Photo",
+  "video": "Video",
+  "document": "Document"
 }
