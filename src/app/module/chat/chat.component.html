@@ -18,13 +18,14 @@
                       [matTooltip]="'conversation.new' | translate"
                       (click)="this.onAddNewConversation()"
             ></mat-icon>
-            <mat-icon svgIcon="mat:more_vert"
-                      color="primary"
-                      class="cursor-pointer"
-                      [matMenuTriggerFor]="conversationMenu"
-                      [matTooltip]="'more-options' | translate"
-            >
-            </mat-icon>
+            <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
+<!--            <mat-icon svgIcon="mat:more_vert"-->
+<!--                      color="primary"-->
+<!--                      class="cursor-pointer"-->
+<!--                      [matMenuTriggerFor]="conversationMenu"-->
+<!--                      [matTooltip]="'more-options' | translate"-->
+<!--            >-->
+<!--            </mat-icon>-->
           </div>
 
           <mat-menu #conversationMenu="matMenu" xPosition="after" yPosition="below">
@@ -45,6 +46,7 @@
               matIconPrefix
               svgIcon="mat:search"></mat-icon>
             <input matInput
+                   [formControl]="searchCtrl"
                    [placeholder]="'search' | translate"
                    type="text"/>
           </mat-form-field>

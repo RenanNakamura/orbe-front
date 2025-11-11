@@ -5,8 +5,9 @@ import {Conversation} from "../../model/chat/conversation";
 import {ChatService} from "../../service/chat/chat.service";
 import {VexLayoutService} from "@vex/services/vex-layout.service";
 import {NavigationEnd, Router} from "@angular/router";
-import {filter, startWith} from "rxjs/operators";
+import {debounceTime, filter, startWith} from "rxjs/operators";
 import {ConversationService} from "../../service/chat/conversation.service";
+import {UntypedFormControl} from "@angular/forms";
 
 @Component({
   selector: 'vex-chat',
@@ -20,6 +21,7 @@ export class ChatComponent implements OnInit {
 
   loading$ = new BehaviorSubject<boolean>(false);
   conversations$: Observable<Conversation[]> = this.conversationsSubject.asObservable();
+  searchCtrl = new UntypedFormControl();
 
   mobileQuery$ = this._layoutService.ltMd$;
   drawerOpen$ = this._chatService.drawerOpen$;
@@ -36,6 +38,13 @@ export class ChatComponent implements OnInit {
   ngOnInit() {
     this.syncSubscribers();
     this.loadConversations();
+
+    this.searchCtrl.valueChanges
+      .pipe(debounceTime(600))
+      .subscribe(() => {
+        this.conversationsSubject.next([]);
+        this.loadConversations();
+      });
   }
 
   drawerChange(drawerOpen: boolean) {
@@ -94,7 +103,7 @@ export class ChatComponent implements OnInit {
 
     this.loading$.next(true);
 
-    this._conversationService.list(datetime)
+    this._conversationService.list(datetime, this.searchCtrl?.value || '')
       .subscribe({
         next: (conversations) => {
           const current = this.conversationsSubject.value;
