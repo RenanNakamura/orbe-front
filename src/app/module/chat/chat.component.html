@@ -9,20 +9,28 @@
       <div
         class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
         <div class="flex items-center mx-4">
-          <div class="flex-1 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+          <div class="w-8/12 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
 
-          <button
-            [matMenuTriggerFor]="conversationMenu"
-            color="primary"
-            mat-mini-fab
-            type="button">
-            <mat-icon svgIcon="mat:more_vert"></mat-icon>
-          </button>
+          <div class="w-4/12 text-end">
+            <mat-icon svgIcon="mat:add_comment"
+                      color="primary"
+                      class="cursor-pointer mr-2"
+                      [matTooltip]="'conversation.new' | translate"
+                      (click)="this.onAddNewConversation()"
+            ></mat-icon>
+            <mat-icon svgIcon="mat:more_vert"
+                      color="primary"
+                      class="cursor-pointer"
+                      [matMenuTriggerFor]="conversationMenu"
+                      [matTooltip]="'more-options' | translate"
+            >
+            </mat-icon>
+          </div>
 
           <mat-menu #conversationMenu="matMenu" xPosition="after" yPosition="below">
-            <button mat-menu-item>
+            <button mat-menu-item (click)="this.onAddNewConversation()">
               <mat-icon matMenuItemIcon svgIcon="mat:add_comment"></mat-icon>
-              <span>Nova conversa</span>
+              <span>{{ 'conversation.new' | translate }}</span>
             </button>
           </mat-menu>
         </div>

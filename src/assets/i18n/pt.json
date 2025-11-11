@@ -557,10 +557,15 @@
     "label": "Chat",
     "conversations": "Conversas"
   },
+  "conversation": {
+    "label": "Conversa",
+    "new": "Nova conversa"
+  },
   "all": "Todas",
   "unread": "Não lidas",
   "yesterday": "Ontem",
   "photo": "Foto",
   "video": "Video",
-  "document": "Documento"
+  "document": "Documento",
+  "more-options": "Mais opções"
 }

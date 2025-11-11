@@ -57,6 +57,10 @@ export class ChatComponent implements OnInit {
     this.loadConversations(datetime);
   }
 
+  onAddNewConversation() {
+    console.log("AddNewConversation");
+  }
+
   private syncSubscribers() {
     this._router.events
       .pipe(

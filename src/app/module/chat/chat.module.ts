@@ -18,6 +18,7 @@ import {FriendlyDatePipeModule} from "../../pipe/friendly-date.pipe";
 import {LastMessagePipeModule} from "../../pipe/last-message.pipe";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
     LastMessagePipeModule,
     InfiniteScrollDirective,
     MatProgressSpinner,
+    MatTooltip,
   ],
   providers: []
 })
