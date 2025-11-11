@@ -60,7 +60,13 @@
             </button>
           </div>
 
-          <div class="space-y-1">
+          <div class="space-y-1"
+               infinite-scroll
+               [infiniteScrollDistance]="2"
+               [infiniteScrollThrottle]="150"
+               [scrollWindow]="false"
+               (scrolled)="onScrollEnd()"
+          >
             <ng-container *ngFor="let conversation of conversations$ | async">
               <a
                 #rla="routerLinkActive"
@@ -91,15 +97,6 @@
               </a>
             </ng-container>
           </div>
-
-          <a
-            class="inline-block text-gray-600 dark:text-gray-300 font-medium text-xs mx-6 mt-3"
-            href="javascript:void(0);">
-            <span>Show more</span>
-            <mat-icon
-              class="icon-xs align-middle select-none"
-              svgIcon="mat:expand_more"></mat-icon>
-          </a>
         </div>
       </div>
     </div>

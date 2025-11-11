@@ -16,6 +16,7 @@ import {MatInput} from "@angular/material/input";
 import {TranslateModule} from "@ngx-translate/core";
 import {FriendlyDatePipeModule} from "../../pipe/friendly-date.pipe";
 import {LastMessagePipeModule} from "../../pipe/last-message.pipe";
+import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import {LastMessagePipeModule} from "../../pipe/last-message.pipe";
     MatPrefix,
     FriendlyDatePipeModule,
     LastMessagePipeModule,
+    InfiniteScrollDirective,
   ],
   providers: []
 })

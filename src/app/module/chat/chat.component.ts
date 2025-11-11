@@ -48,6 +48,10 @@ export class ChatComponent implements OnInit {
     this._cd.markForCheck();
   }
 
+  onScrollEnd(): void {
+    console.log("onScrollEnd");
+  }
+
   private syncSubscribers() {
     this._router.events
       .pipe(
