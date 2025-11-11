@@ -17,6 +17,7 @@ import {TranslateModule} from "@ngx-translate/core";
 import {FriendlyDatePipeModule} from "../../pipe/friendly-date.pipe";
 import {LastMessagePipeModule} from "../../pipe/last-message.pipe";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import {InfiniteScrollDirective} from "ngx-infinite-scroll";
     FriendlyDatePipeModule,
     LastMessagePipeModule,
     InfiniteScrollDirective,
+    MatProgressSpinner,
   ],
   providers: []
 })

@@ -18,7 +18,9 @@ export class ChatComponent implements OnInit {
 
   private conversationsSubject = new BehaviorSubject<Conversation[]>([]);
 
+  loading$ = new BehaviorSubject<boolean>(false);
   conversations$: Observable<Conversation[]> = this.conversationsSubject.asObservable();
+
   mobileQuery$ = this._layoutService.ltMd$;
   drawerOpen$ = this._chatService.drawerOpen$;
 
@@ -84,14 +86,25 @@ export class ChatComponent implements OnInit {
   }
 
   private loadConversations(datetime?: string) {
+    if (this.loading$.value) return;
+
+    this.loading$.next(true);
+
     this._conversationService.list(datetime)
-      .subscribe(conversations => {
-        const current = this.conversationsSubject.value;
-        const merged = [...current, ...conversations];
+      .subscribe({
+        next: (conversations) => {
+          const current = this.conversationsSubject.value;
+          const merged = [...current, ...conversations];
 
-        console.log(merged.length);
-
-        this.conversationsSubject.next(merged);
+          console.log(merged.length);
+          this.conversationsSubject.next(merged);
+        },
+        error: (err) => {
+          console.error('Error when load conversations:', err);
+        },
+        complete: () => {
+          this.loading$.next(false);
+        }
       });
   }
 

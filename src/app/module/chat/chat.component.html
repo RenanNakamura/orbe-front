@@ -95,6 +95,14 @@
                 </div>
               </a>
             </ng-container>
+
+            <div *ngIf="loading$ | async" class="flex justify-center py-4">
+              <mat-progress-spinner
+                diameter="32"
+                mode="indeterminate"
+                color="primary">
+              </mat-progress-spinner>
+            </div>
           </div>
         </div>
       </div>
