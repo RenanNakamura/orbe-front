@@ -19,11 +19,13 @@ import {LastMessagePipeModule} from "../../pipe/last-message.pipe";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatTooltip} from "@angular/material/tooltip";
+import {ConversationEmptyComponent} from "./conversation-empty/conversation-empty.component";
 
 @NgModule({
   declarations: [
     ChatComponent,
     ConversationComponent,
+    ConversationEmptyComponent,
   ],
   imports: [
     ChatRoutingModule,

@@ -15,7 +15,7 @@ import {ChatService} from "../../../service/chat/chat.service";
 })
 export class ConversationComponent implements OnInit {
 
-  chat?: any;
+  conversation?: any;
   // messages!: ChatMessage[];
 
   form = new FormGroup({

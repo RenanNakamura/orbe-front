@@ -560,7 +560,8 @@
   "conversation": {
     "label": "Conversa",
     "new": "Nova conversa",
-    "empty": "Nenhuma conversa"
+    "empty": "Nenhuma conversa",
+    "start": "Inicie uma conversa"
   },
   "all": "Todas",
   "unread": "Não lidas",

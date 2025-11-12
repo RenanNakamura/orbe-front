@@ -10,7 +10,7 @@
     <div class="flex items-center gap-3">
       <img class="hidden sm:block flex-none w-9 h-9 rounded-full" src="assets/img/no-avatar.png" alt=""/>
       <div class="flex-1 truncate">
-        <div class="font-semibold text-sm truncate">{{ chat?.name }}</div>
+        <div class="font-semibold text-sm truncate">{{ conversation?.name }}</div>
       </div>
     </div>
 
@@ -29,7 +29,7 @@
   <vex-scrollbar class="flex-1">
     <div class="flex flex-col space-y-2 p-8 justify-end">
       <div class="flex gap-2">
-        <img class="w-8 h-8 rounded-full self-end" src="{{ chat?.imageUrl }}" alt=""/>
+        <img class="w-8 h-8 rounded-full self-end" src="{{ conversation?.imageUrl }}" alt=""/>
         <div class="flex flex-col space-y-2">
           <div class="self-start inline-flex items-center gap-2">
             <div

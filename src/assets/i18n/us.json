@@ -560,7 +560,8 @@
   "conversation": {
     "label": "Conversation",
     "new": "New conversation",
-    "empty": "No conversations"
+    "empty": "No conversations",
+    "start": "Start a conversation"
   },
   "all": "All",
   "unread": "Unread",
