@@ -124,9 +124,7 @@ export class ChatComponent implements OnInit {
     if (!conversations.length) return undefined;
 
     const lastConversation = conversations[conversations.length - 1];
-    const lastMessage = lastConversation.messages?.[lastConversation.messages.length - 1];
-
-    return lastMessage?.createdAt;
+    return lastConversation?.lastMessageAt;
   }
 
 }

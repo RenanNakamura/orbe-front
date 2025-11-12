@@ -2,6 +2,7 @@ export interface Conversation {
   id: string;
   customerId: string;
   name: string;
+  lastMessageAt: string;
   messages: Message[];
 }
 
