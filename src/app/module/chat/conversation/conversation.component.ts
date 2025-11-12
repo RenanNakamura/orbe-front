@@ -28,7 +28,6 @@ export class ConversationComponent implements OnInit {
   scrollbar?: VexScrollbarComponent;
 
   constructor(
-    private _route: ActivatedRoute,
     private _cd: ChangeDetectorRef,
     private _chatService: ChatService,
   ) {
