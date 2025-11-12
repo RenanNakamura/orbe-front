@@ -14,15 +14,15 @@
           <button
             [ngClass]="{
               'text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20': !(selectedChannel$ | async),
-              'text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800': !!(selectedChannel$ | async)
+              'text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800': !!(selectedChannel$ | async)
             }"
             class="w-full flex flex-col items-center justify-center py-3 px-2 transition relative group rounded-2xl"
             matRipple
             type="button"
             (click)="onChannelSelect(null)"
-            [matTooltip]="'all' | translate">
+            [matTooltip]="'all_masculine' | translate">
             <mat-icon svgIcon="mat:apps" class="icon-md mb-1"></mat-icon>
-            <span class="text-xs truncate w-full text-center">{{ 'all' | translate }}</span>
+            <span class="text-xs truncate w-full text-center">{{ 'all_masculine' | translate }}</span>
           </button>
 
           <!-- Lista de Canais -->
@@ -30,7 +30,7 @@
             <button
               [ngClass]="{
                 'text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20': (selectedChannel$ | async)?.id === channel.id,
-                'text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800': (selectedChannel$ | async)?.id !== channel.id
+                'text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800': (selectedChannel$ | async)?.id !== channel.id
               }"
               class="w-full flex flex-col items-center justify-center py-3 px-2 transition relative group rounded-2xl mt-1"
               matRipple
@@ -111,7 +111,7 @@
                 class="text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20 font-medium text-sm px-4 py-2 rounded-lg hover:bg-primary-200 hover:dark:bg-primary-700/30 transition flex-1 text-center relative"
                 matRipple
                 type="button">
-                {{ 'all' | translate }}
+                {{ 'all_feminine' | translate }}
               </button>
               <button
                 class="text-gray-400 font-medium text-sm px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-1 text-center relative"

@@ -563,7 +563,8 @@
     "empty": "No conversations",
     "start": "Start a conversation"
   },
-  "all": "All",
+  "all_feminine": "All",
+  "all_masculine": "All",
   "unread": "Unread",
   "yesterday": "Yesterday",
   "photo": "Photo",

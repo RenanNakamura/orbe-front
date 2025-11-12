@@ -123,10 +123,6 @@ export class ChatComponent implements OnInit {
       .subscribe({
         next: (page) => {
           this.channels = page.content || [];
-          if (this.channels.length > 0 && !this.selectedChannelSubject.value) {
-            // Seleciona o primeiro canal por padrão
-            this.selectedChannelSubject.next(this.channels[0]);
-          }
         },
         error: (err) => {
           console.error('Error when load channels:', err);

@@ -126,6 +126,14 @@ export class NavigationLoaderService {
         children: [
           {
             type: 'link',
+            label: 'chat.label',
+            route: 'chat',
+            icon: 'mat:forum',
+            roles: [Role.ADMIN, Role.USER, Role.AGENT],
+            plans: [PlanEnum.BASIC, PlanEnum.PRO]
+          },
+          {
+            type: 'link',
             label: 'campaigns',
             route: 'campaign',
             icon: 'mat:campaign',
@@ -140,14 +148,6 @@ export class NavigationLoaderService {
             roles: [Role.ADMIN, Role.USER],
             plans: [PlanEnum.BASIC, PlanEnum.PRO]
           },
-          {
-            type: 'link',
-            label: 'chat.label',
-            route: 'chat',
-            icon: 'mat:forum',
-            roles: [Role.ADMIN, Role.USER, Role.AGENT],
-            plans: [PlanEnum.BASIC, PlanEnum.PRO]
-          }
         ]
       }
     ]);

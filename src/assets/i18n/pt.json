@@ -563,7 +563,8 @@
     "empty": "Nenhuma conversa",
     "start": "Inicie uma conversa"
   },
-  "all": "Todas",
+  "all_feminine": "Todas",
+  "all_masculine": "Todos",
   "unread": "Não lidas",
   "yesterday": "Ontem",
   "photo": "Foto",
