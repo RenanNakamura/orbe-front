@@ -14,7 +14,7 @@ export class ConversationService {
   constructor(private readonly _http: HttpClient) {
   }
 
-  list(cursor: string, search?: string, limit: number = 20, limitMessages: number = 1): Observable<Conversation[]> {
+  list(cursor: string, search?: string, limit: number = 20, limitMessages: number = 1, channelId?: string, phoneNumberId?: string): Observable<Conversation[]> {
     let params = new HttpParams()
       .set('limit', limit.toString())
       .set('limitMessages', limitMessages.toString());
@@ -25,6 +25,14 @@ export class ConversationService {
 
     if (search) {
       params = params.set('search', search);
+    }
+
+    if (channelId) {
+      params = params.set('channelId', channelId);
+    }
+
+    if (phoneNumberId) {
+      params = params.set('phoneNumberId', phoneNumberId);
     }
 
     return this._http.get<Conversation[]>(`${environment.chat}${this._api}`, {params});

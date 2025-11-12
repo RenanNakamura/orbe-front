@@ -5,119 +5,167 @@
     [opened]="!!(drawerOpen$ | async)"
     class="drawer"
     position="start">
-    <div class="h-full flex flex-col">
+    <div class="h-full w-full flex">
+      <!-- Sidebar de Canais -->
       <div
-        class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
-        <div class="flex items-center mx-4">
-          <div class="w-8/12 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+        class="w-[80px] flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col h-full">
+        <div class="flex-1 overflow-y-auto py-2 px-1">
+          <!-- Opção "Todos" -->
+          <button
+            [ngClass]="{
+              'text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20': !(selectedChannel$ | async),
+              'text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800': !!(selectedChannel$ | async)
+            }"
+            class="w-full flex flex-col items-center justify-center py-3 px-2 transition relative group rounded-2xl"
+            matRipple
+            type="button"
+            (click)="onChannelSelect(null)"
+            [matTooltip]="'all' | translate">
+            <mat-icon svgIcon="mat:apps" class="icon-md mb-1"></mat-icon>
+            <span class="text-xs truncate w-full text-center">{{ 'all' | translate }}</span>
+          </button>
 
-          <div class="w-4/12 text-end">
-            <mat-icon svgIcon="mat:add_comment"
-                      color="primary"
-                      class="cursor-pointer mr-2"
-                      [matTooltip]="'conversation.new' | translate"
-                      (click)="this.onAddNewConversation()"
-            ></mat-icon>
-            <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
-<!--            <mat-icon svgIcon="mat:more_vert"-->
-<!--                      color="primary"-->
-<!--                      class="cursor-pointer"-->
-<!--                      [matMenuTriggerFor]="conversationMenu"-->
-<!--                      [matTooltip]="'more-options' | translate"-->
-<!--            >-->
-<!--            </mat-icon>-->
-          </div>
-
-          <mat-menu #conversationMenu="matMenu" xPosition="after" yPosition="below">
-            <button mat-menu-item (click)="this.onAddNewConversation()">
-              <mat-icon matMenuItemIcon svgIcon="mat:add_comment"></mat-icon>
-              <span>{{ 'conversation.new' | translate }}</span>
+          <!-- Lista de Canais -->
+          <ng-container *ngFor="let channel of channels">
+            <button
+              [ngClass]="{
+                'text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20': (selectedChannel$ | async)?.id === channel.id,
+                'text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800': (selectedChannel$ | async)?.id !== channel.id
+              }"
+              class="w-full flex flex-col items-center justify-center py-3 px-2 transition relative group rounded-2xl mt-1"
+              matRipple
+              type="button"
+              (click)="onChannelSelect(channel)"
+              [matTooltip]="channel.name">
+              <img
+                *ngIf="isWhatsAppChannel(channel)"
+                src="assets/img/icons/logos/whatsapp.svg"
+                class="mat-icon icon-md mb-1"
+                alt="WhatsApp"
+              />
+              <span class="text-xs truncate w-full text-center">{{ channel.name }}</span>
             </button>
-          </mat-menu>
-        </div>
-
-        <div class="flex px-4">
-          <mat-form-field
-            appearance="outline"
-            class="vex-mat-dense-xs flex-1 bg-foreground"
-            subscriptSizing="dynamic">
-            <mat-icon
-              class="icon-sm"
-              matIconPrefix
-              svgIcon="mat:search"></mat-icon>
-            <input matInput
-                   [formControl]="searchCtrl"
-                   [placeholder]="'search' | translate"
-                   type="text"/>
-          </mat-form-field>
+          </ng-container>
         </div>
       </div>
 
-      <div class="flex-1 min-h-0 overflow-auto"
-           infinite-scroll
-           [infiniteScrollDistance]="2"
-           [infiniteScrollThrottle]="150"
-           [scrollWindow]="false"
-           (scrolled)="onScrollEnd()">
-        <div class="pt-2">
-          <div class="flex items-center px-4 pb-2 gap-2">
-            <button
-              class="text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-primary-200 hover:dark:bg-primary-700/30 transition flex-1 text-center relative"
-              matRipple
-              type="button">
-              {{ 'all' | translate }}
-            </button>
-            <button
-              class="text-gray-400 font-medium text-sm px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-1 text-center relative"
-              matRipple
-              type="button">
-              {{ 'unread' | translate }}
-            </button>
+      <!-- Área Principal de Conversas -->
+      <div class="flex-1 flex flex-col min-w-0 h-full">
+        <div
+          class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
+          <div class="flex items-center mx-4">
+            <div class="w-8/12 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+
+            <div class="w-4/12 text-end">
+              <mat-icon svgIcon="mat:add_comment"
+                        color="primary"
+                        class="cursor-pointer mr-2"
+                        [matTooltip]="'conversation.new' | translate"
+                        (click)="this.onAddNewConversation()"
+              ></mat-icon>
+              <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
+              <!--            <mat-icon svgIcon="mat:more_vert"-->
+              <!--                      color="primary"-->
+              <!--                      class="cursor-pointer"-->
+              <!--                      [matMenuTriggerFor]="conversationMenu"-->
+              <!--                      [matTooltip]="'more-options' | translate"-->
+              <!--            >-->
+              <!--            </mat-icon>-->
+            </div>
+
+            <mat-menu #conversationMenu="matMenu" xPosition="after" yPosition="below">
+              <button mat-menu-item (click)="this.onAddNewConversation()">
+                <mat-icon matMenuItemIcon svgIcon="mat:add_comment"></mat-icon>
+                <span>{{ 'conversation.new' | translate }}</span>
+              </button>
+            </mat-menu>
           </div>
 
-          <div class="space-y-1">
-            <ng-container *ngIf="(conversations$ | async) as conversations">
-              <ng-container *ngFor="let conversation of conversations">
-                <a
-                  #rla="routerLinkActive"
-                  [ngClass]="{'text-primary-600 bg-primary-50 dark:text-primary-200 dark:bg-primary-700/20': rla.isActive}"
-                  [routerLink]="['./', conversation.id]"
-                  class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out"
-                  matRipple
-                  routerLinkActive>
-                  <div
-                    *ngIf="rla.isActive"
-                    class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
+          <div class="flex px-4">
+            <mat-form-field
+              appearance="outline"
+              class="vex-mat-dense-xs flex-1 bg-foreground"
+              subscriptSizing="dynamic">
+              <mat-icon
+                class="icon-sm"
+                matIconPrefix
+                svgIcon="mat:search"></mat-icon>
+              <input matInput
+                     [formControl]="searchCtrl"
+                     [placeholder]="'search' | translate"
+                     type="text"/>
+            </mat-form-field>
+          </div>
+        </div>
 
-                  <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full flex-none select-none">
-                  <div class="flex-1 select-none truncate">
-                    <div class="truncate flex mb-0.5">
-                      <div class="font-medium flex-1">{{ conversation.name }}</div>
-                      <div class="flex-none text-xs text-gray-500">
-                        {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+        <div class="flex-1 min-h-0 overflow-auto"
+             infinite-scroll
+             [infiniteScrollDistance]="2"
+             [infiniteScrollThrottle]="150"
+             [scrollWindow]="false"
+             (scrolled)="onScrollEnd()">
+          <div class="pt-2">
+            <!-- Botões "Todas" e "Não lidas" -->
+            <div class="flex items-center px-4 pb-2 gap-2">
+              <button
+                class="text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20 font-medium text-sm px-4 py-2 rounded-lg hover:bg-primary-200 hover:dark:bg-primary-700/30 transition flex-1 text-center relative"
+                matRipple
+                type="button">
+                {{ 'all' | translate }}
+              </button>
+              <button
+                class="text-gray-400 font-medium text-sm px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-1 text-center relative"
+                matRipple
+                type="button">
+                {{ 'unread' | translate }}
+              </button>
+            </div>
+
+            <div class="space-y-1">
+              <ng-container *ngIf="(conversations$ | async) as conversations">
+                <ng-container *ngFor="let conversation of conversations">
+                  <a
+                    #rla="routerLinkActive"
+                    [ngClass]="{'text-primary-600 bg-primary-50 dark:text-primary-200 dark:bg-primary-700/20': rla.isActive}"
+                    [routerLink]="['./', conversation.id]"
+                    class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out"
+                    matRipple
+                    routerLinkActive>
+                    <div
+                      *ngIf="rla.isActive"
+                      class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
+
+                    <img src="assets/img/no-avatar.png" alt="Profile"
+                         class="h-10 w-10 rounded-full flex-none select-none">
+                    <div class="flex-1 select-none truncate">
+                      <div class="truncate flex mb-0.5">
+                        <div class="font-medium flex-1">{{ conversation.name }}</div>
+                        <div class="flex-none text-xs text-gray-500">
+                          {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+                        </div>
+                      </div>
+                      <div class="text-xs text-gray-500 truncate">
+                        {{ conversation?.messages[0] | lastMessage }}
                       </div>
                     </div>
-                    <div class="text-xs text-gray-500 truncate">
-                      {{ conversation?.messages[0] | lastMessage }}
-                    </div>
-                  </div>
-                </a>
+                  </a>
+                </ng-container>
+
+                <!-- Mensagem quando não houver nenhuma conversa -->
+                <div
+                  *ngIf="!conversations.length && !(loading$ | async)"
+                  class="flex justify-center py-8 text-gray-500 text-sm">
+                  {{ 'conversation.empty' | translate }}
+                </div>
               </ng-container>
 
-              <!-- Mensagem quando não houver nenhuma conversa -->
-              <div
-                *ngIf="!conversations.length && !(loading$ | async)"
-                class="flex justify-center py-8 text-gray-500 text-sm">
-                {{ 'conversation.empty' | translate }}
+              <div *ngIf="loading$ | async" class="flex justify-center py-4">
+                <mat-progress-spinner
+                  diameter="32"
+                  mode="indeterminate"
+                  color="primary">
+                </mat-progress-spinner>
               </div>
-            </ng-container>
-
-            <div *ngIf="loading$ | async" class="flex justify-center py-4">
-              <mat-progress-spinner
-                diameter="32"
-                mode="indeterminate"
-                color="primary">
-              </mat-progress-spinner>
             </div>
           </div>
         </div>

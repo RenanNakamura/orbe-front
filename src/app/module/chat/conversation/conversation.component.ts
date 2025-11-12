@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
 import {FormControl, FormGroup} from '@angular/forms';
 import {stagger20ms} from '@vex/animations/stagger.animation';

@@ -4,7 +4,16 @@
 
   ::ng-deep .mat-drawer-inner-container {
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
+}
+
+.icon-md {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
 }
 
 .chat-pattern {

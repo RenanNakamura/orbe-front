@@ -8,6 +8,8 @@ import {NavigationEnd, Router} from "@angular/router";
 import {debounceTime, filter, startWith} from "rxjs/operators";
 import {ConversationService} from "../../service/chat/conversation.service";
 import {UntypedFormControl} from "@angular/forms";
+import {Channel} from "../../model/Channel";
+import {ChannelService} from "../../service/channel/channel.service";
 
 @Component({
   selector: 'vex-chat',
@@ -23,6 +25,10 @@ export class ChatComponent implements OnInit {
   conversations$: Observable<Conversation[]> = this.conversationsSubject.asObservable();
   searchCtrl = new UntypedFormControl();
 
+  channels: Channel[] = [];
+  private selectedChannelSubject = new BehaviorSubject<Channel | null>(null);
+  selectedChannel$: Observable<Channel | null> = this.selectedChannelSubject.asObservable();
+
   mobileQuery$ = this._layoutService.ltMd$;
   drawerOpen$ = this._chatService.drawerOpen$;
 
@@ -31,13 +37,14 @@ export class ChatComponent implements OnInit {
     private _cd: ChangeDetectorRef,
     private _chatService: ChatService,
     private _conversationService: ConversationService,
-    private _layoutService: VexLayoutService
+    private _layoutService: VexLayoutService,
+    private _channelService: ChannelService
   ) {
   }
 
   ngOnInit() {
     this.syncSubscribers();
-    this.loadConversations();
+    this.loadChannels();
 
     this.searchCtrl.valueChanges
       .pipe(debounceTime(600))
@@ -45,6 +52,11 @@ export class ChatComponent implements OnInit {
         this.conversationsSubject.next([]);
         this.loadConversations();
       });
+
+    this.selectedChannelSubject.subscribe(() => {
+      this.conversationsSubject.next([]);
+      this.loadConversations();
+    });
   }
 
   drawerChange(drawerOpen: boolean) {
@@ -68,6 +80,14 @@ export class ChatComponent implements OnInit {
 
   onAddNewConversation() {
     console.log("AddNewConversation");
+  }
+
+  onChannelSelect(channel: Channel | null) {
+    this.selectedChannelSubject.next(channel);
+  }
+
+  isWhatsAppChannel(channel: Channel | null): boolean {
+    return !!channel?.wabaId;
   }
 
   private syncSubscribers() {
@@ -98,12 +118,32 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  private loadChannels() {
+    this._channelService.list({ sort: 'createdDate,desc' })
+      .subscribe({
+        next: (page) => {
+          this.channels = page.content || [];
+          if (this.channels.length > 0 && !this.selectedChannelSubject.value) {
+            // Seleciona o primeiro canal por padrão
+            this.selectedChannelSubject.next(this.channels[0]);
+          }
+        },
+        error: (err) => {
+          console.error('Error when load channels:', err);
+        }
+      });
+  }
+
   private loadConversations(datetime?: string) {
     if (this.loading$.value) return;
 
     this.loading$.next(true);
 
-    this._conversationService.list(datetime, this.searchCtrl?.value || '')
+    const selectedChannel = this.selectedChannelSubject.value;
+    const channelId = selectedChannel?.id;
+    const phoneNumberId = selectedChannel?.phoneNumberId;
+
+    this._conversationService.list(datetime, this.searchCtrl?.value || '', 20, 1, channelId, phoneNumberId)
       .subscribe({
         next: (conversations) => {
           const current = this.conversationsSubject.value;
