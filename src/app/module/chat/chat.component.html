@@ -54,24 +54,43 @@
         <div
           class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
           <div class="flex items-center mx-4">
-            <div class="w-8/12 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+            <ng-container *ngIf="!(isCreatingConversation$ | async); else newConversationHeader">
+              <div class="w-8/12 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+              <div class="w-4/12 text-end">
+                <mat-icon svgIcon="mat:add_comment"
+                          color="primary"
+                          class="cursor-pointer mr-2"
+                          [matTooltip]="'conversation.new' | translate"
+                          (click)="this.onAddNewConversation()"
+                ></mat-icon>
+                <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
+<!--                <mat-icon svgIcon="mat:more_vert"-->
+<!--                          color="primary"-->
+<!--                          class="cursor-pointer"-->
+<!--                          [matMenuTriggerFor]="conversationMenu"-->
+<!--                          [matTooltip]="'more-options' | translate"-->
+<!--                ></mat-icon>-->
+              </div>
+            </ng-container>
 
-            <div class="w-4/12 text-end">
-              <mat-icon svgIcon="mat:add_comment"
-                        color="primary"
-                        class="cursor-pointer mr-2"
-                        [matTooltip]="'conversation.new' | translate"
-                        (click)="this.onAddNewConversation()"
-              ></mat-icon>
-              <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
-              <!--            <mat-icon svgIcon="mat:more_vert"-->
-              <!--                      color="primary"-->
-              <!--                      class="cursor-pointer"-->
-              <!--                      [matMenuTriggerFor]="conversationMenu"-->
-              <!--                      [matTooltip]="'more-options' | translate"-->
-              <!--            >-->
-              <!--            </mat-icon>-->
-            </div>
+            <ng-template #newConversationHeader>
+              <div class="w-8/12 flex items-center gap-2">
+                <mat-icon svgIcon="mat:arrow_back"
+                          color="primary"
+                          class="cursor-pointer"
+                          (click)="this.onCancelNewConversation()"
+                ></mat-icon>
+                <div class="text-3xl font-semibold truncate cursor-default" [matTooltip]="'conversation.new' | translate">{{ 'conversation.new' | translate }}</div>
+              </div>
+              <div class="w-4/12 text-end">
+                <mat-icon svgIcon="mat:close"
+                          color="primary"
+                          class="cursor-pointer"
+                          [matTooltip]="'close' | translate"
+                          (click)="this.onCancelNewConversation()"
+                ></mat-icon>
+              </div>
+            </ng-template>
 
             <mat-menu #conversationMenu="matMenu" xPosition="after" yPosition="below">
               <button mat-menu-item (click)="this.onAddNewConversation()">
@@ -82,19 +101,37 @@
           </div>
 
           <div class="flex px-4">
-            <mat-form-field
-              appearance="outline"
-              class="vex-mat-dense-xs flex-1 bg-foreground"
-              subscriptSizing="dynamic">
-              <mat-icon
-                class="icon-sm"
-                matIconPrefix
-                svgIcon="mat:search"></mat-icon>
-              <input matInput
-                     [formControl]="searchCtrl"
-                     [placeholder]="'search' | translate"
-                     type="text"/>
-            </mat-form-field>
+            <ng-container *ngIf="!(isCreatingConversation$ | async); else contactSearchField">
+              <mat-form-field
+                appearance="outline"
+                class="vex-mat-dense-xs flex-1 bg-foreground"
+                subscriptSizing="dynamic">
+                <mat-icon
+                  class="icon-sm"
+                  matIconPrefix
+                  svgIcon="mat:search"></mat-icon>
+                <input matInput
+                       [formControl]="searchCtrl"
+                       [placeholder]="'search' | translate"
+                       type="text"/>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-template #contactSearchField>
+              <mat-form-field
+                appearance="outline"
+                class="vex-mat-dense-xs flex-1 bg-foreground"
+                subscriptSizing="dynamic">
+                <mat-icon
+                  class="icon-sm"
+                  matIconPrefix
+                  svgIcon="mat:search"></mat-icon>
+                <input matInput
+                       [formControl]="contactSearchCtrl"
+                       [placeholder]="'search' | translate"
+                       type="text"/>
+              </mat-form-field>
+            </ng-template>
           </div>
         </div>
 
@@ -106,7 +143,7 @@
              (scrolled)="onScrollEnd()">
           <div class="pt-2">
             <!-- Botões "Todas" e "Não lidas" -->
-            <div class="flex items-center px-4 pb-2 gap-2">
+            <div *ngIf="!(isCreatingConversation$ | async)" class="flex items-center px-4 pb-2 gap-2">
               <button
                 class="text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20 font-medium text-sm px-4 py-2 rounded-lg hover:bg-primary-200 hover:dark:bg-primary-700/30 transition flex-1 text-center relative"
                 matRipple
@@ -122,50 +159,92 @@
             </div>
 
             <div class="space-y-1">
-              <ng-container *ngIf="(conversations$ | async) as conversations">
-                <ng-container *ngFor="let conversation of conversations">
-                  <a
-                    #rla="routerLinkActive"
-                    [ngClass]="{'text-primary-600 bg-primary-50 dark:text-primary-200 dark:bg-primary-700/20': rla.isActive}"
-                    [routerLink]="['./', conversation.id]"
-                    class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out"
-                    matRipple
-                    routerLinkActive>
-                    <div
-                      *ngIf="rla.isActive"
-                      class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
+              <ng-container *ngIf="!(isCreatingConversation$ | async); else contactSelection">
+                <ng-container *ngIf="(conversations$ | async) as conversations">
+                  <ng-container *ngFor="let conversation of conversations">
+                    <a
+                      #rla="routerLinkActive"
+                      [ngClass]="{'text-primary-600 bg-primary-50 dark:text-primary-200 dark:bg-primary-700/20': rla.isActive}"
+                      [routerLink]="['./', conversation.id]"
+                      class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out"
+                      matRipple
+                      routerLinkActive>
+                      <div
+                        *ngIf="rla.isActive"
+                        class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
 
-                    <img src="assets/img/no-avatar.png" alt="Profile"
-                         class="h-10 w-10 rounded-full flex-none select-none">
-                    <div class="flex-1 select-none truncate">
-                      <div class="truncate flex mb-0.5">
-                        <div class="font-medium flex-1">{{ conversation.name }}</div>
-                        <div class="flex-none text-xs text-gray-500">
-                          {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+                      <img src="assets/img/no-avatar.png" alt="Profile"
+                           class="h-10 w-10 rounded-full flex-none select-none">
+                      <div class="flex-1 select-none truncate">
+                        <div class="truncate flex mb-0.5">
+                          <div class="font-medium flex-1">{{ conversation.name }}</div>
+                          <div class="flex-none text-xs text-gray-500">
+                            {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+                          </div>
+                        </div>
+                        <div class="text-xs text-gray-500 truncate">
+                          {{ conversation?.messages[0] | lastMessage }}
                         </div>
                       </div>
-                      <div class="text-xs text-gray-500 truncate">
-                        {{ conversation?.messages[0] | lastMessage }}
-                      </div>
-                    </div>
-                  </a>
+                    </a>
+                  </ng-container>
+
+                  <!-- Mensagem quando não houver nenhuma conversa -->
+                  <div
+                    *ngIf="!conversations.length && !(loading$ | async)"
+                    class="flex justify-center py-8 text-gray-500 text-sm">
+                    {{ 'conversation.empty' | translate }}
+                  </div>
                 </ng-container>
 
-                <!-- Mensagem quando não houver nenhuma conversa -->
-                <div
-                  *ngIf="!conversations.length && !(loading$ | async)"
-                  class="flex justify-center py-8 text-gray-500 text-sm">
-                  {{ 'conversation.empty' | translate }}
+                <div *ngIf="loading$ | async" class="flex justify-center py-4">
+                  <mat-progress-spinner
+                    diameter="32"
+                    mode="indeterminate"
+                    color="primary">
+                  </mat-progress-spinner>
                 </div>
               </ng-container>
 
-              <div *ngIf="loading$ | async" class="flex justify-center py-4">
-                <mat-progress-spinner
-                  diameter="32"
-                  mode="indeterminate"
-                  color="primary">
-                </mat-progress-spinner>
-              </div>
+              <ng-template #contactSelection>
+                <ng-container *ngIf="(contacts$ | async) as contacts">
+                  <ng-container *ngFor="let contact of contacts">
+                    <button
+                      class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out w-full text-left"
+                      [ngClass]="{'opacity-50 cursor-not-allowed': creatingConversation$ | async}"
+                      matRipple
+                      type="button"
+                      (click)="this.onSelectContact(contact)"
+                      [disabled]="creatingConversation$ | async"
+                      [matRippleDisabled]="creatingConversation$ | async">
+                      <img src="assets/img/no-avatar.png" alt="Profile"
+                           class="h-10 w-10 rounded-full flex-none select-none">
+                      <div class="flex-1 select-none truncate">
+                        <div class="truncate flex mb-0.5">
+                          <div class="font-medium flex-1">{{ contact.name }}</div>
+                        </div>
+                        <div class="text-xs text-gray-500 truncate">
+                          {{ contact.ddi + contact.number  | phoneMask }}
+                        </div>
+                      </div>
+                    </button>
+                  </ng-container>
+
+                  <div
+                    *ngIf="!contacts.length && !(contactsLoading$ | async)"
+                    class="flex justify-center py-8 text-gray-500 text-sm">
+                    {{ 'contact.empty' | translate }}
+                  </div>
+                </ng-container>
+
+                <div *ngIf="contactsLoading$ | async" class="flex justify-center py-4">
+                  <mat-progress-spinner
+                    diameter="32"
+                    mode="indeterminate"
+                    color="primary">
+                  </mat-progress-spinner>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>

@@ -1,33 +1,35 @@
 import {NgModule, Pipe, PipeTransform} from '@angular/core';
-import parsePhoneNumberFromString from 'libphonenumber-js';
+import {PhoneUtil} from "../util/phone.util";
 
 @Pipe({
-    name: 'phoneMask'
+  name: 'phoneMask'
 })
 export class PhoneMaskPipe implements PipeTransform {
-    transform(value: string | null): string {
-        if (!value) { return ''; }
 
-        const cleaned = value.replace(/\D/g, '');
+  transform(phone: string, ddi?: string): string {
+    if (!phone) return '';
 
-        // Se já começa com '+', usa direto
-        const international = value.startsWith('+')
-            ? value
-            : '+' + cleaned;
+    try {
+      // Caso o DDI não tenha sido passado, tenta extrair do número
+      const countryCode = ddi || PhoneUtil.extractOnlyCountryCode(phone);
+      if (!countryCode) return phone;
 
-        const phone = parsePhoneNumberFromString(international);
-
-        return phone?.formatInternational() || this.formatGeneric(cleaned);
+      const masked = PhoneUtil.getPhoneWithMask(`${countryCode}${this.removeCountryCode(phone, countryCode)}`);
+      return masked || phone;
+    } catch {
+      return phone;
     }
+  }
 
-    private formatGeneric(value: string): string {
-        // Ex: quebra em blocos de até 4 dígitos
-        return value.replace(/(.{1,4})/g, '$1 ').trim();
-    }
+  private removeCountryCode(phone: string, countryCode: string): string {
+    const code = countryCode.startsWith('+') ? countryCode.substring(1) : countryCode;
+    return phone.startsWith(code) ? phone.substring(code.length) : phone;
+  }
 }
 
 @NgModule({
-    declarations: [PhoneMaskPipe],
-    exports: [PhoneMaskPipe],
+  declarations: [PhoneMaskPipe],
+  exports: [PhoneMaskPipe],
 })
-export class PhoneMaskPipeModule { }
+export class PhoneMaskPipeModule {
+}

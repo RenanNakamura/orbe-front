@@ -20,6 +20,7 @@ import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatTooltip} from "@angular/material/tooltip";
 import {ConversationEmptyComponent} from "./conversation-empty/conversation-empty.component";
+import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
 
 @NgModule({
   declarations: [
@@ -27,32 +28,33 @@ import {ConversationEmptyComponent} from "./conversation-empty/conversation-empt
     ConversationComponent,
     ConversationEmptyComponent,
   ],
-  imports: [
-    ChatRoutingModule,
-    MatButtonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    VexScrollbarComponent,
-    ReactiveFormsModule,
-    MatDividerModule,
-    MatDrawerContent,
-    MatDrawer,
-    MatDrawerContainer,
-    AsyncPipe,
-    MatFormField,
-    CommonModule,
-    MatRipple,
-    MatInput,
-    TranslateModule,
-    MatPrefix,
-    FriendlyDatePipeModule,
-    LastMessagePipeModule,
-    InfiniteScrollDirective,
-    MatProgressSpinner,
-    MatTooltip,
-  ],
+    imports: [
+        ChatRoutingModule,
+        MatButtonModule,
+        MatIconModule,
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
+        VexScrollbarComponent,
+        ReactiveFormsModule,
+        MatDividerModule,
+        MatDrawerContent,
+        MatDrawer,
+        MatDrawerContainer,
+        AsyncPipe,
+        MatFormField,
+        CommonModule,
+        MatRipple,
+        MatInput,
+        TranslateModule,
+        MatPrefix,
+        FriendlyDatePipeModule,
+        LastMessagePipeModule,
+        InfiniteScrollDirective,
+        MatProgressSpinner,
+        MatTooltip,
+        PhoneMaskPipeModule,
+    ],
   providers: []
 })
 export class ChatModule {

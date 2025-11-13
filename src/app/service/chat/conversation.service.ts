@@ -38,4 +38,20 @@ export class ConversationService {
     return this._http.get<Conversation[]>(`${environment.chat}${this._api}`, {params});
   }
 
+  create(payload: { contactId: string; channelId?: string; phoneNumberId?: string }): Observable<Conversation> {
+    // const body: Record<string, string> = {
+    //   contactId: payload.contactId,
+    // };
+    //
+    // if (payload.channelId) {
+    //   body.channelId = payload.channelId;
+    // }
+    //
+    // if (payload.phoneNumberId) {
+    //   body.phoneNumberId = payload.phoneNumberId;
+    // }
+
+    return this._http.post<Conversation>(`${environment.chat}${this._api}`, {});
+  }
+
 }

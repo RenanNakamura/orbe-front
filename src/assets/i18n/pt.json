@@ -43,7 +43,8 @@
     "edit": "Editar contato",
     "delete": "Deseja excluir o contato: ",
     "add": "Adicionar contato",
-    "select": "Selecionar contatos"
+    "select": "Selecionar contatos",
+    "empty": "Nenhum contato encontrado"
   },
   "channel": {
     "title": "Canal",
