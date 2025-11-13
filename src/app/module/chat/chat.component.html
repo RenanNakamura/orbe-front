@@ -209,25 +209,27 @@
               <ng-template #contactSelection>
                 <ng-container *ngIf="(contacts$ | async) as contacts">
                   <ng-container *ngFor="let contact of contacts">
-                    <button
-                      class="relative text-sm mx-2 px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out w-full text-left"
-                      [ngClass]="{'opacity-50 cursor-not-allowed': creatingConversation$ | async}"
-                      matRipple
-                      type="button"
-                      (click)="this.onSelectContact(contact)"
-                      [disabled]="creatingConversation$ | async"
-                      [matRippleDisabled]="creatingConversation$ | async">
-                      <img src="assets/img/no-avatar.png" alt="Profile"
-                           class="h-10 w-10 rounded-full flex-none select-none">
-                      <div class="flex-1 select-none truncate">
-                        <div class="truncate flex mb-0.5">
-                          <div class="font-medium flex-1">{{ contact.name }}</div>
+                    <div class="px-2">
+                      <button
+                        class="relative text-sm w-full px-3 py-2 rounded hover:bg-primary-100 hover:dark:bg-primary-700/10 flex items-center gap-3 transition ease-out text-left"
+                        [ngClass]="{'opacity-50 cursor-not-allowed': creatingConversation$ | async}"
+                        matRipple
+                        type="button"
+                        (click)="this.onSelectContact(contact)"
+                        [disabled]="creatingConversation$ | async"
+                        [matRippleDisabled]="creatingConversation$ | async">
+                        <img src="assets/img/no-avatar.png" alt="Profile"
+                             class="h-10 w-10 rounded-full flex-none select-none">
+                        <div class="flex-1 select-none truncate">
+                          <div class="truncate flex mb-0.5">
+                            <div class="font-medium flex-1">{{ contact.name }}</div>
+                          </div>
+                          <div class="text-xs text-gray-500 truncate">
+                            {{ contact.ddi + contact.number  | phoneMask }}
+                          </div>
                         </div>
-                        <div class="text-xs text-gray-500 truncate">
-                          {{ contact.ddi + contact.number  | phoneMask }}
-                        </div>
-                      </div>
-                    </button>
+                      </button>
+                    </div>
                   </ng-container>
 
                   <div

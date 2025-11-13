@@ -272,9 +272,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         next: (page) => {
           const content = page?.content || [];
           const total = typeof page?.totalElements === 'number' ? page.totalElements : this.contactsTotal;
-
           const current = this.contactsSubject.value;
-          this.contactsSubject.next([...current, ...content]);
+          const merged = [...current, ...content];
+
+          this.contactsSubject.next(merged);
 
           this.contactsTotal = total || 0;
           this.contactsNextPage += 1;
