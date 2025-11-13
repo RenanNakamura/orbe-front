@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {scaleFadeIn400ms} from "@vex/animations/scale-fade-in.animation";
 import {BehaviorSubject, Observable, Subject, switchMap} from "rxjs";
-import {Conversation} from "../../model/chat/conversation";
+import {Conversation, ConversationChannel, ConversationStatus, CreateConversation} from "../../model/chat/conversation";
 import {ChatService} from "../../service/chat/chat.service";
 import {VexLayoutService} from "@vex/services/vex-layout.service";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
@@ -139,11 +139,17 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     const selectedChannel = this.selectedChannelSubject.value;
 
-    this._conversationService.create({
-      contactId: contact.id,
+    const request: CreateConversation = {
       channelId: selectedChannel?.id,
-      phoneNumberId: selectedChannel?.phoneNumberId,
-    })
+      phoneNumberId: selectedChannel.phoneNumberId,
+      name: contact.name,
+      ddi: contact.ddi,
+      phoneNumber: contact.number,
+      status: ConversationStatus.OPEN,
+      channel: ConversationChannel.WHATSAPP
+    }
+
+    this._conversationService.create(request)
       .pipe(finalize(() => this.creatingConversationSubject.next(false)))
       .subscribe({
         next: (conversation) => {
@@ -205,7 +211,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private loadChannels() {
-    this._channelService.list({ sort: 'createdDate,desc' })
+    this._channelService.list({sort: 'createdDate,desc'})
       .subscribe({
         next: (page) => {
           this.channels = page.content || [];

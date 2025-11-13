@@ -25,6 +25,24 @@ export class TextMessage {
   previewUrl?: boolean;
 }
 
+export class CreateConversation {
+  channelId: string;
+  phoneNumberId: string;
+  ddi: string;
+  phoneNumber?: string;
+  name: string;
+  status: ConversationStatus;
+  channel: ConversationChannel
+}
+
+export enum ConversationStatus {
+  OPEN = 'OPEN', CLOSED = 'CLOSED'
+}
+
+export enum ConversationChannel {
+  WHATSAPP = 'WHATSAPP'
+}
+
 export enum SenderType {
   AGENT = 'AGENT', CUSTOMER = 'CUSTOMER', BOT = 'BOT'
 }

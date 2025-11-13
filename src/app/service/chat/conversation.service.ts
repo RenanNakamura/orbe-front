@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {Conversation} from "../../model/chat/conversation";
+import {Conversation, CreateConversation} from "../../model/chat/conversation";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 
@@ -38,20 +38,8 @@ export class ConversationService {
     return this._http.get<Conversation[]>(`${environment.chat}${this._api}`, {params});
   }
 
-  create(payload: { contactId: string; channelId?: string; phoneNumberId?: string }): Observable<Conversation> {
-    // const body: Record<string, string> = {
-    //   contactId: payload.contactId,
-    // };
-    //
-    // if (payload.channelId) {
-    //   body.channelId = payload.channelId;
-    // }
-    //
-    // if (payload.phoneNumberId) {
-    //   body.phoneNumberId = payload.phoneNumberId;
-    // }
-
-    return this._http.post<Conversation>(`${environment.chat}${this._api}`, {});
+  create(body: CreateConversation): Observable<Conversation> {
+    return this._http.post<Conversation>(`${environment.chat}${this._api}`, body);
   }
 
 }
