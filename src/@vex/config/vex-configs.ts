@@ -32,7 +32,7 @@ const baseConfig: VexConfig = {
   boxed: false,
   sidenav: {
     title: 'VEX',
-    imageUrl: 'assets/img/logo/logo.svg',
+    imageUrl: 'assets/img/logo/logo-white.svg',
     showCollapsePin: true,
     user: {
       visible: true

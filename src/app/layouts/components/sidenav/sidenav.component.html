@@ -5,14 +5,14 @@
   [class.open]="collapsed && (collapsedOpen$ | async)"
   class="vex-sidenav flex flex-col">
   <div class="vex-sidenav-toolbar__container">
-    <div class="sidenav-toolbar flex-none flex items-center">
+    <div class="sidenav-toolbar flex-none flex items-center justify-between">
       <img
         [src]="imageUrl$ | async"
         alt="Logo"
-        class="w-6 select-none flex-none" />
-      <h2 class="vex-sidenav-toolbar__headline flex-auto">
-        {{ title$ | async }}
-      </h2>
+        class="w-32 select-none flex-none" />
+<!--      <h2 class="vex-sidenav-toolbar__headline flex-auto">-->
+<!--        {{ title$ | async }}-->
+<!--      </h2>-->
       <button
         (click)="toggleCollapse()"
         *ngIf="showCollapsePin$ | async"

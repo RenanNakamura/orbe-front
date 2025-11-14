@@ -15,7 +15,7 @@ export class TitlePageStrategy extends TitleStrategy {
   override updateTitle(snapshot: RouterStateSnapshot): void {
     const title = this.buildTitle(snapshot);
     if (title !== undefined) {
-      this.title.setTitle(`Orbetalk - ${this._translate.instant(title)}`);
+      this.title.setTitle(`Tipefy - ${this._translate.instant(title)}`);
     }
   }
 }

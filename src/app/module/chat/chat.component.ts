@@ -66,28 +66,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.syncSubscribers();
     this.loadChannels();
-
-    this.searchCtrl.valueChanges
-      .pipe(debounceTime(600), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.conversationsSubject.next([]);
-        this.loadConversations();
-      });
-
-    this.selectedChannelSubject
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.conversationsSubject.next([]);
-        this.loadConversations();
-      });
-
-    this.contactSearchCtrl.valueChanges
-      .pipe(debounceTime(600), takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.isCreatingConversationSubject.value) {
-          this.loadContacts(true);
-        }
-      });
   }
 
   ngOnDestroy(): void {
@@ -208,6 +186,33 @@ export class ChatComponent implements OnInit, OnDestroy {
           this._chatService.drawerOpen.next(true);
         }
       });
+
+    this.searchCtrl
+      .valueChanges
+      .pipe(debounceTime(600), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.conversationsSubject.next([]);
+        this.loadConversations();
+      });
+
+    this.selectedChannelSubject
+      .pipe(
+        filter(channel => !!channel),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.conversationsSubject.next([]);
+        this.loadConversations();
+      });
+
+    this.contactSearchCtrl
+      .valueChanges
+      .pipe(debounceTime(600), takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.isCreatingConversationSubject.value) {
+          this.loadContacts(true);
+        }
+      });
   }
 
   private loadChannels() {
@@ -215,6 +220,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (page) => {
           this.channels = page.content || [];
+
+          if (this.channels?.length && !this.selectedChannelSubject?.value) {
+            this.onChannelSelect(this.channels[0]);
+          }
         },
         error: (err) => {
           console.error('Error when load channels:', err);
