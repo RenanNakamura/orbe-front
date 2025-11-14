@@ -8,22 +8,23 @@
     <div class="h-full w-full flex">
       <!-- Sidebar de Canais -->
       <div
-        class="w-[80px] flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col h-full" *ngIf="channels?.length > 1">
+        class="w-[80px] flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col h-full"
+        *ngIf="channels?.length > 1">
         <div class="flex-1 overflow-y-auto py-2 px-1">
           <!-- Opção "Todos", talvez mais para frente podemos habilitar -->
-<!--          <button-->
-<!--            [ngClass]="{-->
-<!--              'text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20': !(selectedChannel$ | async),-->
-<!--              'text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800': !!(selectedChannel$ | async)-->
-<!--            }"-->
-<!--            class="w-full flex flex-col items-center justify-center py-3 px-2 transition relative group rounded-2xl"-->
-<!--            matRipple-->
-<!--            type="button"-->
-<!--            (click)="onChannelSelect(null)"-->
-<!--            [matTooltip]="'all_masculine' | translate">-->
-<!--            <mat-icon svgIcon="mat:apps" class="icon-md mb-1"></mat-icon>-->
-<!--            <span class="text-xs truncate w-full text-center">{{ 'all_masculine' | translate }}</span>-->
-<!--          </button>-->
+          <!--          <button-->
+          <!--            [ngClass]="{-->
+          <!--              'text-primary-600 bg-primary-100 dark:text-primary-200 dark:bg-primary-700/20': !(selectedChannel$ | async),-->
+          <!--              'text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800': !!(selectedChannel$ | async)-->
+          <!--            }"-->
+          <!--            class="w-full flex flex-col items-center justify-center py-3 px-2 transition relative group rounded-2xl"-->
+          <!--            matRipple-->
+          <!--            type="button"-->
+          <!--            (click)="onChannelSelect(null)"-->
+          <!--            [matTooltip]="'all_masculine' | translate">-->
+          <!--            <mat-icon svgIcon="mat:apps" class="icon-md mb-1"></mat-icon>-->
+          <!--            <span class="text-xs truncate w-full text-center">{{ 'all_masculine' | translate }}</span>-->
+          <!--          </button>-->
 
           <!-- Lista de Canais -->
           <ng-container *ngFor="let channel of channels">

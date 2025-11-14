@@ -42,4 +42,7 @@ export class ConversationService {
     return this._http.post<Conversation>(`${environment.chat}${this._api}`, body);
   }
 
+  findById(id: string): Observable<Conversation> {
+    return this._http.get<Conversation>(`${environment.chat}${this._api}/${id}/details`);
+  }
 }

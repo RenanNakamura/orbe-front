@@ -4,6 +4,9 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {stagger20ms} from '@vex/animations/stagger.animation';
 import {VexScrollbarComponent} from '@vex/components/vex-scrollbar/vex-scrollbar.component';
 import {ChatService} from "../../../service/chat/chat.service";
+import {ConversationCache} from "../../../service/chat/conversation.cache";
+import {ActivatedRoute} from "@angular/router";
+import {ConversationService} from "../../../service/chat/conversation.service";
 
 @Component({
   selector: 'vex-conversation',
@@ -27,12 +30,40 @@ export class ConversationComponent implements OnInit {
   scrollbar?: VexScrollbarComponent;
 
   constructor(
+    private _route: ActivatedRoute,
     private _cd: ChangeDetectorRef,
     private _chatService: ChatService,
+    private _conversationService: ConversationService,
+    private _conversationCache: ConversationCache,
   ) {
   }
 
   ngOnInit() {
+    this._route
+      .paramMap
+      .subscribe(params => {
+        const id = params.get('conversationId');
+
+        if (!id) return;
+
+        const cached = this._conversationCache.get(id);
+
+        console.log('Conversation cached => ', cached);
+
+        if (cached) {
+          this.conversation = cached;
+          this._cd.markForCheck();
+        } else {
+          this._conversationService
+            .findById(id)
+            .subscribe(c => {
+              console.log('Conversation resulted => ', c);
+              this.conversation = c;
+              this._conversationCache.set(c);
+              this._cd.markForCheck();
+            });
+        }
+      });
   }
 
   openDrawer() {

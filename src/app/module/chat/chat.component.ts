@@ -12,6 +12,7 @@ import {Channel} from "../../model/Channel";
 import {ChannelService} from "../../service/channel/channel.service";
 import {Contact} from "../../model/Contact";
 import {ContactService} from "../../service/contact/contact.service";
+import {ConversationCache} from "../../service/chat/conversation.cache";
 
 @Component({
   selector: 'vex-chat',
@@ -59,7 +60,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _conversationService: ConversationService,
     private _layoutService: VexLayoutService,
     private _channelService: ChannelService,
-    private _contactService: ContactService
+    private _contactService: ContactService,
   ) {
   }
 
