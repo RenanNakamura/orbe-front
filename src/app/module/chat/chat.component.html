@@ -56,20 +56,24 @@
           <div class="flex items-center mx-4">
             <ng-container *ngIf="!(isCreatingConversation$ | async); else newConversationHeader">
               <div class="w-8/12 text-3xl font-semibold">{{ 'chat.conversations' | translate }}</div>
-              <div class="w-4/12 text-end">
-                <mat-icon svgIcon="mat:add_comment"
-                          color="primary"
-                          class="cursor-pointer mr-2"
-                          [matTooltip]="'conversation.new' | translate"
-                          (click)="this.onAddNewConversation()"
-                ></mat-icon>
+              <div class="w-4/12 text-end self-end">
+                <button
+                  class="cursor-pointer mr-2"
+                  [disabled]="!(selectedChannel$ | async)"
+                  (click)="this.onAddNewConversation()">
+                  <mat-icon svgIcon="mat:add_comment"
+                            color="primary"
+                            [ngClass]="{'text-gray-300': !(selectedChannel$ | async)}"
+                            [matTooltip]="'conversation.new' | translate"
+                  ></mat-icon>
+                </button>
                 <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
-<!--                <mat-icon svgIcon="mat:more_vert"-->
-<!--                          color="primary"-->
-<!--                          class="cursor-pointer"-->
-<!--                          [matMenuTriggerFor]="conversationMenu"-->
-<!--                          [matTooltip]="'more-options' | translate"-->
-<!--                ></mat-icon>-->
+                <!--                <mat-icon svgIcon="mat:more_vert"-->
+                <!--                          color="primary"-->
+                <!--                          class="cursor-pointer"-->
+                <!--                          [matMenuTriggerFor]="conversationMenu"-->
+                <!--                          [matTooltip]="'more-options' | translate"-->
+                <!--                ></mat-icon>-->
               </div>
             </ng-container>
 
@@ -80,7 +84,9 @@
                           class="cursor-pointer"
                           (click)="this.onCancelNewConversation()"
                 ></mat-icon>
-                <div class="text-3xl font-semibold truncate cursor-default" [matTooltip]="'conversation.new' | translate">{{ 'conversation.new' | translate }}</div>
+                <div class="text-3xl font-semibold truncate cursor-default"
+                     [matTooltip]="'conversation.new' | translate">{{ 'conversation.new' | translate }}
+                </div>
               </div>
               <div class="w-4/12 text-end">
                 <mat-icon svgIcon="mat:close"
