@@ -11,25 +11,25 @@
       <img class="hidden sm:block flex-none w-9 h-9 rounded-full" src="assets/img/no-avatar.png" alt=""/>
       <div class="flex-1 truncate">
         <div class="font-semibold text-sm truncate">{{ conversation?.name }}</div>
+        <div class="text-xs text-gray-500 truncate">
+          {{ conversation?.ddi + conversation?.phoneNumber  | phoneMask }}
+        </div>
       </div>
     </div>
 
     <span class="flex-1"></span>
 
-    <div class="flex-none flex items-center gap-1 mr-1">
-      <button mat-icon-button type="button">
-        <mat-icon svgIcon="mat:search"></mat-icon>
-      </button>
-      <button mat-icon-button type="button">
-        <mat-icon svgIcon="mat:info"></mat-icon>
-      </button>
-    </div>
+<!--    <div class="flex-none flex items-center gap-1 mr-1">-->
+<!--      <button mat-icon-button type="button">-->
+<!--        <mat-icon svgIcon="mat:info"></mat-icon>-->
+<!--      </button>-->
+<!--    </div>-->
   </div>
 
   <vex-scrollbar class="flex-1">
     <div class="flex flex-col space-y-2 p-8 justify-end">
       <div class="flex gap-2">
-        <img class="w-8 h-8 rounded-full self-end" src="{{ conversation?.imageUrl }}" alt=""/>
+        <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
         <div class="flex flex-col space-y-2">
           <div class="self-start inline-flex items-center gap-2">
             <div

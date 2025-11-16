@@ -2,6 +2,8 @@ export interface Conversation {
   id: string;
   customerId: string;
   name: string;
+  ddi: string;
+  phoneNumber: string;
   lastMessageAt: string;
   messages: Message[];
 }

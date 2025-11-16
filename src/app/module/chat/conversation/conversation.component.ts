@@ -7,6 +7,7 @@ import {ChatService} from "../../../service/chat/chat.service";
 import {ConversationCache} from "../../../service/chat/conversation.cache";
 import {ActivatedRoute} from "@angular/router";
 import {ConversationService} from "../../../service/chat/conversation.service";
+import {Conversation} from "../../../model/chat/conversation";
 
 @Component({
   selector: 'vex-conversation',
@@ -17,7 +18,7 @@ import {ConversationService} from "../../../service/chat/conversation.service";
 })
 export class ConversationComponent implements OnInit {
 
-  conversation?: any;
+  conversation?: Conversation;
   // messages!: ChatMessage[];
 
   form = new FormGroup({
