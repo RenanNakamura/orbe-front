@@ -22,6 +22,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {ConversationEmptyComponent} from "./conversation-empty/conversation-empty.component";
 import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
 import {DateMomentPipeModule} from "../../pipe/date-moment.pipe";
+import {PickerComponent} from "@ctrl/ngx-emoji-mart";
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import {DateMomentPipeModule} from "../../pipe/date-moment.pipe";
     MatTooltip,
     PhoneMaskPipeModule,
     DateMomentPipeModule,
+    PickerComponent,
   ],
   providers: []
 })

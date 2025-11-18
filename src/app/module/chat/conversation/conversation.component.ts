@@ -1,7 +1,6 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
 import {stagger20ms} from '@vex/animations/stagger.animation';
-import {VexScrollbarComponent} from '@vex/components/vex-scrollbar/vex-scrollbar.component';
 import {ChatService} from "../../../service/chat/chat.service";
 import {ConversationCache} from "../../../service/chat/conversation.cache";
 import {ActivatedRoute} from "@angular/router";
@@ -9,6 +8,7 @@ import {ConversationService} from "../../../service/chat/conversation.service";
 import {Conversation, Message, SenderType} from "../../../model/chat/conversation";
 import {BehaviorSubject, Observable} from "rxjs";
 import {finalize} from "rxjs/operators";
+import {MatMenuTrigger} from '@angular/material/menu';
 
 @Component({
   selector: 'vex-conversation',
@@ -19,14 +19,13 @@ import {finalize} from "rxjs/operators";
 })
 export class ConversationComponent implements OnInit {
 
+  @ViewChild('msgTextarea') msgTextarea: ElementRef;
+
   private messagesSubject: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
 
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
   conversation?: Conversation;
-
-  @ViewChild(VexScrollbarComponent)
-  scrollbar?: VexScrollbarComponent;
 
   constructor(
     private _route: ActivatedRoute,
@@ -85,6 +84,26 @@ export class ConversationComponent implements OnInit {
     textarea.value = '';
     textarea.style.height = 'auto';
     // se você usa change detection ou bind, dispare a atualização conforme necessário
+  }
+
+  onSelectEmoji(event, trigger: MatMenuTrigger) {
+    const emoji = event?.emoji?.native;
+    const textarea: HTMLTextAreaElement = this.msgTextarea?.nativeElement;
+
+    if (!textarea) return;
+
+    const index = textarea.selectionStart;
+    const text = textarea.value;
+
+    textarea.value = text.slice(0, index) + emoji + text.slice(index);
+
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = index + emoji.length;
+      textarea.focus();
+      this.autoResize(textarea);
+    });
+
+    trigger?.closeMenu?.();
   }
 
   private syncSubscribers() {

@@ -97,14 +97,26 @@
     </button>
 
     <button
-      [matMenuTriggerFor]="addMenuButton"
       color="primary"
       mat-icon-button
       type="button"
       class="flex-none self-end"
+      #emojiTrigger="matMenuTrigger"
+      [matMenuTriggerFor]="emojiMenu"
+      [matTooltip]="'emoji.add' | translate"
     >
       <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
     </button>
+
+    <mat-menu #emojiMenu="matMenu" class="shadow-none bg-none" xPosition="after" yPosition="above">
+      <div (click)="$event.stopPropagation()">
+        <emoji-mart [isNative]="true"
+                    [showPreview]="false"
+                    [enableSearch]="false"
+                    [style]="{ width: '100%', height: 'auto' }"
+                    (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
+      </div>
+    </mat-menu>
 
     <mat-menu #addMenuButton="matMenu" xPosition="after" yPosition="above">
       <button mat-menu-item>
