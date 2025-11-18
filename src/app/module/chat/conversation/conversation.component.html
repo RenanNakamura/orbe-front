@@ -37,28 +37,31 @@
       <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
 
-        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl  bg-white dark:bg-gray-800 self-start max-w-[350px] shadow-sm">
+        <div
+          class="flex flex-col space-y-1 px-3 py-2 rounded-xl  bg-white dark:bg-gray-800 self-start max-w-[350px] shadow-sm">
           <div class="text-sm">
             {{ message?.content?.text?.body }}
           </div>
           <div class="flex items-center self-end">
-            <div class="text-[10px]">{{ message.createdAt | friendlyDate }}</div>
+            <div class="text-[10px]" [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}</div>
           </div>
         </div>
       </div>
 
-      <div *ngIf="this.isAgent(message)" class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white self-end max-w-[350px] shadow-sm">
+      <div *ngIf="this.isAgent(message)"
+           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white self-end max-w-[350px] shadow-sm">
         <div class="text-sm">
           {{ message?.content?.text?.body }}
         </div>
 
         <div class="self-end flex items-center">
-          <div class="text-[10px] mr-1">{{ message.createdAt | friendlyDate }}</div>
+          <div class="text-[10px] mr-1" [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}</div>
           <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
         </div>
       </div>
 
-      <div *ngIf="this.isBot(message)" class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-500 text-white self-end max-w-[350px] shadow-sm">
+      <div *ngIf="this.isBot(message)"
+           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-500 text-white self-end max-w-[350px] shadow-sm">
         <div class="text-sm">
           {{ message?.content?.text?.body }}
         </div>
@@ -66,9 +69,7 @@
         <div class="flex items-center justify-between w-full">
           <mat-icon class="w-[16px] h-[16px] mr-1" svgIcon="mat:smart_toy"></mat-icon>
           <div class="flex items-center">
-            <div class="text-[10px] mr-1">
-              {{ message.createdAt | friendlyDate }}
-            </div>
+            <div class="text-[10px] mr-1" [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}</div>
             <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
           </div>
         </div>
