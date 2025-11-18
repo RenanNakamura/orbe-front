@@ -74,18 +74,6 @@ export class ConversationComponent implements OnInit {
     textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
   }
 
-  onEnter(event: Event, textarea: HTMLTextAreaElement) {
-    const e = event as KeyboardEvent;
-
-    if (e.shiftKey) {
-      setTimeout(() => this.autoResize(textarea));
-      return;
-    }
-
-    e.preventDefault();
-    this.sendMessage(textarea);
-  }
-
   sendMessage(textarea: HTMLTextAreaElement) {
     const value = textarea.value.trim();
     if (!value) return;

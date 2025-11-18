@@ -83,7 +83,7 @@
     </ng-container>
   </div>
 
-  <div class="flex items-center mb-3 mr-3 ml-3 bg-white rounded-full border shadow px-1 py-1">
+  <div class="flex items-center mb-3 mr-3 ml-3 bg-white rounded-xl border shadow px-1 py-1">
 
     <!-- Botão de adicionar -->
     <button
@@ -91,7 +91,7 @@
       color="primary"
       mat-icon-button
       type="button"
-      class="flex-none"
+      class="flex-none self-end"
     >
       <mat-icon svgIcon="mat:add"></mat-icon>
     </button>
@@ -101,7 +101,7 @@
       color="primary"
       mat-icon-button
       type="button"
-      class="flex-none"
+      class="flex-none self-end"
     >
       <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
     </button>
@@ -128,28 +128,26 @@
 
     <!-- Campo de texto -->
     <div class="flex flex-col justify-end flex-1">
-    <textarea
-      #msgTextarea
-      rows="1"
-      class="w-full min-h-[24px] max-h-[160px] px-0 py-1
-             overflow-y-auto outline-none resize-none
-             whitespace-pre-wrap break-words bg-transparent
-             text-[15px] leading-[18px]"
-      [placeholder]="'type-a-message' | translate"
-      (input)="autoResize(msgTextarea)"
-    ></textarea>
+      <textarea
+        #msgTextarea
+        rows="1"
+        class="w-full min-h-[24px] max-h-[160px] px-0 py-1
+               overflow-y-auto outline-none resize-none
+               whitespace-pre-wrap break-words bg-transparent
+               text-[15px] leading-[18px]"
+        [placeholder]="'type-a-message' | translate"
+        (input)="autoResize(msgTextarea)"
+      ></textarea>
     </div>
 
-    <!-- Botão de enviar -->
     <button
       color="primary"
-      mat-mini-fab
+      mat-icon-button
       type="button"
-      class="flex-none ml-1"
+      class="flex-none self-end"
       (click)="sendMessage(msgTextarea)"
     >
-      <mat-icon class="w-[22px] h-[22px]" svgIcon="mat:send"></mat-icon>
+      <mat-icon svgIcon="mat:send"></mat-icon>
     </button>
-
   </div>
 </div>
