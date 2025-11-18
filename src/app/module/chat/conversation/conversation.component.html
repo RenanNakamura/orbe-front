@@ -18,123 +18,74 @@
     </div>
 
     <span class="flex-1"></span>
-
-<!--    <div class="flex-none flex items-center gap-1 mr-1">-->
-<!--      <button mat-icon-button type="button">-->
-<!--        <mat-icon svgIcon="mat:info"></mat-icon>-->
-<!--      </button>-->
-<!--    </div>-->
   </div>
 
-  <vex-scrollbar class="flex-1">
-    <div class="flex flex-col space-y-2 p-8 justify-end">
-      <div class="flex gap-2">
-        <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
-        <div class="flex flex-col space-y-2">
-          <div class="self-start inline-flex items-center gap-2">
-            <div
-              class="p-3 rounded-xl bg-gray-200 dark:bg-gray-800 inline-flex max-w-[350px]">
-              <div class="grid grid-cols-2 gap-1.5">
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-tl-xl"
-                    src="/assets/img/demo/macbook-blended-color-beauty-shot.jpg"
-                    alt=""/>
+  <vex-scrollbar class="flex-1 overflow-hidden">
+    <div 
+      #messagesContainer
+      class="conversation-messages-container">
+      
+      <!-- Loading indicator for older messages -->
+      <div *ngIf="loadingMessages$.value && (messages$ | async)?.length > 0" 
+           class="flex justify-center py-4">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+
+      <!-- Messages list -->
+      <div class="flex flex-col space-y-2 p-8" *ngIf="messages$ | async as messages">
+        <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
+          
+          <!-- Customer Message (Left Side) -->
+          <div *ngIf="isCustomerMessage(message.senderType)" 
+               class="message-wrapper message-wrapper--customer">
+            <div class="flex gap-2">
+              <img src="assets/img/no-avatar.png" 
+                   alt="Profile" 
+                   class="message-avatar message-avatar--customer">
+              <div class="flex flex-col space-y-1">
+                <div class="message-bubble message-bubble--customer">
+                  <span class="message-text">{{ getMessageText(message) }}</span>
                 </div>
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-tr-xl"
-                    src="/assets/img/demo/macbook-desk-work-beauty-shot.jpg"
-                    alt=""/>
-                </div>
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-bl-xl"
-                    src="/assets/img/demo/macbook-iphone-airpods-gopro-beauty-shot.jpg"
-                    alt=""/>
-                </div>
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-br-xl"
-                    src="/assets/img/demo/macbook-pencil-iphone-airpods-closeup-beauty-shot.jpg"
-                    alt=""/>
+                <div class="message-time message-time--customer">
+                  {{ message.createdAt | friendlyDate }}
                 </div>
               </div>
             </div>
-
-            <button class="rox-btn-icon text-gray-500" type="button">
-              <mat-icon svgIcon="mat:forward"></mat-icon>
-            </button>
           </div>
 
-          <div
-            class="px-4 py-3 rounded-xl bg-gray-200 dark:bg-gray-800 inline-flex self-start max-w-[350px]">
-            I finished the design you requested. It's attached. Let me know if
-            you have any changes. 🤗
-          </div>
-          <div
-            class="px-4 py-3 rounded-xl rounded-bl-none bg-gray-200 dark:bg-gray-800 inline-flex self-start max-w-[350px]">
-            There's been a lot of great progress with the project so far. 🙌
-          </div>
-          <div class="flex items-center">
-            <div class="text-xs font-medium">09:02 am</div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="px-4 py-3 rounded-xl bg-primary-600 text-white inline-flex self-end max-w-[350px]">
-        Wow, how did you do this so fast?! 👀
-      </div>
-      <div
-        class="px-4 py-3 rounded-xl rounded-br-none bg-primary-600 text-white inline-flex self-end max-w-[350px]">
-        Thanks a lot! I'll have a look and update the page. 👍
-      </div>
-      <div class="self-end flex items-center gap-2">
-        <mat-icon class="icon-xs" svgIcon="mat:done_all"></mat-icon>
-        <div class="text-xs font-medium">09:04 am</div>
-      </div>
-
-      <div class="flex gap-2">
-        <img class="w-8 h-8 rounded-full self-end" src="assets/img/no-avatar.png" alt=""/>
-        <div class="flex flex-col space-y-2">
-          <div
-            class="px-4 py-3 rounded-xl bg-gray-200 dark:bg-gray-800 inline-flex items-center self-start max-w-[350px] gap-3 cursor-pointer">
-            <div
-              class="flex-none h-10 w-10 rounded-xl bg-foreground flex items-center justify-center">
-              <mat-icon
-                class="text-primary-600"
-                svgIcon="mat:folder_zip"></mat-icon>
-            </div>
-
-            <div class="flex-1 truncate">
-              <div class="text-sm font-medium truncate">
-                Marketing Files.zip
+          <!-- Bot/Agent Message (Right Side) -->
+          <div *ngIf="!isCustomerMessage(message.senderType)" 
+               class="message-wrapper message-wrapper--sent">
+            <div class="flex flex-col items-end space-y-1">
+              <div class="message-bubble" 
+                   [ngClass]="{
+                     'message-bubble--bot': isBotMessage(message.senderType),
+                     'message-bubble--agent': isAgentMessage(message.senderType)
+                   }">
+                <span class="message-text">{{ getMessageText(message) }}</span>
               </div>
-              <div class="text-xs text-gray-500 truncate">6.9 MB</div>
+              <div class="message-time message-time--sent">
+                <mat-icon *ngIf="isAgentMessage(message.senderType)" 
+                          class="icon-xs" 
+                          svgIcon="mat:done_all"></mat-icon>
+                <span>{{ message.createdAt | friendlyDate }}</span>
+              </div>
             </div>
-
-            <mat-icon class="flex-none" svgIcon="mat:download"></mat-icon>
           </div>
 
-          <div
-            class="px-4 py-3 rounded-xl rounded-bl-none bg-gray-200 dark:bg-gray-800 inline-flex self-start max-w-[350px]">
-            Here's the full compilation in a zip file. Let me know if you need
-            anything else. 🤗
-          </div>
-          <div class="flex items-center">
-            <div class="text-xs font-medium">09:08 am</div>
-          </div>
+        </ng-container>
+
+        <!-- Empty state -->
+        <div *ngIf="messages.length === 0 && !loadingMessages$.value" 
+             class="flex flex-col items-center justify-center h-full text-center py-12">
+          <p class="text-gray-500 text-sm">Nenhuma mensagem ainda</p>
         </div>
       </div>
 
-      <div
-        class="px-4 py-3 rounded-xl bg-primary-600 text-white inline-flex self-end max-w-[350px] text-6xl">
-        👍
-      </div>
-      <div class="self-end flex items-center gap-2">
-        <mat-icon class="icon-xs" svgIcon="mat:done_all"></mat-icon>
-        <div class="text-xs font-medium">09:16 am</div>
+      <!-- Loading initial messages -->
+      <div *ngIf="loadingMessages$.value && (messages$ | async)?.length === 0" 
+           class="flex justify-center items-center h-full py-12">
+        <mat-spinner diameter="32"></mat-spinner>
       </div>
     </div>
   </vex-scrollbar>
