@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
-import {FormControl, FormGroup} from '@angular/forms';
 import {stagger20ms} from '@vex/animations/stagger.animation';
 import {VexScrollbarComponent} from '@vex/components/vex-scrollbar/vex-scrollbar.component';
 import {ChatService} from "../../../service/chat/chat.service";
 import {ConversationCache} from "../../../service/chat/conversation.cache";
 import {ActivatedRoute} from "@angular/router";
 import {ConversationService} from "../../../service/chat/conversation.service";
-import {Conversation} from "../../../model/chat/conversation";
+import {Conversation, Message, SenderType} from "../../../model/chat/conversation";
+import {BehaviorSubject, Observable} from "rxjs";
+import {finalize} from "rxjs/operators";
 
 @Component({
   selector: 'vex-conversation',
@@ -18,14 +19,11 @@ import {Conversation} from "../../../model/chat/conversation";
 })
 export class ConversationComponent implements OnInit {
 
-  conversation?: Conversation;
-  // messages!: ChatMessage[];
+  private messagesSubject: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
+  loading$ = new BehaviorSubject<boolean>(false);
 
-  form = new FormGroup({
-    message: new FormControl<string>('', {
-      nonNullable: true
-    })
-  });
+  messages$: Observable<Message[]> = this.messagesSubject.asObservable();
+  conversation?: Conversation;
 
   @ViewChild(VexScrollbarComponent)
   scrollbar?: VexScrollbarComponent;
@@ -40,31 +38,7 @@ export class ConversationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._route
-      .paramMap
-      .subscribe(params => {
-        const id = params.get('conversationId');
-
-        if (!id) return;
-
-        const cached = this._conversationCache.get(id);
-
-        console.log('Conversation cached => ', cached);
-
-        if (cached) {
-          this.conversation = cached;
-          this._cd.markForCheck();
-        } else {
-          this._conversationService
-            .findById(id)
-            .subscribe(c => {
-              console.log('Conversation resulted => ', c);
-              this.conversation = c;
-              this._conversationCache.set(c);
-              this._cd.markForCheck();
-            });
-        }
-      });
+    this.syncSubscribers();
   }
 
   openDrawer() {
@@ -75,6 +49,75 @@ export class ConversationComponent implements OnInit {
   closeDrawer() {
     this._chatService.drawerOpen.next(false);
     this._cd.markForCheck();
+  }
+
+  isCustomer(message: Message): boolean {
+    return message.senderType === SenderType.CUSTOMER;
+  }
+
+  isAgent(message: Message): boolean {
+    return message.senderType === SenderType.AGENT;
+  }
+
+  isBot(message: Message): boolean {
+    return message.senderType === SenderType.BOT;
+  }
+
+  onScrollEnd() {
+    console.log('onScrollEnd');
+  }
+
+  private syncSubscribers() {
+    this._route
+      .paramMap
+      .subscribe(params => {
+        console.log('1')
+        const id = params.get('conversationId');
+
+        if (!id) return;
+
+        const cached = this._conversationCache.get(id);
+
+        if (cached) {
+          console.log('cached');
+
+          this.conversation = cached;
+          this.loadMessages();
+
+          this._cd.markForCheck();
+        } else {
+          this._conversationService
+            .findById(id)
+            .subscribe(c => {
+              console.log('2');
+              this.conversation = c;
+              this._conversationCache.set(c);
+              this.loadMessages();
+
+              this._cd.markForCheck();
+            });
+        }
+      });
+  }
+
+  private loadMessages(datetime?: string) {
+    if (this.loading$.value) return;
+
+    this.loading$.next(true);
+
+    this._conversationService.getMessages(this.conversation?.id, datetime)
+      .pipe(finalize(() => this.loading$.next(false)))
+      .subscribe({
+        next: (messages) => {
+          // const current = this.messagesSubject.value;
+          // const merged = [...current, ...messages];
+          // this.messagesSubject.next(merged);
+          this.messagesSubject.next(messages);
+        },
+        error: (err) => {
+          console.error('Error when load messages:', err);
+        }
+      });
   }
 
 }

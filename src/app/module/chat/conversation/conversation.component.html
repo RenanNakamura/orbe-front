@@ -19,125 +19,62 @@
 
     <span class="flex-1"></span>
 
-<!--    <div class="flex-none flex items-center gap-1 mr-1">-->
-<!--      <button mat-icon-button type="button">-->
-<!--        <mat-icon svgIcon="mat:info"></mat-icon>-->
-<!--      </button>-->
-<!--    </div>-->
+    <!--    <div class="flex-none flex items-center gap-1 mr-1">-->
+    <!--      <button mat-icon-button type="button">-->
+    <!--        <mat-icon svgIcon="mat:info"></mat-icon>-->
+    <!--      </button>-->
+    <!--    </div>-->
   </div>
 
-  <vex-scrollbar class="flex-1">
-    <div class="flex flex-col space-y-2 p-8 justify-end">
-      <div class="flex gap-2">
+  <div infinite-scroll
+       [infiniteScrollUpDistance]="2"
+       [infiniteScrollThrottle]="150"
+       [scrollWindow]="false"
+       (scrolledUp)="onScrollEnd()"
+       class="flex-1 overflow-auto flex flex-col-reverse p-8"
+  >
+    <ng-container *ngFor="let message of messages$ | async">
+      <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
-        <div class="flex flex-col space-y-2">
-          <div class="self-start inline-flex items-center gap-2">
-            <div
-              class="p-3 rounded-xl bg-gray-200 dark:bg-gray-800 inline-flex max-w-[350px]">
-              <div class="grid grid-cols-2 gap-1.5">
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-tl-xl"
-                    src="/assets/img/demo/macbook-blended-color-beauty-shot.jpg"
-                    alt=""/>
-                </div>
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-tr-xl"
-                    src="/assets/img/demo/macbook-desk-work-beauty-shot.jpg"
-                    alt=""/>
-                </div>
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-bl-xl"
-                    src="/assets/img/demo/macbook-iphone-airpods-gopro-beauty-shot.jpg"
-                    alt=""/>
-                </div>
-                <div class="relative aspect-square">
-                  <img
-                    class="cursor-pointer h-full w-full object-cover rounded-br-xl"
-                    src="/assets/img/demo/macbook-pencil-iphone-airpods-closeup-beauty-shot.jpg"
-                    alt=""/>
-                </div>
-              </div>
-            </div>
 
-            <button class="rox-btn-icon text-gray-500" type="button">
-              <mat-icon svgIcon="mat:forward"></mat-icon>
-            </button>
+        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl  bg-white dark:bg-gray-800 self-start max-w-[350px] shadow-sm">
+          <div class="text-sm">
+            {{ message?.content?.text?.body }}
           </div>
-
-          <div
-            class="px-4 py-3 rounded-xl bg-gray-200 dark:bg-gray-800 inline-flex self-start max-w-[350px]">
-            I finished the design you requested. It's attached. Let me know if
-            you have any changes. 🤗
-          </div>
-          <div
-            class="px-4 py-3 rounded-xl rounded-bl-none bg-gray-200 dark:bg-gray-800 inline-flex self-start max-w-[350px]">
-            There's been a lot of great progress with the project so far. 🙌
-          </div>
-          <div class="flex items-center">
-            <div class="text-xs font-medium">09:02 am</div>
+          <div class="flex items-center self-end">
+            <div class="text-[10px]">{{ message.createdAt | friendlyDate }}</div>
           </div>
         </div>
       </div>
 
-      <div
-        class="px-4 py-3 rounded-xl bg-primary-600 text-white inline-flex self-end max-w-[350px]">
-        Wow, how did you do this so fast?! 👀
-      </div>
-      <div
-        class="px-4 py-3 rounded-xl rounded-br-none bg-primary-600 text-white inline-flex self-end max-w-[350px]">
-        Thanks a lot! I'll have a look and update the page. 👍
-      </div>
-      <div class="self-end flex items-center gap-2">
-        <mat-icon class="icon-xs" svgIcon="mat:done_all"></mat-icon>
-        <div class="text-xs font-medium">09:04 am</div>
-      </div>
+      <div *ngIf="this.isAgent(message)" class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white self-end max-w-[350px] shadow-sm">
+        <div class="text-sm">
+          {{ message?.content?.text?.body }}
+        </div>
 
-      <div class="flex gap-2">
-        <img class="w-8 h-8 rounded-full self-end" src="assets/img/no-avatar.png" alt=""/>
-        <div class="flex flex-col space-y-2">
-          <div
-            class="px-4 py-3 rounded-xl bg-gray-200 dark:bg-gray-800 inline-flex items-center self-start max-w-[350px] gap-3 cursor-pointer">
-            <div
-              class="flex-none h-10 w-10 rounded-xl bg-foreground flex items-center justify-center">
-              <mat-icon
-                class="text-primary-600"
-                svgIcon="mat:folder_zip"></mat-icon>
-            </div>
-
-            <div class="flex-1 truncate">
-              <div class="text-sm font-medium truncate">
-                Marketing Files.zip
-              </div>
-              <div class="text-xs text-gray-500 truncate">6.9 MB</div>
-            </div>
-
-            <mat-icon class="flex-none" svgIcon="mat:download"></mat-icon>
-          </div>
-
-          <div
-            class="px-4 py-3 rounded-xl rounded-bl-none bg-gray-200 dark:bg-gray-800 inline-flex self-start max-w-[350px]">
-            Here's the full compilation in a zip file. Let me know if you need
-            anything else. 🤗
-          </div>
-          <div class="flex items-center">
-            <div class="text-xs font-medium">09:08 am</div>
-          </div>
+        <div class="self-end flex items-center">
+          <div class="text-[10px] mr-1">{{ message.createdAt | friendlyDate }}</div>
+          <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
         </div>
       </div>
 
-      <div
-        class="px-4 py-3 rounded-xl bg-primary-600 text-white inline-flex self-end max-w-[350px] text-6xl">
-        👍
+      <div *ngIf="this.isBot(message)" class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-500 text-white self-end max-w-[350px] shadow-sm">
+        <div class="text-sm">
+          {{ message?.content?.text?.body }}
+        </div>
+
+        <div class="flex items-center justify-between w-full">
+          <mat-icon class="w-[16px] h-[16px] mr-1" svgIcon="mat:smart_toy"></mat-icon>
+          <div class="flex items-center">
+            <div class="text-[10px] mr-1">
+              {{ message.createdAt | friendlyDate }}
+            </div>
+            <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
+          </div>
+        </div>
       </div>
-      <div class="self-end flex items-center gap-2">
-        <mat-icon class="icon-xs" svgIcon="mat:done_all"></mat-icon>
-        <div class="text-xs font-medium">09:16 am</div>
-      </div>
-    </div>
-  </vex-scrollbar>
+    </ng-container>
+  </div>
 
   <div class="flex-none bg-foreground border-t">
     <div class="relative h-16 flex items-center justify-between">
