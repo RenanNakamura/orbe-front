@@ -67,11 +67,42 @@ export class ConversationComponent implements OnInit {
     console.log('onScrollEnd');
   }
 
+  autoResize(textarea: HTMLTextAreaElement) {
+    if (!textarea) return;
+
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+  }
+
+  onEnter(event: Event, textarea: HTMLTextAreaElement) {
+    const e = event as KeyboardEvent;
+
+    if (e.shiftKey) {
+      setTimeout(() => this.autoResize(textarea));
+      return;
+    }
+
+    e.preventDefault();
+    this.sendMessage(textarea);
+  }
+
+  sendMessage(textarea: HTMLTextAreaElement) {
+    const value = textarea.value.trim();
+    if (!value) return;
+
+    // seu envio aqui
+    console.log('enviar:', value);
+
+    // limpar e resetar altura
+    textarea.value = '';
+    textarea.style.height = 'auto';
+    // se você usa change detection ou bind, dispare a atualização conforme necessário
+  }
+
   private syncSubscribers() {
     this._route
       .paramMap
       .subscribe(params => {
-        console.log('1')
         const id = params.get('conversationId');
 
         if (!id) return;
@@ -79,8 +110,6 @@ export class ConversationComponent implements OnInit {
         const cached = this._conversationCache.get(id);
 
         if (cached) {
-          console.log('cached');
-
           this.conversation = cached;
           this.loadMessages();
 
@@ -89,7 +118,6 @@ export class ConversationComponent implements OnInit {
           this._conversationService
             .findById(id)
             .subscribe(c => {
-              console.log('2');
               this.conversation = c;
               this._conversationCache.set(c);
               this.loadMessages();

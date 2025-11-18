@@ -571,5 +571,6 @@
   "photo": "Photo",
   "video": "Video",
   "document": "Document",
-  "more-options": "More options"
+  "more-options": "More options",
+  "type-a-message": "Type a message"
 }

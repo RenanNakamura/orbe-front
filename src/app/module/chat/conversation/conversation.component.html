@@ -38,12 +38,14 @@
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
 
         <div
-          class="flex flex-col space-y-1 px-3 py-2 rounded-xl  bg-white dark:bg-gray-800 self-start max-w-[350px] shadow-sm">
+          class="flex flex-col space-y-1 px-3 py-2 rounded-xl  bg-white self-start max-w-[350px] shadow-sm">
           <div class="text-sm">
             {{ message?.content?.text?.body }}
           </div>
           <div class="flex items-center self-end">
-            <div class="text-[10px]" [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}</div>
+            <div class="text-[10px]"
+                 [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}
+            </div>
           </div>
         </div>
       </div>
@@ -55,13 +57,15 @@
         </div>
 
         <div class="self-end flex items-center">
-          <div class="text-[10px] mr-1" [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}</div>
+          <div class="text-[10px] mr-1"
+               [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}
+          </div>
           <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
         </div>
       </div>
 
       <div *ngIf="this.isBot(message)"
-           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-500 text-white self-end max-w-[350px] shadow-sm">
+           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 self-end max-w-[350px] shadow-sm">
         <div class="text-sm">
           {{ message?.content?.text?.body }}
         </div>
@@ -69,7 +73,9 @@
         <div class="flex items-center justify-between w-full">
           <mat-icon class="w-[16px] h-[16px] mr-1" svgIcon="mat:smart_toy"></mat-icon>
           <div class="flex items-center">
-            <div class="text-[10px] mr-1" [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}</div>
+            <div class="text-[10px] mr-1"
+                 [matTooltip]="message.createdAt | dateMoment">{{ message.createdAt | dateOnlyHour }}
+            </div>
             <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
           </div>
         </div>
@@ -77,45 +83,73 @@
     </ng-container>
   </div>
 
-  <div class="flex-none bg-foreground border-t">
-    <div class="relative h-16 flex items-center justify-between">
-      <button
-        [matMenuTriggerFor]="addMenuButton"
-        class="z-10 ml-4"
-        color="primary"
-        mat-mini-fab
-        type="button">
-        <mat-icon svgIcon="mat:add"></mat-icon>
+  <div class="flex items-center mb-3 mr-3 ml-3 bg-white rounded-full border shadow px-1 py-1">
+
+    <!-- Botão de adicionar -->
+    <button
+      [matMenuTriggerFor]="addMenuButton"
+      color="primary"
+      mat-icon-button
+      type="button"
+      class="flex-none"
+    >
+      <mat-icon svgIcon="mat:add"></mat-icon>
+    </button>
+
+    <button
+      [matMenuTriggerFor]="addMenuButton"
+      color="primary"
+      mat-icon-button
+      type="button"
+      class="flex-none"
+    >
+      <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
+    </button>
+
+    <mat-menu #addMenuButton="matMenu" xPosition="after" yPosition="above">
+      <button mat-menu-item>
+        <mat-icon matMenuItemIcon svgIcon="mat:attach_file"></mat-icon>
+        <span>Upload File</span>
       </button>
-
-      <mat-menu #addMenuButton="matMenu" xPosition="after" yPosition="above">
-        <button mat-menu-item>
-          <mat-icon matMenuItemIcon svgIcon="mat:attach_file"></mat-icon>
-          <span>Upload File</span>
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item>
-          <mat-icon matMenuItemIcon svgIcon="mat:text_snippet"></mat-icon>
-          <span>Create Text Snippet</span>
-        </button>
-        <button mat-menu-item>
-          <mat-icon matMenuItemIcon svgIcon="mat:draw"></mat-icon>
-          <span>Start Drawing Canvas</span>
-        </button>
-        <button mat-menu-item>
-          <mat-icon matMenuItemIcon svgIcon="mat:event"></mat-icon>
-          <span>Schedule Meeting</span>
-        </button>
-      </mat-menu>
-
-      <input
-        class="z-0 absolute top-0 right-0 bottom-0 left-0 h-full w-full border-0 focus:border-0 px-20 bg-transparent"
-        placeholder="Type your message ..."
-        type="text"/>
-
-      <button class="relative z-10 mr-4" mat-icon-button type="button">
-        <mat-icon svgIcon="mat:send"></mat-icon>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        <mat-icon matMenuItemIcon svgIcon="mat:text_snippet"></mat-icon>
+        <span>Create Text Snippet</span>
       </button>
+      <button mat-menu-item>
+        <mat-icon matMenuItemIcon svgIcon="mat:draw"></mat-icon>
+        <span>Start Drawing Canvas</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon matMenuItemIcon svgIcon="mat:event"></mat-icon>
+        <span>Schedule Meeting</span>
+      </button>
+    </mat-menu>
+
+    <!-- Campo de texto -->
+    <div class="flex flex-col justify-end flex-1">
+    <textarea
+      #msgTextarea
+      rows="1"
+      class="w-full min-h-[24px] max-h-[160px] px-0 py-1
+             overflow-y-auto outline-none resize-none
+             whitespace-pre-wrap break-words bg-transparent
+             text-[15px] leading-[18px]"
+      [placeholder]="'type-a-message' | translate"
+      (input)="autoResize(msgTextarea)"
+    ></textarea>
     </div>
+
+    <!-- Botão de enviar -->
+    <button
+      color="primary"
+      mat-mini-fab
+      type="button"
+      class="flex-none ml-1"
+      (click)="sendMessage(msgTextarea)"
+    >
+      <mat-icon class="w-[22px] h-[22px]" svgIcon="mat:send"></mat-icon>
+    </button>
+
   </div>
 </div>
