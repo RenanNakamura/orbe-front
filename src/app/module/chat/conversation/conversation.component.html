@@ -112,7 +112,7 @@
       <div (click)="$event.stopPropagation()">
         <emoji-mart [isNative]="true"
                     [showPreview]="false"
-                    [enableSearch]="false"
+                    [enableSearch]="true"
                     [style]="{ width: '100%', height: 'auto' }"
                     (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
       </div>
