@@ -120,21 +120,16 @@
 
     <mat-menu #addMenuButton="matMenu" xPosition="after" yPosition="above">
       <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:attach_file"></mat-icon>
-        <span>Upload File</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:text_snippet"></mat-icon>
-        <span>Create Text Snippet</span>
+        <mat-icon matMenuItemIcon svgIcon="mat:image"></mat-icon>
+        <span>{{ 'IMAGE' | translate }}</span>
       </button>
       <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:draw"></mat-icon>
-        <span>Start Drawing Canvas</span>
+        <mat-icon matMenuItemIcon svgIcon="mat:videocam"></mat-icon>
+        <span>{{ 'VIDEO' | translate }}</span>
       </button>
       <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:event"></mat-icon>
-        <span>Schedule Meeting</span>
+        <mat-icon matMenuItemIcon svgIcon="mat:insert_drive_file"></mat-icon>
+        <span>{{ 'DOCUMENT' | translate }}</span>
       </button>
     </mat-menu>
 
