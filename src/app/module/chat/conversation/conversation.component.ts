@@ -9,6 +9,7 @@ import {Conversation, Message, SenderType} from "../../../model/chat/conversatio
 import {BehaviorSubject, Observable} from "rxjs";
 import {finalize} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
+import {MessageCache} from "../../../service/chat/message.cache";
 
 @Component({
   selector: 'vex-conversation',
@@ -33,6 +34,7 @@ export class ConversationComponent implements OnInit {
     private _chatService: ChatService,
     private _conversationService: ConversationService,
     private _conversationCache: ConversationCache,
+    private _messageCache: MessageCache,
   ) {
   }
 
@@ -63,7 +65,7 @@ export class ConversationComponent implements OnInit {
   }
 
   onScrollEnd() {
-    console.log('onScrollEnd');
+    console.log('onScrollEnd', this.messages$);
   }
 
   autoResize(textarea: HTMLTextAreaElement) {
