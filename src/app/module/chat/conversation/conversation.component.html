@@ -34,6 +34,12 @@
        (scrolledUp)="onScrollEnd()"
        class="flex-1 overflow-auto flex flex-col p-8"
   >
+    <ng-container *ngIf="(loading$ | async) as loading">
+      <div class="flex justify-center mb-2" *ngIf="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="22" strokeWidth="3"></mat-progress-spinner>
+      </div>
+    </ng-container>
+
     <div class="flex-1"></div>
 
     <ng-container *ngFor="let message of messages$ | async">
