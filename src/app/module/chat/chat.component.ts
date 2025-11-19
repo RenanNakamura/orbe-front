@@ -39,11 +39,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   private isCreatingConversationSubject = new BehaviorSubject<boolean>(false);
   isCreatingConversation$ = this.isCreatingConversationSubject.asObservable();
 
+  private channelsSubject = new BehaviorSubject<Channel[]>([]);
+  channels$ = this.channelsSubject.asObservable();
+
   loading$ = new BehaviorSubject<boolean>(false);
 
   searchCtrl = new UntypedFormControl();
   contactSearchCtrl = new UntypedFormControl();
-  channels: Channel[] = [];
 
   mobileQuery$ = this._layoutService.ltMd$;
   drawerOpen$ = this._chatService.drawerOpen$;
@@ -242,14 +244,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     this._channelService.list({sort: 'createdDate,desc'})
       .subscribe({
         next: (page) => {
-          this.channels = page.content || [];
+          const channels = page.content || [];
+          this.channelsSubject.next(channels);
 
-          if (this.channels?.length && !this.selectedChannelSubject?.value) {
-            this.onChannelSelect(this.channels[0]);
+          if (channels.length && !this.selectedChannelSubject.value) {
+            this.onChannelSelect(channels[0]);
           }
         },
         error: (err) => {
-          console.error('Error when load channels:', err);
+          console.error('m=loadChannels; msg=Error when load channels', err);
         }
       });
   }
