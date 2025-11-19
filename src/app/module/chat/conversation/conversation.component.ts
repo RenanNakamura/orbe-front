@@ -21,6 +21,7 @@ import {MessageCache} from "../../../service/chat/message.cache";
 export class ConversationComponent implements OnInit {
 
   @ViewChild('msgTextarea') msgTextarea: ElementRef;
+  @ViewChild('messagesContainer') messagesContainer: ElementRef;
 
   private messagesSubject: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
@@ -35,8 +36,7 @@ export class ConversationComponent implements OnInit {
     private _conversationService: ConversationService,
     private _conversationCache: ConversationCache,
     private _messageCache: MessageCache,
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.syncSubscribers();
@@ -65,7 +65,31 @@ export class ConversationComponent implements OnInit {
   }
 
   onScrollEnd() {
-    console.log('onScrollEnd', this.messages$);
+    const conversationId = this.conversation?.id;
+    if (!conversationId) return;
+
+    const currentMessages = this.messagesSubject.value;
+    if (!currentMessages.length) return;
+
+    const oldestMsg = currentMessages[0];
+    const cursor = oldestMsg.createdAt;
+
+    this.loading$.next(true);
+    this._conversationService.getMessages(conversationId, cursor)
+      .pipe(finalize(() => this.loading$.next(false)))
+      .subscribe({
+        next: (newMessages) => {
+          newMessages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+          const combined = [...newMessages, ...currentMessages].slice(-60);
+
+          this.messagesSubject.next(combined);
+          this._messageCache.setAll(conversationId, combined);
+        },
+        error: (err) => {
+          console.error('Error loading more messages:', err);
+        }
+      });
   }
 
   autoResize(textarea: HTMLTextAreaElement) {
@@ -79,13 +103,10 @@ export class ConversationComponent implements OnInit {
     const value = textarea.value.trim();
     if (!value) return;
 
-    // seu envio aqui
     console.log('enviar:', value);
 
-    // limpar e resetar altura
     textarea.value = '';
     textarea.style.height = 'auto';
-    // se você usa change detection ou bind, dispare a atualização conforme necessário
   }
 
   onSelectEmoji(event, trigger: MatMenuTrigger) {
@@ -109,52 +130,69 @@ export class ConversationComponent implements OnInit {
   }
 
   private syncSubscribers() {
-    this._route
-      .paramMap
-      .subscribe(params => {
-        const id = params.get('conversationId');
+    this._route.paramMap.subscribe(params => {
+      const id = params.get('conversationId');
+      if (!id) return;
 
-        if (!id) return;
+      const cached = this._conversationCache.get(id);
 
-        const cached = this._conversationCache.get(id);
+      if (cached) {
+        this.conversation = cached;
+        this.loadMessages();
+        this._cd.markForCheck();
+      } else {
+        this._conversationService.findById(id)
+          .subscribe(c => {
+            this.conversation = c;
+            this._conversationCache.set(c);
+            this.loadMessages();
+            this._cd.markForCheck();
+          });
+      }
+    });
+  }
 
-        if (cached) {
-          this.conversation = cached;
-          this.loadMessages();
-
-          this._cd.markForCheck();
-        } else {
-          this._conversationService
-            .findById(id)
-            .subscribe(c => {
-              this.conversation = c;
-              this._conversationCache.set(c);
-              this.loadMessages();
-
-              this._cd.markForCheck();
-            });
-        }
-      });
+  private scrollToBottom() {
+    setTimeout(() => {
+      if (this.messagesContainer?.nativeElement) {
+        const el = this.messagesContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    }, 0);
   }
 
   private loadMessages(datetime?: string) {
-    if (this.loading$.value) return;
+    const conversationId = this.conversation?.id;
+    if (!conversationId) return;
+
+    const cachedMessages = this._messageCache.get(conversationId);
+
+    if (cachedMessages?.length) {
+      console.log('message cached => ', cachedMessages);
+      cachedMessages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      const lastCache = cachedMessages.slice(-60);
+      this.messagesSubject.next(lastCache);
+      this.scrollToBottom();
+      return;
+    }
 
     this.loading$.next(true);
-
-    this._conversationService.getMessages(this.conversation?.id, datetime)
+    this._conversationService.getMessages(conversationId, datetime)
       .pipe(finalize(() => this.loading$.next(false)))
       .subscribe({
         next: (messages) => {
-          // const current = this.messagesSubject.value;
-          // const merged = [...current, ...messages];
-          // this.messagesSubject.next(merged);
-          this.messagesSubject.next(messages);
+          messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+          const lastMessages = messages.slice(-60);
+
+          this.messagesSubject.next(lastMessages);
+          this._messageCache.setAll(conversationId, lastMessages);
+
+          this.scrollToBottom();
         },
         error: (err) => {
           console.error('Error when load messages:', err);
         }
       });
   }
-
 }

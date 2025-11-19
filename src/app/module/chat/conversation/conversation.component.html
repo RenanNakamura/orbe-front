@@ -26,12 +26,13 @@
     <!--    </div>-->
   </div>
 
-  <div infinite-scroll
+  <div #messagesContainer
+       infinite-scroll
        [infiniteScrollUpDistance]="2"
        [infiniteScrollThrottle]="150"
        [scrollWindow]="false"
        (scrolledUp)="onScrollEnd()"
-       class="flex-1 overflow-auto flex flex-col-reverse p-8"
+       class="flex-1 overflow-auto flex flex-col p-8"
   >
     <ng-container *ngFor="let message of messages$ | async">
       <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
