@@ -34,6 +34,8 @@
        (scrolledUp)="onScrollEnd()"
        class="flex-1 overflow-auto flex flex-col p-8"
   >
+    <div class="flex-1"></div>
+
     <ng-container *ngFor="let message of messages$ | async">
       <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">

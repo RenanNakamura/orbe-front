@@ -175,7 +175,7 @@ export class ConversationComponent implements OnInit {
         const el = this.messagesContainer.nativeElement;
         el.scrollTop = el.scrollHeight;
       }
-    }, 0);
+    }, 50);
   }
 
   private loadMessages(datetime?: string) {

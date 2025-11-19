@@ -7,7 +7,7 @@ import {Conversation, Message} from "../../model/chat/conversation";
 export class MessageCache {
 
   private cache = new Map<string, Message[]>();
-  private MAX = 15;
+  private MAX = 60;
 
   get(conversationId: string): Message[] | undefined {
     return this.cache.get(conversationId);
