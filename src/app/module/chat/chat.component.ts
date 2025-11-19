@@ -12,7 +12,6 @@ import {Channel} from "../../model/Channel";
 import {ChannelService} from "../../service/channel/channel.service";
 import {Contact} from "../../model/Contact";
 import {ContactService} from "../../service/contact/contact.service";
-import {ConversationCache} from "../../service/chat/conversation.cache";
 
 @Component({
   selector: 'vex-chat',
@@ -23,19 +22,14 @@ import {ConversationCache} from "../../service/chat/conversation.cache";
 export class ChatComponent implements OnInit, OnDestroy {
 
   private conversationsSubject = new BehaviorSubject<Conversation[]>([]);
-
-  loading$ = new BehaviorSubject<boolean>(false);
   conversations$: Observable<Conversation[]> = this.conversationsSubject.asObservable();
-  searchCtrl = new UntypedFormControl();
 
-  contactSearchCtrl = new UntypedFormControl();
-
-  channels: Channel[] = [];
   private selectedChannelSubject = new BehaviorSubject<Channel | null>(null);
   selectedChannel$: Observable<Channel | null> = this.selectedChannelSubject.asObservable();
 
   private contactsSubject = new BehaviorSubject<Contact[]>([]);
   contacts$: Observable<Contact[]> = this.contactsSubject.asObservable();
+
   private contactsLoadingSubject = new BehaviorSubject<boolean>(false);
   contactsLoading$ = this.contactsLoadingSubject.asObservable();
 
@@ -44,6 +38,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private isCreatingConversationSubject = new BehaviorSubject<boolean>(false);
   isCreatingConversation$ = this.isCreatingConversationSubject.asObservable();
+
+  loading$ = new BehaviorSubject<boolean>(false);
+
+  searchCtrl = new UntypedFormControl();
+  contactSearchCtrl = new UntypedFormControl();
+  channels: Channel[] = [];
 
   mobileQuery$ = this._layoutService.ltMd$;
   drawerOpen$ = this._chatService.drawerOpen$;
@@ -214,6 +214,28 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.loadContacts(true);
         }
       });
+
+    // this._route
+    //   .firstChild
+    //   ?.data
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((data) => {
+    //     console.log('chat.data => ', data);
+    //     const conversation = data?.['conversation'] as Conversation;
+    //
+    //     if (conversation) {
+    //       console.log('entrou', this.channels);
+    //       const channelOfConversation = this.channels.find(
+    //         c => c.id === conversation.channelId
+    //       );
+    //
+    //       console.log('channelOfConversation');
+    //
+    //       if (channelOfConversation) {
+    //         this.selectedChannelSubject.next(channelOfConversation);
+    //       }
+    //     }
+    //   });
   }
 
   private loadChannels() {

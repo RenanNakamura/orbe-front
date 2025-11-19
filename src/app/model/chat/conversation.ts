@@ -1,6 +1,7 @@
 export interface Conversation {
   id: string;
   customerId: string;
+  channelId: string;
   name: string;
   ddi: string;
   phoneNumber: string;

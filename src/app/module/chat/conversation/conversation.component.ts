@@ -143,30 +143,12 @@ export class ConversationComponent implements OnInit {
   }
 
   private syncSubscribers() {
-    this._route.paramMap.subscribe(params => {
-      const id = params.get('conversationId');
-
-      if (!id) {
-        return;
-      }
-
-      const conversationCached = this._conversationCache.get(id);
-
-      if (conversationCached) {
-        this.conversation = conversationCached;
+    this._route
+      .data
+      .subscribe((data) => {
+        this.conversation = data?.['conversation'] as Conversation;
         this.loadMessages();
-        this._cd.markForCheck();
-      } else {
-        this._conversationService
-          .findById(id)
-          .subscribe(c => {
-            this.conversation = c;
-            this._conversationCache.set(c);
-            this.loadMessages();
-            this._cd.markForCheck();
-          });
-      }
-    });
+      });
   }
 
   private scrollToBottom() {

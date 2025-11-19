@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {ChatComponent} from './chat.component';
 import {ConversationComponent} from "./conversation/conversation.component";
 import {ConversationEmptyComponent} from "./conversation-empty/conversation-empty.component";
+import {ConversationResolver} from "./resolver/conversation.resolver";
 
 const routes: Routes = [
   {
@@ -21,7 +22,10 @@ const routes: Routes = [
       },
       {
         path: ':conversationId',
-        component: ConversationComponent
+        component: ConversationComponent,
+        resolve: {
+          conversation: ConversationResolver
+        }
       },
     ]
   }
