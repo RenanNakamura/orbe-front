@@ -146,7 +146,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           }
         },
         error: (err) => {
-          console.error('Error when creating conversation:', err);
+          console.error('m=onSelectContact; msg=Error when creating conversation', err);
         }
       });
   }
@@ -216,28 +216,6 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.loadContacts(true);
         }
       });
-
-    // this._route
-    //   .firstChild
-    //   ?.data
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((data) => {
-    //     console.log('chat.data => ', data);
-    //     const conversation = data?.['conversation'] as Conversation;
-    //
-    //     if (conversation) {
-    //       console.log('entrou', this.channels);
-    //       const channelOfConversation = this.channels.find(
-    //         c => c.id === conversation.channelId
-    //       );
-    //
-    //       console.log('channelOfConversation');
-    //
-    //       if (channelOfConversation) {
-    //         this.selectedChannelSubject.next(channelOfConversation);
-    //       }
-    //     }
-    //   });
   }
 
   private loadChannels() {
@@ -275,7 +253,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.conversationsSubject.next(merged);
         },
         error: (err) => {
-          console.error('Error when load conversations:', err);
+          console.error('m=loadConversations; msg=Error when load conversations', err);
         }
       });
   }
@@ -322,7 +300,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.contactsNextPage += 1;
         },
         error: (err) => {
-          console.error('Error when load contacts:', err);
+          console.error('m=loadContacts; msg=Error when load contacts', err);
         }
       });
   }
