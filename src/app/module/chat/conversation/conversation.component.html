@@ -52,7 +52,7 @@
             {{ message?.content?.text?.body }}
           </div>
           <div class="flex items-center self-end">
-            <div class="text-[10px]">{{ message.createdAt | dateOnlyHour }}
+            <div class="text-[12px]">{{ message.createdAt | dateOnlyHour }}
             </div>
           </div>
         </div>
@@ -65,9 +65,13 @@
         </div>
 
         <div class="self-end flex items-center">
-          <div class="text-[10px] mr-1">{{ message.createdAt | dateOnlyHour }}
+          <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
           </div>
-          <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
+          <mat-icon class="w-[14px] h-[14px]"
+                    [matTooltip]="message?.error | MapWhatsAppError"
+                    [svgIcon]="MessageStatusIconMap[message.status]"
+                    [ngClass]="MessageStatusColorMap[message.status]"
+          ></mat-icon>
         </div>
       </div>
 
@@ -80,9 +84,13 @@
         <div class="flex items-center justify-between w-full">
           <mat-icon class="w-[16px] h-[16px] mr-1" svgIcon="mat:smart_toy"></mat-icon>
           <div class="flex items-center">
-            <div class="text-[10px] mr-1">{{ message.createdAt | dateOnlyHour }}
+            <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
             </div>
-            <mat-icon class="w-[12px] h-[12px]" svgIcon="mat:done_all"></mat-icon>
+            <mat-icon class="w-[14px] h-[14px]"
+                      [matTooltip]="message?.error | MapWhatsAppError"
+                      [svgIcon]="MessageStatusIconMap[message.status]"
+                      [ngClass]="MessageStatusColorMap[message.status]"
+            ></mat-icon>
           </div>
         </div>
       </div>

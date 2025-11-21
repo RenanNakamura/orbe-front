@@ -20,9 +20,10 @@ import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatTooltip} from "@angular/material/tooltip";
 import {ConversationEmptyComponent} from "./conversation-empty/conversation-empty.component";
-import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
 import {DateMomentPipeModule} from "../../pipe/date-moment.pipe";
 import {PickerComponent} from "@ctrl/ngx-emoji-mart";
+import {MetaPipeModule} from "../../pipe/map-whatsapp-error.pipe";
+import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import {PickerComponent} from "@ctrl/ngx-emoji-mart";
     PhoneMaskPipeModule,
     DateMomentPipeModule,
     PickerComponent,
+    MetaPipeModule
   ],
   providers: []
 })

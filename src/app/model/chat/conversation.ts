@@ -15,12 +15,19 @@ export class Message {
   senderId: string;
   senderType: SenderType;
   content: MessageContent;
+  status: MessageStatus;
+  error: MessageError;
 }
 
 export class MessageContent {
   to: string;
   type: MessageType;
   text: TextMessage;
+}
+
+export class MessageError {
+  code: string;
+  messages: { ptBr: string; enUs: string };
 }
 
 export class TextMessage {
@@ -56,3 +63,33 @@ export enum MessageType {
   VIDEO = 'VIDEO',
   DOCUMENT = 'DOCUMENT',
 }
+
+export enum MessageStatus {
+  PENDING = 'PENDING',
+  SENT = 'SENT',
+  DELIVERED = 'DELIVERED',
+  READ = 'READ',
+  FAILED = 'FAILED',
+  PLAYED = 'PLAYED',
+  ERROR = 'ERROR'
+}
+
+export const MessageStatusIconMap: Record<MessageStatus, string> = {
+  PENDING: 'mat:access_time',
+  SENT: 'mat:done',
+  DELIVERED: 'mat:done_all',
+  READ: 'mat:done_all',
+  FAILED: 'mat:error',
+  ERROR: 'mat:error',
+  PLAYED: 'mat:done_all'
+};
+
+export const MessageStatusColorMap: Record<MessageStatus, string> = {
+  PENDING: 'text-white',
+  SENT: 'text-white',
+  DELIVERED: 'text-white',
+  READ: 'text-[#3897f8]',
+  FAILED: 'text-red-600',
+  ERROR: 'text-red-600',
+  PLAYED: 'text-[#3897f8]'
+};

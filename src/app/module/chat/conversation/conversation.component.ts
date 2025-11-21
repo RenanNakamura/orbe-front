@@ -2,10 +2,15 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnIni
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
 import {stagger20ms} from '@vex/animations/stagger.animation';
 import {ChatService} from "../../../service/chat/chat.service";
-import {ConversationCache} from "../../../service/chat/conversation.cache";
 import {ActivatedRoute} from "@angular/router";
 import {ConversationService} from "../../../service/chat/conversation.service";
-import {Conversation, Message, SenderType} from "../../../model/chat/conversation";
+import {
+  Conversation,
+  Message,
+  MessageStatusColorMap,
+  MessageStatusIconMap,
+  SenderType
+} from "../../../model/chat/conversation";
 import {BehaviorSubject, Observable} from "rxjs";
 import {finalize} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
@@ -29,12 +34,14 @@ export class ConversationComponent implements OnInit {
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
   conversation?: Conversation;
 
+  protected readonly MessageStatusIconMap = MessageStatusIconMap;
+  protected readonly MessageStatusColorMap = MessageStatusColorMap;
+
   constructor(
     private _route: ActivatedRoute,
     private _cd: ChangeDetectorRef,
     private _chatService: ChatService,
     private _conversationService: ConversationService,
-    private _conversationCache: ConversationCache,
     private _messageCache: MessageCache,
   ) {
   }
