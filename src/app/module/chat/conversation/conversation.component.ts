@@ -101,7 +101,6 @@ export class ConversationComponent implements OnInit {
       .pipe(finalize(() => this.loading$.next(false)))
       .subscribe({
         next: (messages) => {
-          messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
           this.putMessagesCache(conversationId, messages);
         },
         error: (err) => {
@@ -225,6 +224,8 @@ export class ConversationComponent implements OnInit {
   private putMessagesCache(conversationId: string, messages: Message[]) {
     const currentMessages = this._messageCache.get(conversationId);
     const combined = [...messages, ...currentMessages];
+
+    combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     this.messagesSubject.next(combined);
     this._messageCache.setAll(conversationId, combined);
