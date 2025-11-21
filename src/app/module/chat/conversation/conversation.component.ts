@@ -9,7 +9,9 @@ import {
   Message,
   MessageStatusColorMap,
   MessageStatusIconMap,
-  SenderType
+  MessageType,
+  SenderType,
+  SendMessageRequest
 } from "../../../model/chat/conversation";
 import {BehaviorSubject, Observable} from "rxjs";
 import {finalize} from "rxjs/operators";
@@ -25,7 +27,7 @@ import {MessageCache} from "../../../service/chat/message.cache";
 })
 export class ConversationComponent implements OnInit {
 
-  @ViewChild('msgTextarea') msgTextarea: ElementRef;
+  @ViewChild('textareaMessage') msgTextarea: ElementRef;
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
 
   private messagesSubject: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
@@ -100,11 +102,7 @@ export class ConversationComponent implements OnInit {
       .subscribe({
         next: (messages) => {
           messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
-          const combined = [...messages, ...currentMessages];
-
-          this.messagesSubject.next(combined);
-          this._messageCache.setAll(conversationId, combined);
+          this.putMessagesCache(conversationId, messages);
         },
         error: (err) => {
           console.error(`m=onScrollEnd; msg=Error loading more messages; conversationId=${conversationId}`, err);
@@ -120,13 +118,35 @@ export class ConversationComponent implements OnInit {
   }
 
   sendMessage(textarea: HTMLTextAreaElement) {
-    const value = textarea.value.trim();
+    const value = textarea?.value?.trim();
+
     if (!value) return;
 
-    console.log('enviar:', value);
+    const request: SendMessageRequest = {
+      senderType: SenderType.AGENT,
+      senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+      phoneNumberId: this.conversation.phoneNumberId,
+      content: {
+        to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
+        type: MessageType.TEXT,
+        text: {
+          body: value,
+          previewUrl: false
+        }
+      }
+    }
 
-    textarea.value = '';
-    textarea.style.height = 'auto';
+    this._conversationService.sendMessage(this.conversation.id, request)
+      .pipe(finalize(() => {
+        textarea.value = '';
+        textarea.style.height = 'auto';
+        this.loading$.next(false);
+      }))
+      .subscribe(messageCreated => {
+        console.log('MessageCreated => ', messageCreated);
+
+        this.putMessagesCache(this.conversation.id, [messageCreated]);
+      })
   }
 
   onSelectEmoji(event, trigger: MatMenuTrigger) {
@@ -177,6 +197,7 @@ export class ConversationComponent implements OnInit {
     const cachedMessages = this._messageCache.get(conversationId);
 
     if (cachedMessages?.length) {
+      console.log('cachedMessages', cachedMessages)
       this.messagesSubject.next(cachedMessages);
       this.scrollToBottom();
       return;
@@ -201,4 +222,11 @@ export class ConversationComponent implements OnInit {
       });
   }
 
+  private putMessagesCache(conversationId: string, messages: Message[]) {
+    const currentMessages = this._messageCache.get(conversationId);
+    const combined = [...messages, ...currentMessages];
+
+    this.messagesSubject.next(combined);
+    this._messageCache.setAll(conversationId, combined);
+  }
 }

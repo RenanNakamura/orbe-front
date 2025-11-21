@@ -2,6 +2,7 @@ export interface Conversation {
   id: string;
   customerId: string;
   channelId: string;
+  phoneNumberId: string;
   name: string;
   ddi: string;
   phoneNumber: string;
@@ -43,6 +44,24 @@ export class CreateConversation {
   name: string;
   status: ConversationStatus;
   channel: ConversationChannel
+}
+
+export class SendMessageRequest {
+  senderId: string; // TODO no back deve pegar do agentId do token
+  senderType: SenderType;
+  phoneNumberId: string;
+  content: MessageContentRequest;
+}
+
+export class MessageContentRequest {
+  to: string;
+  type: MessageType;
+  text: TextMessageRequest;
+}
+
+export class TextMessageRequest {
+  body: string;
+  previewUrl?: boolean;
 }
 
 export enum ConversationStatus {

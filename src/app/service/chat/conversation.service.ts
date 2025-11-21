@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {Conversation, CreateConversation, Message} from "../../model/chat/conversation";
+import {Conversation, CreateConversation, Message, SendMessageRequest} from "../../model/chat/conversation";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 
@@ -56,4 +56,9 @@ export class ConversationService {
 
     return this._http.get<Message[]>(`${environment.chat}${this._api}/${id}/messages`, {params});
   }
+
+  sendMessage(conversationId: string, request: SendMessageRequest): Observable<Message> {
+    return this._http.post<Message>(`${environment.chat}${this._api}/${conversationId}/messages/send`, request);
+  }
+
 }

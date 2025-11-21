@@ -149,14 +149,14 @@
     <!-- Campo de texto -->
     <div class="flex flex-col justify-end flex-1">
       <textarea
-        #msgTextarea
+        #textareaMessage
         rows="1"
         class="w-full min-h-[24px] max-h-[160px] px-0 py-1
                overflow-y-auto outline-none resize-none
                whitespace-pre-wrap break-words bg-transparent
                text-[15px] leading-[18px]"
         [placeholder]="'type-a-message' | translate"
-        (input)="autoResize(msgTextarea)"
+        (input)="autoResize(textareaMessage)"
       ></textarea>
     </div>
 
@@ -165,7 +165,7 @@
       mat-icon-button
       type="button"
       class="flex-none self-end"
-      (click)="sendMessage(msgTextarea)"
+      (click)="sendMessage(textareaMessage)"
     >
       <mat-icon svgIcon="mat:send"></mat-icon>
     </button>
