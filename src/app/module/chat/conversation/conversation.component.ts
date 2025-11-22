@@ -139,7 +139,7 @@ export class ConversationComponent implements OnInit {
       .pipe(finalize(() => {
         textarea.value = '';
         textarea.style.height = 'auto';
-        this.loading$.next(false);
+        this.scrollToBottom();
       }))
       .subscribe(messageCreated => {
         console.log('MessageCreated => ', messageCreated);
