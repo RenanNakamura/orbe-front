@@ -168,6 +168,13 @@ export class ChatComponent implements OnInit, OnDestroy {
           const current = this.conversationsSubject.value;
           const filtered = current.filter(c => c.id !== conversationId);
           this.conversationsSubject.next(filtered);
+
+          const currentRoute = this._route.firstChild?.snapshot;
+          const currentConversationId = currentRoute?.params['conversationId'];
+
+          if (currentConversationId === conversationId) {
+            this._router.navigate(['./'], {relativeTo: this._route});
+          }
         },
         error: (err) => {
           console.error('m=onArchiveConversation; msg=Error when archiving conversation', err);
