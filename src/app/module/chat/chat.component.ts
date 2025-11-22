@@ -54,6 +54,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   private contactsNextPage = 0;
   private destroy$ = new Subject<void>();
 
+  selectedConversationId: string | null = null;
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -153,6 +155,24 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   onChannelSelect(channel: Channel | null) {
     this.selectedChannelSubject.next(channel);
+  }
+
+  onArchiveConversation(conversationId: string) {
+    if (!conversationId) {
+      return;
+    }
+
+    this._conversationService.archive(conversationId)
+      .subscribe({
+        next: () => {
+          const current = this.conversationsSubject.value;
+          const filtered = current.filter(c => c.id !== conversationId);
+          this.conversationsSubject.next(filtered);
+        },
+        error: (err) => {
+          console.error('m=onArchiveConversation; msg=Error when archiving conversation', err);
+        }
+      });
   }
 
   isWhatsAppChannel(channel: Channel | null): boolean {

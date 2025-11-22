@@ -61,4 +61,8 @@ export class ConversationService {
     return this._http.post<Message>(`${environment.chat}${this._api}/${conversationId}/messages/send`, request);
   }
 
+  archive(conversationId: string): Observable<void> {
+    return this._http.patch<void>(`${environment.chat}${this._api}/${conversationId}/archive`, {});
+  }
+
 }

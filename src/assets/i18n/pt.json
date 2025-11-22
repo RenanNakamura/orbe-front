@@ -562,7 +562,8 @@
     "label": "Conversa",
     "new": "Nova conversa",
     "empty": "Nenhuma conversa",
-    "start": "Inicie uma conversa"
+    "start": "Inicie uma conversa",
+    "archive": "Arquivar"
   },
   "all_feminine": "Todas",
   "all_masculine": "Todos",
