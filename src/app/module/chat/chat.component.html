@@ -188,7 +188,7 @@
                           <div class="truncate flex mb-0.5">
                             <div class="font-medium flex-1">{{ conversation.name }}</div>
                             <div class="flex-none text-xs text-gray-500">
-                              {{ conversation?.messages[0]?.createdAt | friendlyDate }}
+                              {{ conversation?.messages[0]?.createdAt || conversation?.lastMessageAt | friendlyDate }}
                             </div>
                           </div>
                           <div class="text-xs text-gray-500 truncate">

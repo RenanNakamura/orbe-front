@@ -1,7 +1,13 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {scaleFadeIn400ms} from "@vex/animations/scale-fade-in.animation";
 import {BehaviorSubject, Observable, Subject, switchMap} from "rxjs";
-import {Conversation, ConversationChannel, ConversationStatus, CreateConversation} from "../../model/chat/conversation";
+import {
+  Conversation,
+  ConversationChannel,
+  ConversationStatus,
+  CreateConversation,
+  Message
+} from "../../model/chat/conversation";
 import {ChatService} from "../../service/chat/chat.service";
 import {VexLayoutService} from "@vex/services/vex-layout.service";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
@@ -243,6 +249,12 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.loadContacts(true);
         }
       });
+
+    this._chatService.messageSent$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(event => {
+        this.moveConversationToTop(event.conversationId, event.message);
+      });
   }
 
   private loadChannels() {
@@ -336,6 +348,26 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.contactsSubject.next([]);
     this.contactsTotal = 0;
     this.contactsNextPage = 0;
+  }
+
+  private moveConversationToTop(conversationId: string, message: Message) {
+    const current = this.conversationsSubject.value;
+    const conversationIndex = current.findIndex(c => c.id === conversationId);
+
+    if (conversationIndex === -1) {
+      return;
+    }
+
+    const conversation = current[conversationIndex];
+    const updatedMessages = [message, ...(conversation.messages || [])];
+    const updatedConversation = {
+      ...conversation,
+      lastMessageAt: message.createdAt,
+      messages: updatedMessages
+    };
+    const updated = [updatedConversation, ...current.filter(c => c.id !== conversationId)];
+
+    this.conversationsSubject.next(updated);
   }
 
 }

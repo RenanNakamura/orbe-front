@@ -145,6 +145,11 @@ export class ConversationComponent implements OnInit {
         console.log('MessageCreated => ', messageCreated);
 
         this.putMessagesCache(this.conversation.id, [messageCreated]);
+
+        this._chatService.messageSent.next({
+          conversationId: this.conversation.id,
+          message: messageCreated
+        });
       })
   }
 
