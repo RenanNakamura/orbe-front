@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
 import {stagger20ms} from '@vex/animations/stagger.animation';
 import {ChatService} from "../../../service/chat/chat.service";
@@ -13,11 +23,11 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, Observable, Subject, combineLatest} from "rxjs";
-import {finalize, filter, debounceTime} from "rxjs/operators";
+import {BehaviorSubject, combineLatest, fromEvent, Observable, Subject} from "rxjs";
+import {debounceTime, filter, finalize, map} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
-import { fromEvent } from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'vex-conversation',
@@ -26,7 +36,7 @@ import { fromEvent } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [fadeInUp400ms, stagger20ms],
 })
-export class ConversationComponent implements OnInit {
+export class ConversationComponent implements OnInit, AfterViewInit {
 
   @ViewChild('textareaMessage') msgTextarea: ElementRef;
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
@@ -34,7 +44,7 @@ export class ConversationComponent implements OnInit {
   public stickToBottom$ = new BehaviorSubject<boolean>(true);
   private mediaLoaded$ = new Subject<void>();
 
-  private messagesSubject: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
+  private messagesSubject = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
 
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
@@ -42,6 +52,8 @@ export class ConversationComponent implements OnInit {
 
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
   protected readonly MessageStatusColorMap = MessageStatusColorMap;
+
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private _route: ActivatedRoute,
@@ -57,24 +69,41 @@ export class ConversationComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    if (this.messagesContainer?.nativeElement) {
-      fromEvent(this.messagesContainer.nativeElement, 'scroll')
-        .pipe(debounceTime(10))
-        .subscribe(() => {
-          const el = this.messagesContainer.nativeElement as HTMLElement;
-          const atBottom = Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 2;
-          this.stickToBottom$.next(atBottom);
-        });
-    }
+    this.setupScrollListener();
+    this.setupAutoScrollOnMediaLoaded();
+  }
 
+  /**
+   * Detecta scroll e atualiza stickToBottom$
+   */
+  private setupScrollListener() {
+    if (!this.messagesContainer?.nativeElement) return;
+
+    fromEvent(this.messagesContainer.nativeElement, 'scroll')
+      .pipe(
+        debounceTime(10),
+        map(() => {
+          const el = this.messagesContainer.nativeElement as HTMLElement;
+          return Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 2;
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(atBottom => this.stickToBottom$.next(atBottom));
+  }
+
+  /**
+   * Sempre que mídia carregar E o usuário estiver no final → rolar automaticamente
+   */
+  private setupAutoScrollOnMediaLoaded() {
     combineLatest([
-      this.mediaLoaded$,
+      this.mediaLoaded$.pipe(debounceTime(30)),
       this.stickToBottom$
-    ]).pipe(
-      filter(([_, stick]) => !!stick)
-    ).subscribe(() => {
-      this.scrollToBottom();
-    });
+    ])
+      .pipe(
+        filter(([_, stick]) => stick),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => this.scrollToBottom());
   }
 
   openDrawer() {
@@ -87,63 +116,51 @@ export class ConversationComponent implements OnInit {
     this._cd.markForCheck();
   }
 
-  isCustomer(message: Message): boolean {
-    return message.senderType === SenderType.CUSTOMER;
+  isCustomer(m: Message) {
+    return m.senderType === SenderType.CUSTOMER;
   }
 
-  isAgent(message: Message): boolean {
-    return message.senderType === SenderType.AGENT;
+  isAgent(m: Message) {
+    return m.senderType === SenderType.AGENT;
   }
 
-  isBot(message: Message): boolean {
-    return message.senderType === SenderType.BOT;
+  isBot(m: Message) {
+    return m.senderType === SenderType.BOT;
   }
 
   onScrollEnd() {
-    if (this.loading$.value) {
-      return;
-    }
+    if (this.loading$.value) return;
 
     const conversationId = this.conversation?.id;
-
-    if (!conversationId) {
-      return;
-    }
+    if (!conversationId) return;
 
     const currentMessages = this.messagesSubject.value;
-
-    if (!currentMessages.length) {
-      return;
-    }
+    if (!currentMessages.length) return;
 
     const oldestMsg = currentMessages[0];
     const cursor = oldestMsg.createdAt;
 
     this.loading$.next(true);
 
-    this._conversationService
-      .getMessages(conversationId, cursor)
-      .pipe(finalize(() => this.loading$.next(false)))
+    this._conversationService.getMessages(conversationId, cursor)
+      .pipe(
+        finalize(() => this.loading$.next(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
-        next: (messages) => {
-          this.putMessagesCache(conversationId, messages);
-        },
-        error: (err) => {
-          console.error(`m=onScrollEnd; msg=Error loading more messages; conversationId=${conversationId}`, err);
-        }
+        next: (messages) => this.putMessagesCache(conversationId, messages),
+        error: (err) => console.error(`Error loading more messages`, err)
       });
   }
 
   autoResize(textarea: HTMLTextAreaElement) {
     if (!textarea) return;
-
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
   }
 
   sendMessage(textarea: HTMLTextAreaElement) {
     const value = textarea?.value?.trim();
-
     if (!value) return;
 
     const request: SendMessageRequest = {
@@ -153,33 +170,33 @@ export class ConversationComponent implements OnInit {
       content: {
         to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
         type: MessageType.TEXT,
-        text: {
-          body: value,
-          previewUrl: false
-        }
+        text: {body: value, previewUrl: false}
       }
     }
 
     this._conversationService.sendMessage(this.conversation.id, request)
-      .pipe(finalize(() => {
-        textarea.value = '';
-        textarea.style.height = 'auto';
-        this.scrollToBottom();
-      }))
+      .pipe(
+        finalize(() => {
+          textarea.value = '';
+          textarea.style.height = 'auto';
+          if (this.stickToBottom$.value) {
+            this.scrollToBottom();
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(messageCreated => {
         this.putMessagesCache(this.conversation.id, [messageCreated]);
-
         this._chatService.messageSent.next({
           conversationId: this.conversation.id,
           message: messageCreated
         });
-      })
+      });
   }
 
   onSelectEmoji(event, trigger: MatMenuTrigger) {
     const emoji = event?.emoji?.native;
-    const textarea: HTMLTextAreaElement = this.msgTextarea?.nativeElement;
-
+    const textarea = this.msgTextarea?.nativeElement as HTMLTextAreaElement;
     if (!textarea) return;
 
     const index = textarea.selectionStart;
@@ -201,32 +218,29 @@ export class ConversationComponent implements OnInit {
   }
 
   private syncSubscribers() {
-    this._route
-      .data
-      .subscribe((data) => {
-        this.conversation = data?.['conversation'] as Conversation;
+    this._route.data
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        this.conversation = data['conversation'] as Conversation;
         this.loadMessages();
       });
   }
 
   private scrollToBottom() {
     setTimeout(() => {
-      if (this.messagesContainer?.nativeElement) {
-        const el = this.messagesContainer.nativeElement;
-        el.scrollTop = el.scrollHeight;
-      }
+      const el = this.messagesContainer?.nativeElement;
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: 'smooth'
+      });
     }, 50);
   }
 
   private loadMessages(datetime?: string) {
     const conversationId = this.conversation?.id;
-
-    if (!conversationId) {
-      return;
-    }
+    if (!conversationId) return;
 
     const cachedMessages = this._messageCache.get(conversationId);
-
     if (cachedMessages?.length) {
       this.messagesSubject.next(cachedMessages);
       this.scrollToBottom();
@@ -236,27 +250,31 @@ export class ConversationComponent implements OnInit {
     this.loading$.next(true);
 
     this._conversationService.getMessages(conversationId, datetime)
-      .pipe(finalize(() => this.loading$.next(false)))
+      .pipe(
+        finalize(() => this.loading$.next(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
-        next: (messages) => {
-          messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
+        next: messages => {
+          messages.sort((a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
           this.messagesSubject.next(messages);
           this._messageCache.setAll(conversationId, messages);
-
           this.scrollToBottom();
         },
-        error: (err) => {
-          console.error(`m=loadMessages; msg=Error when load messages; conversationId=${conversationId}`, err);
-        }
+        error: err =>
+          console.error(`Error loading messages`, err)
       });
   }
 
   private putMessagesCache(conversationId: string, messages: Message[]) {
-    const currentMessages = this._messageCache.get(conversationId);
+    const currentMessages = this._messageCache.get(conversationId) ?? [];
     const combined = [...messages, ...currentMessages];
 
-    combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    combined.sort((a, b) =>
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
 
     this.messagesSubject.next(combined);
     this._messageCache.setAll(conversationId, combined);
