@@ -43,21 +43,78 @@
     <div class="flex-1"></div>
 
     <ng-container *ngFor="let message of messages$ | async">
+      <!-- Customer message -->
       <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
+        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-white self-start max-w-[350px] shadow-sm">
+          <!-- Mídia IMAGE -->
+          <ng-container *ngIf="message?.content?.image as img">
+            <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
+              <ng-container *ngIf="media.loading">
+                <div class="flex justify-center my-2">
+                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                </div>
+              </ng-container>
+              <img *ngIf="media.url" [src]="media.url" class="max-h-52 max-w-full rounded mb-1"/>
+              <div class="text-sm">{{ img?.caption }}</div>
+              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+            </ng-container>
+          </ng-container>
 
-        <div
-          class="flex flex-col space-y-1 px-3 py-2 rounded-xl  bg-white self-start max-w-[350px] shadow-sm">
-          <div class="text-sm">
-            {{ message?.content?.text?.body }}
-          </div>
+          <!-- Mídia VIDEO -->
+          <ng-container *ngIf="message?.content?.video as vid">
+            <ng-container *ngIf="vid | mediaAsync: conversation.channelId | async as media">
+              <ng-container *ngIf="media.loading">
+                <div class="flex justify-center my-2">
+                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                </div>
+              </ng-container>
+              <video *ngIf="media.url" [src]="media.url" controls class="max-h-[400px] max-w-full rounded mb-1"></video>
+              <div class="text-sm">{{ vid?.caption }}</div>
+              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+            </ng-container>
+          </ng-container>
+
+          <!-- Mídia DOCUMENT -->
+          <ng-container *ngIf="message.content.document as doc">
+            <ng-container *ngIf="doc | mediaAsync: conversation.channelId | async as media">
+              <ng-container *ngIf="media.loading">
+                <div class="flex justify-center my-2">
+                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                </div>
+              </ng-container>
+              <a *ngIf="media.url" [href]="media.url" target="_blank" rel="noopener"
+                 class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
+              <div class="text-sm">{{ doc?.caption }}</div>
+              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+            </ng-container>
+          </ng-container>
+
+          <!-- Mídia STICKER ou GIF -->
+          <ng-container *ngIf="message.content.sticker as stc">
+            <ng-container *ngIf="stc | mediaAsync: conversation.channelId | async as media">
+              <ng-container *ngIf="media.loading">
+                <div class="flex justify-center my-2">
+                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                </div>
+              </ng-container>
+              <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
+                   class="max-h-32 max-w-full rounded mb-2 bg-gray-100"/>
+              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="message?.content?.text as text">
+            <div class="text-sm">{{ text?.body }}</div>
+          </ng-container>
+
           <div class="flex items-center self-end">
-            <div class="text-[12px]">{{ message.createdAt | dateOnlyHour }}
-            </div>
+            <div class="text-[12px]">{{ message.createdAt | dateOnlyHour }}</div>
           </div>
         </div>
       </div>
 
+      <!-- AGENT/OUTRO + BOT. Coloque trechos similares, omitido pelo limite -->
       <div *ngIf="this.isAgent(message)"
            class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white self-end max-w-[350px] shadow-sm">
         <div class="text-sm">

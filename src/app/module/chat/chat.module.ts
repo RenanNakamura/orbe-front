@@ -22,7 +22,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {ConversationEmptyComponent} from "./conversation-empty/conversation-empty.component";
 import {DateMomentPipeModule} from "../../pipe/date-moment.pipe";
 import {PickerComponent} from "@ctrl/ngx-emoji-mart";
-import {MetaPipeModule} from "../../pipe/map-whatsapp-error.pipe";
+import {MetaPipeModule} from "../../pipe/meta.pipe";
 import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
 
 @NgModule({
@@ -59,7 +59,7 @@ import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
     PhoneMaskPipeModule,
     DateMomentPipeModule,
     PickerComponent,
-    MetaPipeModule
+    MetaPipeModule,
   ],
   providers: []
 })

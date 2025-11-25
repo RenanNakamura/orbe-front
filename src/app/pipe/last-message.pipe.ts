@@ -21,7 +21,6 @@ export class LastMessagePipe implements PipeTransform {
         return content.text?.body ?? '';
 
       case MessageType.IMAGE:
-
         return `📷 ${this._translate.instant(`photo`)}`;
 
       case MessageType.VIDEO:
