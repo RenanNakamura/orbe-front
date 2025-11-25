@@ -23,7 +23,12 @@ export class Message {
 export class MessageContent {
   to: string;
   type: MessageType;
-  text: TextMessage;
+  text?: TextMessage;
+  image?: ImageMessage;
+  video?: VideoMessage;
+  audio?: AudioMessage;
+  document?: DocumentMessage;
+  sticker?: StickerMessage;
 }
 
 export class MessageError {
@@ -34,6 +39,47 @@ export class MessageError {
 export class TextMessage {
   body: string;
   previewUrl?: boolean;
+}
+
+export class ImageMessage {
+  id: string;
+  sha256: string;
+  caption: string;
+  mime_type: string;
+  url?: string;
+}
+
+export class VideoMessage {
+  id: string;
+  sha256: string;
+  caption: string;
+  mime_type: string;
+  url?: string;
+}
+
+export class AudioMessage {
+  id: string;
+  voice: boolean;
+  sha256: string;
+  mime_type: string;
+  url?: string;
+}
+
+export class DocumentMessage {
+  id: string;
+  filename: string;
+  sha256: string;
+  caption: string;
+  mime_type: string;
+  url?: string;
+}
+
+export class StickerMessage {
+  id: string;
+  sha256: string;
+  mime_type: string;
+  animated: boolean;
+  url?: string;
 }
 
 export class CreateConversation {
@@ -81,6 +127,8 @@ export enum MessageType {
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO',
   DOCUMENT = 'DOCUMENT',
+  AUDIO = 'AUDIO',
+  STICKER = 'STICKER'
 }
 
 export enum MessageStatus {
