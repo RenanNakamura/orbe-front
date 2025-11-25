@@ -149,7 +149,7 @@ export class ConversationComponent implements OnInit, AfterViewInit {
       )
       .subscribe({
         next: (messages) => this.putMessagesCache(conversationId, messages),
-        error: (err) => console.error(`Error loading more messages`, err)
+        error: (err) => console.error(`m=onScrollEnd; msg=Error loading more messages`, err)
       });
   }
 
@@ -264,7 +264,7 @@ export class ConversationComponent implements OnInit, AfterViewInit {
           this.scrollToBottom();
         },
         error: err =>
-          console.error(`Error loading messages`, err)
+          console.error(`m=loadMessages; msg=Error loading messages`, err)
       });
   }
 
