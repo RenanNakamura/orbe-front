@@ -13,10 +13,11 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, Observable} from "rxjs";
-import {finalize} from "rxjs/operators";
+import {BehaviorSubject, Observable, Subject, combineLatest} from "rxjs";
+import {finalize, filter, debounceTime} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
+import { fromEvent } from 'rxjs';
 
 @Component({
   selector: 'vex-conversation',
@@ -29,6 +30,9 @@ export class ConversationComponent implements OnInit {
 
   @ViewChild('textareaMessage') msgTextarea: ElementRef;
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
+
+  public stickToBottom$ = new BehaviorSubject<boolean>(true);
+  private mediaLoaded$ = new Subject<void>();
 
   private messagesSubject: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
@@ -50,6 +54,27 @@ export class ConversationComponent implements OnInit {
 
   ngOnInit() {
     this.syncSubscribers();
+  }
+
+  ngAfterViewInit() {
+    if (this.messagesContainer?.nativeElement) {
+      fromEvent(this.messagesContainer.nativeElement, 'scroll')
+        .pipe(debounceTime(10))
+        .subscribe(() => {
+          const el = this.messagesContainer.nativeElement as HTMLElement;
+          const atBottom = Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 2;
+          this.stickToBottom$.next(atBottom);
+        });
+    }
+
+    combineLatest([
+      this.mediaLoaded$,
+      this.stickToBottom$
+    ]).pipe(
+      filter(([_, stick]) => !!stick)
+    ).subscribe(() => {
+      this.scrollToBottom();
+    });
   }
 
   openDrawer() {
@@ -142,8 +167,6 @@ export class ConversationComponent implements OnInit {
         this.scrollToBottom();
       }))
       .subscribe(messageCreated => {
-        console.log('MessageCreated => ', messageCreated);
-
         this.putMessagesCache(this.conversation.id, [messageCreated]);
 
         this._chatService.messageSent.next({
@@ -171,6 +194,10 @@ export class ConversationComponent implements OnInit {
     });
 
     trigger?.closeMenu?.();
+  }
+
+  onMediaLoaded() {
+    this.mediaLoaded$.next();
   }
 
   private syncSubscribers() {
@@ -201,7 +228,6 @@ export class ConversationComponent implements OnInit {
     const cachedMessages = this._messageCache.get(conversationId);
 
     if (cachedMessages?.length) {
-      console.log('cachedMessages', cachedMessages)
       this.messagesSubject.next(cachedMessages);
       this.scrollToBottom();
       return;

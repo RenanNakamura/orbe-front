@@ -55,7 +55,7 @@
                   <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                 </div>
               </ng-container>
-              <img *ngIf="media.url" [src]="media.url" class="max-h-52 max-w-full rounded mb-1"/>
+              <img *ngIf="media.url" [src]="media.url" class="max-h-52 max-w-full rounded mb-2" (load)="onMediaLoaded()"/>
               <div class="text-sm">{{ img?.caption }}</div>
               <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
             </ng-container>
@@ -69,7 +69,7 @@
                   <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                 </div>
               </ng-container>
-              <video *ngIf="media.url" [src]="media.url" controls class="max-h-[400px] max-w-full rounded mb-1"></video>
+              <video *ngIf="media.url" [src]="media.url" controls class="max-h-[400px] max-w-full rounded mb-1" (loadedmetadata)="onMediaLoaded()"></video>
               <div class="text-sm">{{ vid?.caption }}</div>
               <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
             </ng-container>
@@ -99,7 +99,7 @@
                 </div>
               </ng-container>
               <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
-                   class="max-h-32 max-w-full rounded mb-2 bg-gray-100"/>
+                   class="max-h-32 max-w-full rounded mb-2 bg-gray-100" (load)="onMediaLoaded()"/>
               <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
             </ng-container>
           </ng-container>
