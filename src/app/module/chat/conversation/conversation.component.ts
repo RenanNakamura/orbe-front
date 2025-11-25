@@ -50,6 +50,7 @@ export class ConversationComponent implements OnInit, AfterViewInit {
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
   conversation?: Conversation;
 
+  protected readonly MessageType = MessageType;
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
   protected readonly MessageStatusColorMap = MessageStatusColorMap;
 
@@ -279,4 +280,5 @@ export class ConversationComponent implements OnInit, AfterViewInit {
     this.messagesSubject.next(combined);
     this._messageCache.setAll(conversationId, combined);
   }
+
 }

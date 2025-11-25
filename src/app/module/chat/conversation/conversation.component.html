@@ -47,65 +47,87 @@
       <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
         <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-white self-start max-w-[350px] shadow-sm">
-          <!-- Mídia IMAGE -->
-          <ng-container *ngIf="message?.content?.image as img">
-            <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
-              <ng-container *ngIf="media.loading">
-                <div class="flex justify-center my-2">
-                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
-                </div>
-              </ng-container>
-              <img *ngIf="media.url" [src]="media.url" class="max-h-52 max-w-full rounded mb-2" (load)="onMediaLoaded()"/>
-              <div class="text-sm">{{ img?.caption }}</div>
-              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
-            </ng-container>
-          </ng-container>
+          <ng-container [ngSwitch]="message?.content?.type">
 
-          <!-- Mídia VIDEO -->
-          <ng-container *ngIf="message?.content?.video as vid">
-            <ng-container *ngIf="vid | mediaAsync: conversation.channelId | async as media">
-              <ng-container *ngIf="media.loading">
-                <div class="flex justify-center my-2">
-                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
-                </div>
+            <ng-container *ngSwitchCase="MessageType.IMAGE">
+              <ng-container *ngIf="message?.content?.image as img">
+                <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
+                  <ng-container *ngIf="media.loading">
+                    <div class="flex justify-center my-2">
+                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                  </ng-container>
+                  <img *ngIf="media.url"
+                       [src]="media.url"
+                       class="max-h-[400px] max-w-full rounded mb-1"
+                       (load)="onMediaLoaded()"/>
+                  <div class="text-sm">{{ img?.caption }}</div>
+                  <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+                </ng-container>
               </ng-container>
-              <video *ngIf="media.url" [src]="media.url" controls class="max-h-[400px] max-w-full rounded mb-1" (loadedmetadata)="onMediaLoaded()"></video>
-              <div class="text-sm">{{ vid?.caption }}</div>
-              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
             </ng-container>
-          </ng-container>
 
-          <!-- Mídia DOCUMENT -->
-          <ng-container *ngIf="message.content.document as doc">
-            <ng-container *ngIf="doc | mediaAsync: conversation.channelId | async as media">
-              <ng-container *ngIf="media.loading">
-                <div class="flex justify-center my-2">
-                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
-                </div>
+            <ng-container *ngSwitchCase="MessageType.VIDEO">
+              <ng-container *ngIf="message?.content?.video as vid">
+                <ng-container *ngIf="message?.content?.video | mediaAsync: conversation.channelId | async as media">
+                  <ng-container *ngIf="media.loading">
+                    <div class="flex justify-center my-2">
+                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                  </ng-container>
+                  <video *ngIf="media.url"
+                         [src]="media.url"
+                         controls
+                         class="max-h-[400px] max-w-full rounded mb-1"
+                         (loadedmetadata)="onMediaLoaded()"></video>
+                  <div class="text-sm">{{ vid?.caption }}</div>
+                  <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+                </ng-container>
               </ng-container>
-              <a *ngIf="media.url" [href]="media.url" target="_blank" rel="noopener"
-                 class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
-              <div class="text-sm">{{ doc?.caption }}</div>
-              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
             </ng-container>
-          </ng-container>
 
-          <!-- Mídia STICKER ou GIF -->
-          <ng-container *ngIf="message.content.sticker as stc">
-            <ng-container *ngIf="stc | mediaAsync: conversation.channelId | async as media">
-              <ng-container *ngIf="media.loading">
-                <div class="flex justify-center my-2">
-                  <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
-                </div>
+            <ng-container *ngSwitchCase="MessageType.DOCUMENT">
+              <ng-container *ngIf="message?.content?.document as doc">
+                <ng-container *ngIf="message?.content?.document | mediaAsync: conversation.channelId | async as media">
+                  <ng-container *ngIf="media.loading">
+                    <div class="flex justify-center my-2">
+                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                  </ng-container>
+                  <a *ngIf="media.url"
+                     [href]="media.url"
+                     target="_blank"
+                     rel="noopener"
+                     class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
+                  <div class="text-sm">{{ doc?.caption }}</div>
+                  <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+                </ng-container>
               </ng-container>
-              <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
-                   class="max-h-32 max-w-full rounded mb-2 bg-gray-100" (load)="onMediaLoaded()"/>
-              <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
             </ng-container>
-          </ng-container>
 
-          <ng-container *ngIf="message?.content?.text as text">
-            <div class="text-sm">{{ text?.body }}</div>
+            <ng-container *ngSwitchCase="MessageType.STICKER">
+              <ng-container *ngIf="message?.content?.sticker as stc">
+                <ng-container *ngIf="message?.content?.sticker | mediaAsync: conversation.channelId | async as media">
+                  <ng-container *ngIf="media.loading">
+                    <div class="flex justify-center my-2">
+                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                  </ng-container>
+                  <img *ngIf="media.url"
+                       [src]="media.url"
+                       [alt]="'sticker'"
+                       class="max-h-32 max-w-full rounded mb-2 bg-gray-100"
+                       (load)="onMediaLoaded()"/>
+                  <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MessageType.TEXT">
+              <ng-container *ngIf="message?.content?.text as text">
+                <div class="text-sm">{{ text?.body }}</div>
+              </ng-container>
+            </ng-container>
           </ng-container>
 
           <div class="flex items-center self-end">
