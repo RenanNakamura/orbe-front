@@ -218,6 +218,17 @@ export class ConversationComponent implements OnInit, AfterViewInit {
     this.mediaLoaded$.next();
   }
 
+  onKeyDownTextarea(event: KeyboardEvent, textarea: HTMLTextAreaElement) {
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        return;
+      }
+
+      event.preventDefault();
+      this.sendMessage(textarea);
+    }
+  }
+
   private syncSubscribers() {
     this._route.data
       .pipe(takeUntilDestroyed(this.destroyRef))

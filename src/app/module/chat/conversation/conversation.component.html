@@ -44,9 +44,9 @@
 
     <ng-container *ngFor="let message of messages$ | async">
       <!-- Customer message -->
-      <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1">
+      <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1 self-start">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
-        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-white self-start max-w-[350px] shadow-sm">
+        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-white max-w-[350px] shadow-sm">
           <ng-container [ngSwitch]="message?.content?.type">
 
             <ng-container *ngSwitchCase="MessageType.IMAGE">
@@ -61,7 +61,7 @@
                        [src]="media.url"
                        class="max-h-[400px] max-w-full rounded mb-1"
                        (load)="onMediaLoaded()"/>
-                  <div class="text-sm">{{ img?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -80,7 +80,7 @@
                          controls
                          class="max-h-[400px] max-w-full rounded mb-1"
                          (loadedmetadata)="onMediaLoaded()"></video>
-                  <div class="text-sm">{{ vid?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -99,7 +99,7 @@
                      target="_blank"
                      rel="noopener"
                      class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
-                  <div class="text-sm">{{ doc?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap">{{ doc?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -125,7 +125,7 @@
 
             <ng-container *ngSwitchCase="MessageType.TEXT">
               <ng-container *ngIf="message?.content?.text as text">
-                <div class="text-sm">{{ text?.body }}</div>
+                <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -137,32 +137,13 @@
       </div>
 
       <!-- AGENT/OUTRO + BOT. Coloque trechos similares, omitido pelo limite -->
-      <div *ngIf="this.isAgent(message)"
-           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white self-end max-w-[350px] shadow-sm">
-        <div class="text-sm">
-          {{ message?.content?.text?.body }}
-        </div>
+      <div *ngIf="this.isAgent(message)" class="flex gap-2 mt-1 self-end">
+        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white max-w-[350px] shadow-sm">
+          <ng-container *ngIf="message?.content?.text as text">
+            <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+          </ng-container>
 
-        <div class="self-end flex items-center">
-          <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
-          </div>
-          <mat-icon class="w-[14px] h-[14px]"
-                    [matTooltip]="message?.error | MapWhatsAppError"
-                    [svgIcon]="MessageStatusIconMap[message.status]"
-                    [ngClass]="MessageStatusColorMap[message.status]"
-          ></mat-icon>
-        </div>
-      </div>
-
-      <div *ngIf="this.isBot(message)"
-           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 self-end max-w-[350px] shadow-sm">
-        <div class="text-sm">
-          {{ message?.content?.text?.body }}
-        </div>
-
-        <div class="flex items-center justify-between w-full">
-          <mat-icon class="w-[16px] h-[16px] mr-1" svgIcon="mat:smart_toy"></mat-icon>
-          <div class="flex items-center">
+          <div class="self-end flex items-center">
             <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
             </div>
             <mat-icon class="w-[14px] h-[14px]"
@@ -170,6 +151,27 @@
                       [svgIcon]="MessageStatusIconMap[message.status]"
                       [ngClass]="MessageStatusColorMap[message.status]"
             ></mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="this.isBot(message)" class="flex gap-2 mt-1 self-end">
+        <div class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 max-w-[350px] shadow-sm">
+          <ng-container *ngIf="message?.content?.text as text">
+            <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+          </ng-container>
+
+          <div class="flex items-center justify-between w-full">
+            <mat-icon class="w-[16px] h-[16px] mr-1" svgIcon="mat:smart_toy"></mat-icon>
+            <div class="flex items-center">
+              <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
+              </div>
+              <mat-icon class="w-[14px] h-[14px]"
+                        [matTooltip]="message?.error | MapWhatsAppError"
+                        [svgIcon]="MessageStatusIconMap[message.status]"
+                        [ngClass]="MessageStatusColorMap[message.status]"
+              ></mat-icon>
+            </div>
           </div>
         </div>
       </div>
@@ -236,6 +238,7 @@
                text-[15px] leading-[18px]"
         [placeholder]="'type-a-message' | translate"
         (input)="autoResize(textareaMessage)"
+        (keydown)="onKeyDownTextarea($event, textareaMessage)"
       ></textarea>
     </div>
 
