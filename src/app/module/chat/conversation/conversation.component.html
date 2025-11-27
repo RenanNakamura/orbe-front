@@ -12,7 +12,7 @@
       <div class="flex-1 truncate">
         <div class="font-semibold text-sm truncate">{{ conversation?.name }}</div>
         <div class="text-xs text-gray-500 truncate">
-          {{ conversation?.ddi + conversation?.phoneNumber  | phoneMask }}
+          {{ conversation?.ddi + conversation?.phoneNumber | phoneMask }}
         </div>
       </div>
     </div>
@@ -100,6 +100,25 @@
                      rel="noopener"
                      class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
                   <div class="text-sm whitespace-pre-wrap">{{ doc?.caption }}</div>
+                  <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MessageType.AUDIO">
+              <ng-container *ngIf="message?.content?.audio as audio">
+                <ng-container *ngIf="message?.content?.audio | mediaAsync: conversation.channelId | async as media">
+                  <ng-container *ngIf="media.loading">
+                    <div class="flex justify-center my-2">
+                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                  </ng-container>
+                  <audio *ngIf="media.url"
+                         [src]="media.url"
+                         controls
+                         class="w-[300px] max-w-[300px] mb-1"
+                         (loadedmetadata)="onMediaLoaded()"
+                  ></audio>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
