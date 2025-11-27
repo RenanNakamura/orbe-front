@@ -1,14 +1,10 @@
 <div class="relative h-full flex flex-col overflow-hidden">
   <div class="px-6 bg-foreground border-b h-16 flex-none flex items-center">
-    <button
-      (click)="openDrawer()"
-      class="md:hidden sm:-ml-4 mr-2"
-      mat-icon-button
-      type="button">
+    <button (click)="openDrawer()" class="md:hidden sm:-ml-4 mr-2" mat-icon-button type="button">
       <mat-icon svgIcon="mat:menu"></mat-icon>
     </button>
     <div class="flex items-center gap-3">
-      <img class="hidden sm:block flex-none w-9 h-9 rounded-full" src="assets/img/no-avatar.png" alt=""/>
+      <img class="hidden sm:block flex-none w-9 h-9 rounded-full" src="assets/img/no-avatar.png" alt="" />
       <div class="flex-1 truncate">
         <div class="font-semibold text-sm truncate">{{ conversation?.name }}</div>
         <div class="text-xs text-gray-500 truncate">
@@ -26,14 +22,8 @@
     <!--    </div>-->
   </div>
 
-  <div #messagesContainer
-       infinite-scroll
-       [infiniteScrollUpDistance]="2"
-       [infiniteScrollThrottle]="150"
-       [scrollWindow]="false"
-       (scrolledUp)="onScrollEnd()"
-       class="flex-1 overflow-auto flex flex-col p-8"
-  >
+  <div #messagesContainer infinite-scroll [infiniteScrollUpDistance]="2" [infiniteScrollThrottle]="150"
+    [scrollWindow]="false" (scrolledUp)="onScrollEnd()" class="flex-1 overflow-auto flex flex-col p-8">
     <ng-container *ngIf="(loading$ | async) as loading">
       <div class="flex justify-center mb-2" *ngIf="loading">
         <mat-progress-spinner mode="indeterminate" diameter="22" strokeWidth="3"></mat-progress-spinner>
@@ -53,14 +43,12 @@
               <ng-container *ngIf="message?.content?.image as img">
                 <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center my-2">
+                    <div class="flex justify-center items-center w-[300px] h-[400px] bg-gray-100 rounded mb-1">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <img *ngIf="media.url"
-                       [src]="media.url"
-                       class="max-h-[400px] max-w-full rounded mb-1"
-                       (load)="onMediaLoaded()"/>
+                  <img *ngIf="media.url" [src]="media.url" class="w-[300px] h-[400px] object-cover rounded mb-1"
+                    (load)="onMediaLoaded()" />
                   <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -71,15 +59,12 @@
               <ng-container *ngIf="message?.content?.video as vid">
                 <ng-container *ngIf="message?.content?.video | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center my-2">
+                    <div class="flex justify-center items-center w-[300px] h-[400px] bg-gray-100 rounded mb-1">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <video *ngIf="media.url"
-                         [src]="media.url"
-                         controls
-                         class="max-h-[400px] max-w-full rounded mb-1"
-                         (loadedmetadata)="onMediaLoaded()"></video>
+                  <video *ngIf="media.url" [src]="media.url" controls
+                    class="w-[300px] h-[400px] object-cover rounded mb-1" (loadedmetadata)="onMediaLoaded()"></video>
                   <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -94,11 +79,8 @@
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <a *ngIf="media.url"
-                     [href]="media.url"
-                     target="_blank"
-                     rel="noopener"
-                     class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
+                  <a *ngIf="media.url" [href]="media.url" target="_blank" rel="noopener"
+                    class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
                   <div class="text-sm whitespace-pre-wrap">{{ doc?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -113,12 +95,8 @@
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <audio *ngIf="media.url"
-                         [src]="media.url"
-                         controls
-                         class="w-[300px] max-w-[300px] mb-1"
-                         (loadedmetadata)="onMediaLoaded()"
-                  ></audio>
+                  <audio *ngIf="media.url" [src]="media.url" controls class="w-[300px] max-w-[300px] mb-1"
+                    (loadedmetadata)="onMediaLoaded()"></audio>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -128,15 +106,12 @@
               <ng-container *ngIf="message?.content?.sticker as stc">
                 <ng-container *ngIf="message?.content?.sticker | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center my-2">
+                    <div class="flex justify-center items-center w-32 h-32 bg-gray-100 rounded mb-2">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <img *ngIf="media.url"
-                       [src]="media.url"
-                       [alt]="'sticker'"
-                       class="max-h-32 max-w-full rounded mb-2 bg-gray-100"
-                       (load)="onMediaLoaded()"/>
+                  <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
+                    class="w-32 h-32 object-contain rounded mb-2 bg-gray-100" (load)="onMediaLoaded()" />
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -165,17 +140,16 @@
           <div class="self-end flex items-center">
             <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
             </div>
-            <mat-icon class="w-[14px] h-[14px]"
-                      [matTooltip]="message?.error | MapWhatsAppError"
-                      [svgIcon]="MessageStatusIconMap[message.status]"
-                      [ngClass]="MessageStatusColorMap[message.status]"
-            ></mat-icon>
+            <mat-icon class="w-[14px] h-[14px]" [matTooltip]="message?.error | MapWhatsAppError"
+              [svgIcon]="MessageStatusIconMap[message.status]"
+              [ngClass]="MessageStatusColorMap[message.status]"></mat-icon>
           </div>
         </div>
       </div>
 
       <div *ngIf="this.isBot(message)" class="flex gap-2 mt-1 self-end">
-        <div class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 max-w-[350px] shadow-sm">
+        <div
+          class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 max-w-[350px] shadow-sm">
           <ng-container *ngIf="message?.content?.text as text">
             <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
           </ng-container>
@@ -185,11 +159,9 @@
             <div class="flex items-center">
               <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
               </div>
-              <mat-icon class="w-[14px] h-[14px]"
-                        [matTooltip]="message?.error | MapWhatsAppError"
-                        [svgIcon]="MessageStatusIconMap[message.status]"
-                        [ngClass]="MessageStatusColorMap[message.status]"
-              ></mat-icon>
+              <mat-icon class="w-[14px] h-[14px]" [matTooltip]="message?.error | MapWhatsAppError"
+                [svgIcon]="MessageStatusIconMap[message.status]"
+                [ngClass]="MessageStatusColorMap[message.status]"></mat-icon>
             </div>
           </div>
         </div>
@@ -200,34 +172,20 @@
   <div class="flex items-center mb-3 mr-3 ml-3 bg-white rounded-xl border shadow px-1 py-1">
 
     <!-- Botão de adicionar -->
-    <button
-      [matMenuTriggerFor]="addMenuButton"
-      color="primary"
-      mat-icon-button
-      type="button"
-      class="flex-none self-end"
-    >
+    <button [matMenuTriggerFor]="addMenuButton" color="primary" mat-icon-button type="button"
+      class="flex-none self-end">
       <mat-icon svgIcon="mat:add"></mat-icon>
     </button>
 
-    <button
-      color="primary"
-      mat-icon-button
-      type="button"
-      class="flex-none self-end"
-      #emojiTrigger="matMenuTrigger"
-      [matMenuTriggerFor]="emojiMenu"
-    >
+    <button color="primary" mat-icon-button type="button" class="flex-none self-end" #emojiTrigger="matMenuTrigger"
+      [matMenuTriggerFor]="emojiMenu">
       <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
     </button>
 
     <mat-menu #emojiMenu="matMenu" class="shadow-none bg-none" xPosition="after" yPosition="above">
       <div (click)="$event.stopPropagation()">
-        <emoji-mart [isNative]="true"
-                    [showPreview]="false"
-                    [enableSearch]="true"
-                    [style]="{ width: '100%', height: 'auto' }"
-                    (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
+        <emoji-mart [isNative]="true" [showPreview]="false" [enableSearch]="true"
+          [style]="{ width: '100%', height: 'auto' }" (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
       </div>
     </mat-menu>
 
@@ -248,26 +206,15 @@
 
     <!-- Campo de texto -->
     <div class="flex flex-col justify-end flex-1">
-      <textarea
-        #textareaMessage
-        rows="1"
-        class="w-full min-h-[24px] max-h-[160px] px-0 py-1
+      <textarea #textareaMessage rows="1" class="w-full min-h-[24px] max-h-[160px] px-0 py-1
                overflow-y-auto outline-none resize-none
                whitespace-pre-wrap break-words bg-transparent
-               text-[15px] leading-[18px]"
-        [placeholder]="'type-a-message' | translate"
-        (input)="autoResize(textareaMessage)"
-        (keydown)="onKeyDownTextarea($event, textareaMessage)"
-      ></textarea>
+               text-[15px] leading-[18px]" [placeholder]="'type-a-message' | translate"
+        (input)="autoResize(textareaMessage)" (keydown)="onKeyDownTextarea($event, textareaMessage)"></textarea>
     </div>
 
-    <button
-      color="primary"
-      mat-icon-button
-      type="button"
-      class="flex-none self-end"
-      (click)="sendMessage(textareaMessage)"
-    >
+    <button color="primary" mat-icon-button type="button" class="flex-none self-end"
+      (click)="sendMessage(textareaMessage)">
       <mat-icon svgIcon="mat:send"></mat-icon>
     </button>
   </div>
