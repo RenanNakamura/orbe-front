@@ -43,6 +43,7 @@ export class ConversationComponent implements OnInit {
   public stickToBottom$ = new BehaviorSubject<boolean>(true);
   public isInitialLoad$ = new BehaviorSubject<boolean>(true);
   public messagesReady$ = new BehaviorSubject<boolean>(false);
+  public hasMoreMessages$ = new BehaviorSubject<boolean>(true);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
@@ -92,14 +93,25 @@ export class ConversationComponent implements OnInit {
   }
 
   onScrollEnd() {
-    console.log('m=onScrollEnd')
-    if (this.loading$.value) return;
+    if (this.loading$.value) {
+      return;
+    }
+
+    if (!this.hasMoreMessages$.value) {
+      return;
+    }
 
     const conversationId = this.conversation?.id;
-    if (!conversationId) return;
+
+    if (!conversationId) {
+      return;
+    }
 
     const currentMessages = this.messagesSubject.value;
-    if (!currentMessages.length) return;
+
+    if (!currentMessages.length) {
+      return;
+    }
 
     const oldestMsg = currentMessages[0];
     const cursor = oldestMsg.createdAt;
@@ -112,7 +124,13 @@ export class ConversationComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: (messages) => this.putMessagesCache(conversationId, messages),
+        next: (messages) => {
+          if (!messages || messages.length === 0) {
+            this.hasMoreMessages$.next(false);
+            return;
+          }
+          this.putMessagesCache(conversationId, messages);
+        },
         error: (err) => console.error(`m=onScrollEnd; msg=Error loading more messages`, err)
       });
   }
@@ -224,6 +242,7 @@ export class ConversationComponent implements OnInit {
 
     this.isInitialLoad$.next(true);
     this.messagesReady$.next(false);
+    this.hasMoreMessages$.next(true); // Reset flag for new conversation
 
     const cachedMessages = this._messageCache.get(conversationId);
     if (cachedMessages?.length) {
