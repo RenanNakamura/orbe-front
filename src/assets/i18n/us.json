@@ -571,7 +571,9 @@
   "yesterday": "Yesterday",
   "photo": "Photo",
   "video": "Video",
+  "voice-message": "Voice message",
   "document": "Document",
+  "sticker": "Sticker",
   "more-options": "More options",
   "type-a-message": "Type a message"
 }

@@ -29,6 +29,12 @@ export class LastMessagePipe implements PipeTransform {
       case MessageType.DOCUMENT:
         return `📎 ${this._translate.instant(`document`)}`;
 
+      case MessageType.STICKER:
+        return `🗒️ ${this._translate.instant(`sticker`)}`;
+
+      case MessageType.AUDIO:
+        return `🎤 ${this._translate.instant(`voice-message`)}`;
+
       default:
         return content?.text?.body ?? '';
     }
