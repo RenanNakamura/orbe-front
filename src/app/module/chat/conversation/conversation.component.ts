@@ -199,7 +199,7 @@ export class ConversationComponent implements OnInit {
       const el = this.messagesContainer?.nativeElement;
       el.scrollTo({
         top: el.scrollHeight,
-        behavior: 'smooth'
+        behavior: 'instant'
       });
     }, 50);
   }
