@@ -36,19 +36,18 @@
       <!-- Customer message -->
       <div *ngIf="this.isCustomer(message)" class="flex gap-2 mt-1 self-start">
         <img src="assets/img/no-avatar.png" alt="Profile" class="h-10 w-10 rounded-full self-end">
-        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-white max-w-[350px] shadow-sm">
+        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-white max-w-[400px] shadow-sm">
           <ng-container [ngSwitch]="message?.content?.type">
 
             <ng-container *ngSwitchCase="MessageType.IMAGE">
               <ng-container *ngIf="message?.content?.image as img">
                 <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center items-center w-[300px] h-[400px] bg-gray-100 rounded mb-1">
+                    <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <img *ngIf="media.url" [src]="media.url" class="w-[300px] h-[400px] object-cover rounded mb-1"
-                    (load)="onMediaLoaded()" />
+                  <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
                   <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -59,12 +58,12 @@
               <ng-container *ngIf="message?.content?.video as vid">
                 <ng-container *ngIf="message?.content?.video | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center items-center w-[300px] h-[400px] bg-gray-100 rounded mb-1">
+                    <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
                   <video *ngIf="media.url" [src]="media.url" controls
-                    class="w-[300px] h-[400px] object-cover rounded mb-1" (loadedmetadata)="onMediaLoaded()"></video>
+                    class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
                   <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -91,12 +90,11 @@
               <ng-container *ngIf="message?.content?.audio as audio">
                 <ng-container *ngIf="message?.content?.audio | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center my-2">
+                    <div class="flex justify-center items-center w-[350px] h-[50px] rounded mb-1">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <audio *ngIf="media.url" [src]="media.url" controls class="w-[300px] max-w-[300px] mb-1"
-                    (loadedmetadata)="onMediaLoaded()"></audio>
+                  <audio *ngIf="media.url" [src]="media.url" controls class="w-[350px] h-[50px] mb-1"></audio>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -111,7 +109,7 @@
                     </div>
                   </ng-container>
                   <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
-                    class="w-32 h-32 object-contain rounded mb-2 bg-gray-100" (load)="onMediaLoaded()" />
+                    class="w-32 h-32 object-contain rounded mb-2 bg-gray-100"/>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -132,7 +130,7 @@
 
       <!-- AGENT/OUTRO + BOT. Coloque trechos similares, omitido pelo limite -->
       <div *ngIf="this.isAgent(message)" class="flex gap-2 mt-1 self-end">
-        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white max-w-[350px] shadow-sm">
+        <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white max-w-[400px] shadow-sm">
           <ng-container *ngIf="message?.content?.text as text">
             <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
           </ng-container>
@@ -149,7 +147,7 @@
 
       <div *ngIf="this.isBot(message)" class="flex gap-2 mt-1 self-end">
         <div
-          class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 max-w-[350px] shadow-sm">
+          class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 max-w-[400px] shadow-sm">
           <ng-container *ngIf="message?.content?.text as text">
             <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
           </ng-container>

@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -23,8 +22,8 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, combineLatest, fromEvent, Observable, Subject} from "rxjs";
-import {debounceTime, filter, finalize, map} from "rxjs/operators";
+import {BehaviorSubject, Observable} from "rxjs";
+import {finalize} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -36,13 +35,12 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [fadeInUp400ms, stagger20ms],
 })
-export class ConversationComponent implements OnInit, AfterViewInit {
+export class ConversationComponent implements OnInit {
 
   @ViewChild('textareaMessage') msgTextarea: ElementRef;
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
 
   public stickToBottom$ = new BehaviorSubject<boolean>(true);
-  private mediaLoaded$ = new Subject<void>();
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
@@ -67,44 +65,6 @@ export class ConversationComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.syncSubscribers();
-  }
-
-  ngAfterViewInit() {
-    this.setupScrollListener();
-    this.setupAutoScrollOnMediaLoaded();
-  }
-
-  /**
-   * Detecta scroll e atualiza stickToBottom$
-   */
-  private setupScrollListener() {
-    if (!this.messagesContainer?.nativeElement) return;
-
-    fromEvent(this.messagesContainer.nativeElement, 'scroll')
-      .pipe(
-        debounceTime(10),
-        map(() => {
-          const el = this.messagesContainer.nativeElement as HTMLElement;
-          return Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 2;
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(atBottom => this.stickToBottom$.next(atBottom));
-  }
-
-  /**
-   * Sempre que mídia carregar E o usuário estiver no final → rolar automaticamente
-   */
-  private setupAutoScrollOnMediaLoaded() {
-    combineLatest([
-      this.mediaLoaded$.pipe(debounceTime(30)),
-      this.stickToBottom$
-    ])
-      .pipe(
-        filter(([_, stick]) => stick),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => this.scrollToBottom());
   }
 
   openDrawer() {
@@ -212,10 +172,6 @@ export class ConversationComponent implements OnInit, AfterViewInit {
     });
 
     trigger?.closeMenu?.();
-  }
-
-  onMediaLoaded() {
-    this.mediaLoaded$.next();
   }
 
   onKeyDownTextarea(event: KeyboardEvent, textarea: HTMLTextAreaElement) {
