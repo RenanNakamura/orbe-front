@@ -41,6 +41,8 @@ export class ConversationComponent implements OnInit {
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
 
   public stickToBottom$ = new BehaviorSubject<boolean>(true);
+  public isInitialLoad$ = new BehaviorSubject<boolean>(true);
+  public messagesReady$ = new BehaviorSubject<boolean>(false);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
   loading$ = new BehaviorSubject<boolean>(false);
@@ -90,6 +92,7 @@ export class ConversationComponent implements OnInit {
   }
 
   onScrollEnd() {
+    console.log('m=onScrollEnd')
     if (this.loading$.value) return;
 
     const conversationId = this.conversation?.id;
@@ -194,24 +197,40 @@ export class ConversationComponent implements OnInit {
       });
   }
 
-  private scrollToBottom() {
-    setTimeout(() => {
+  private scrollToBottom(instant: boolean = false) {
+    const doScroll = () => {
       const el = this.messagesContainer?.nativeElement;
-      el.scrollTo({
-        top: el.scrollHeight,
-        behavior: 'instant'
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    };
+
+    if (instant || this.isInitialLoad$.value) {
+      doScroll();
+      requestAnimationFrame(() => {
+        doScroll();
+        requestAnimationFrame(() => {
+          doScroll();
+          this.messagesReady$.next(true);
+        });
       });
-    }, 50);
+    } else {
+      setTimeout(doScroll, 50);
+    }
   }
 
   private loadMessages(datetime?: string) {
     const conversationId = this.conversation?.id;
     if (!conversationId) return;
 
+    this.isInitialLoad$.next(true);
+    this.messagesReady$.next(false);
+
     const cachedMessages = this._messageCache.get(conversationId);
     if (cachedMessages?.length) {
+      console.log(cachedMessages)
       this.messagesSubject.next(cachedMessages);
-      this.scrollToBottom();
+      this.scrollToBottom(true);
+      this.isInitialLoad$.next(false);
       return;
     }
 
@@ -229,7 +248,8 @@ export class ConversationComponent implements OnInit {
           );
           this.messagesSubject.next(messages);
           this._messageCache.setAll(conversationId, messages);
-          this.scrollToBottom();
+          this.scrollToBottom(true);
+          this.isInitialLoad$.next(false);
         },
         error: err =>
           console.error(`m=loadMessages; msg=Error loading messages`, err)

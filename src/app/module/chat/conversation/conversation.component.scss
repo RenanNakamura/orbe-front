@@ -2,3 +2,12 @@
 .partner + .me {
   @apply mt-6;
 }
+
+.messages-loading {
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
+}
+
+.messages-ready {
+  opacity: 1;
+}

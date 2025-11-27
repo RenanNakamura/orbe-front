@@ -23,7 +23,9 @@
   </div>
 
   <div #messagesContainer infinite-scroll [infiniteScrollUpDistance]="2" [infiniteScrollThrottle]="150"
-    [scrollWindow]="false" (scrolledUp)="onScrollEnd()" class="flex-1 overflow-auto flex flex-col p-8">
+    [scrollWindow]="false" (scrolledUp)="onScrollEnd()"
+    [ngClass]="(messagesReady$ | async) ? 'messages-ready' : 'messages-loading'"
+    class="flex-1 overflow-auto flex flex-col p-8">
     <ng-container *ngIf="(loading$ | async) as loading">
       <div class="flex justify-center mb-2" *ngIf="loading">
         <mat-progress-spinner mode="indeterminate" diameter="22" strokeWidth="3"></mat-progress-spinner>
@@ -47,7 +49,7 @@
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
+                  <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" />
                   <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -109,7 +111,7 @@
                     </div>
                   </ng-container>
                   <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
-                    class="w-32 h-32 object-contain rounded mb-2 bg-gray-100"/>
+                    class="w-32 h-32 object-contain rounded mb-2 bg-gray-100" />
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
