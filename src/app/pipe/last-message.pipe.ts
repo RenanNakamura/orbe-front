@@ -35,6 +35,9 @@ export class LastMessagePipe implements PipeTransform {
       case MessageType.AUDIO:
         return `🎤 ${this._translate.instant(`voice-message`)}`;
 
+      case MessageType.UNSUPPORTED:
+        return `${this._translate.instant(`unsupported-message`)}`;
+
       default:
         return content?.text?.body ?? '';
     }
