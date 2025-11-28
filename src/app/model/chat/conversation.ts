@@ -128,7 +128,8 @@ export enum MessageType {
   VIDEO = 'VIDEO',
   DOCUMENT = 'DOCUMENT',
   AUDIO = 'AUDIO',
-  STICKER = 'STICKER'
+  STICKER = 'STICKER',
+  UNSUPPORTED = 'UNSUPPORTED'
 }
 
 export enum MessageStatus {

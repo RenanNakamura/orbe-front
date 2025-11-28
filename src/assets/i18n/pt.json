@@ -577,5 +577,6 @@
   "sticker": "Figurinha",
   "more-options": "Mais opções",
   "type-a-message": "Digite uma mensagem",
-  "media-not-found": "Esta mídia não está mais disponível"
+  "media-not-found": "Esta mídia não está mais disponível",
+  "unsupported-message": "Este tipo de mensagem não é suportado"
 }

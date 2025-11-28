@@ -135,6 +135,10 @@
                 <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
               </ng-container>
             </ng-container>
+
+            <ng-container *ngSwitchCase="MessageType.UNSUPPORTED">
+              <div class="text-sm text-gray-500 italic">{{ 'unsupported-message' | translate }}</div>
+            </ng-container>
           </ng-container>
 
           <div class="flex items-center self-end">
