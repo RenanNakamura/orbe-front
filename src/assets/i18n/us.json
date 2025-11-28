@@ -576,5 +576,6 @@
   "document-click-to-open": "Click to open in new tab",
   "sticker": "Sticker",
   "more-options": "More options",
-  "type-a-message": "Type a message"
+  "type-a-message": "Type a message",
+  "media-not-found": "This media is no longer available"
 }
