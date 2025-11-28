@@ -1,13 +1,13 @@
 export const environment = {
   production: true,
-  buddy: 'https://api.orbetalk.com/core',
-  campaign: 'https://api.orbetalk.com/campaign',
-  storage: 'https://api.orbetalk.com/storage',
-  webhook: 'https://api.orbetalk.com/whatsapp-webhook',
-  flow: 'https://api.orbetalk.com/workflow',
+  buddy: 'https://api.tipefy.com/core',
+  campaign: 'https://api.tipefy.com/campaign',
+  storage: 'https://api.tipefy.com/storage',
+  webhook: 'https://api.tipefy.com/whatsapp-webhook',
+  flow: 'https://api.tipefy.com/workflow',
   calendar: 'http://localhost:8092',
-  whatsappService: 'https://api.orbetalk.com/whatsapp',
-  chat: 'https://api.orbetalk.com/chat',
+  whatsappService: 'https://api.tipefy.com/whatsapp',
+  chat: 'https://api.tipefy.com/chat',
   receptcha: {
     sitekey: '6Ld-R5UqAAAAAOFwUurtIj-KVO2XZti8aw72m3SM'
   },
