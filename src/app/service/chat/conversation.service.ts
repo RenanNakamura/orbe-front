@@ -46,7 +46,7 @@ export class ConversationService {
     return this._http.get<Conversation>(`${environment.chat}${this._api}/${id}/details`);
   }
 
-  getMessages(id: string, cursor: string, limit: number = 20): Observable<Message[]> {
+  getMessages(id: string, cursor?: string, limit: number = 20): Observable<Message[]> {
     let params = new HttpParams()
       .set('limit', limit.toString());
 

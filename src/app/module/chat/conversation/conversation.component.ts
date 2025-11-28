@@ -214,7 +214,7 @@ export class ConversationComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.conversation = data['conversation'] as Conversation;
-        this.loadMessages();
+        this.initLoadMessages();
       });
   }
 
@@ -239,17 +239,19 @@ export class ConversationComponent implements OnInit {
     }
   }
 
-  private loadMessages(datetime?: string) {
+  private initLoadMessages() {
     const conversationId = this.conversation?.id;
-    if (!conversationId) return;
+
+    if (!conversationId) {
+      return;
+    }
 
     this.isInitialLoad$.next(true);
     this.messagesReady$.next(false);
-    this.hasMoreMessages$.next(true); // Reset flag for new conversation
+    this.hasMoreMessages$.next(true);
 
     const cachedMessages = this._messageCache.get(conversationId);
     if (cachedMessages?.length) {
-      console.log(cachedMessages)
       this.messagesSubject.next(cachedMessages);
       this.scrollToBottom(true);
       this.isInitialLoad$.next(false);
@@ -258,7 +260,7 @@ export class ConversationComponent implements OnInit {
 
     this.loading$.next(true);
 
-    this._conversationService.getMessages(conversationId, datetime)
+    this._conversationService.getMessages(conversationId)
       .pipe(
         finalize(() => this.loading$.next(false)),
         takeUntilDestroyed(this.destroyRef)
@@ -282,9 +284,7 @@ export class ConversationComponent implements OnInit {
     const currentMessages = this._messageCache.get(conversationId) ?? [];
     const combined = [...messages, ...currentMessages];
 
-    combined.sort((a, b) =>
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+    combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     this.messagesSubject.next(combined);
     this._messageCache.setAll(conversationId, combined);
