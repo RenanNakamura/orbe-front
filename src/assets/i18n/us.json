@@ -578,5 +578,6 @@
   "more-options": "More options",
   "type-a-message": "Type a message",
   "media-not-found": "This media is no longer available",
-  "unsupported-message": "This message type is not supported"
+  "unsupported-message": "This message type is not supported",
+  "download": "Download"
 }

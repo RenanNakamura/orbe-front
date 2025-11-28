@@ -44,13 +44,33 @@
             <ng-container *ngSwitchCase="MessageType.IMAGE">
               <ng-container *ngIf="message?.content?.image as img">
                 <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
-                  <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
-                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                  <div class="relative group">
+                    <ng-container *ngIf="media.loading">
+                      <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
+                        <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                      </div>
+                    </ng-container>
+                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
+
+                    <!-- Download button - visible on hover -->
+                    <button *ngIf="media.url"
+                            [matMenuTriggerFor]="mediaMenu"
+                            mat-icon-button
+                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-white"></mat-icon>
+                    </button>
+                    <mat-menu #mediaMenu="matMenu">
+                      <button mat-menu-item (click)="downloadMedia(media.url, img.id || 'image')">
+                        <mat-icon svgIcon="mat:download"></mat-icon>
+                        <span>{{ 'download' | translate }}</span>
+                      </button>
+                    </mat-menu>
+
+                    <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{
+                        'media-not-found' | translate
+                      }}
                     </div>
-                  </ng-container>
-                  <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
-                  <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}</div>
+                  </div>
                   <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
                 </ng-container>
               </ng-container>
@@ -59,14 +79,34 @@
             <ng-container *ngSwitchCase="MessageType.VIDEO">
               <ng-container *ngIf="message?.content?.video as vid">
                 <ng-container *ngIf="message?.content?.video | mediaAsync: conversation.channelId | async as media">
-                  <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
-                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                  <div class="relative group">
+                    <ng-container *ngIf="media.loading">
+                      <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
+                        <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                      </div>
+                    </ng-container>
+                    <video *ngIf="media.url" [src]="media.url" controls
+                           class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
+
+                    <!-- Download button - visible on hover -->
+                    <button *ngIf="media.url"
+                            [matMenuTriggerFor]="videoMenu"
+                            mat-icon-button
+                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-white"></mat-icon>
+                    </button>
+                    <mat-menu #videoMenu="matMenu">
+                      <button mat-menu-item (click)="downloadMedia(media.url, vid.id || 'video')">
+                        <mat-icon svgIcon="mat:download"></mat-icon>
+                        <span>{{ 'download' | translate }}</span>
+                      </button>
+                    </mat-menu>
+
+                    <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{
+                        'media-not-found' | translate
+                      }}
                     </div>
-                  </ng-container>
-                  <video *ngIf="media.url" [src]="media.url" controls
-                         class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
-                  <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}</div>
+                  </div>
                   <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
                 </ng-container>
               </ng-container>
@@ -96,7 +136,9 @@
                       </div>
                     </a>
                   </div>
-                  <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}</div>
+                  <div *ngIf="media.error"
+                       class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}
+                  </div>
                   <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1">{{ doc?.caption }}</div>
                 </ng-container>
               </ng-container>
@@ -110,7 +152,9 @@
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}</div>
+                  <div *ngIf="media.error"
+                       class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}
+                  </div>
                   <audio *ngIf="media.url" [src]="media.url" controls class="w-[350px] h-[50px] mb-1"></audio>
                 </ng-container>
               </ng-container>
@@ -124,8 +168,11 @@
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}</div>
-                  <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'" class="w-32 h-32 object-contain rounded mb-2 bg-gray-100"/>
+                  <div *ngIf="media.error"
+                       class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{ 'media-not-found' | translate }}
+                  </div>
+                  <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
+                       class="w-32 h-32 object-contain rounded mb-2 bg-gray-100"/>
                 </ng-container>
               </ng-container>
             </ng-container>

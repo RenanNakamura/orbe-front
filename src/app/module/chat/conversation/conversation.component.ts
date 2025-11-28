@@ -290,4 +290,28 @@ export class ConversationComponent implements OnInit {
     this._messageCache.setAll(conversationId, combined);
   }
 
+  downloadMedia(url: any, filename?: string) {
+    if (!url) {
+      return;
+    }
+
+    let actualUrl: string;
+
+    if (typeof url === 'string') {
+      actualUrl = url;
+    } else if (url && typeof url === 'object' && 'changingThisBreaksApplicationSecurity' in url) {
+      actualUrl = url['changingThisBreaksApplicationSecurity'];
+    } else {
+      actualUrl = String(url);
+    }
+
+    const link = document.createElement('a');
+    link.href = actualUrl;
+    link.download = filename || 'media';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
 }
