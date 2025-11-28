@@ -22,8 +22,8 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, Observable} from "rxjs";
-import {finalize} from "rxjs/operators";
+import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -46,6 +46,7 @@ export class ConversationComponent implements OnInit {
   public hasMoreMessages$ = new BehaviorSubject<boolean>(true);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
+  private scrollEndSubject = new Subject<void>();
   loading$ = new BehaviorSubject<boolean>(false);
 
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
@@ -68,6 +69,7 @@ export class ConversationComponent implements OnInit {
 
   ngOnInit() {
     this.syncSubscribers();
+    this.setupScrollListener();
   }
 
   openDrawer() {
@@ -93,46 +95,47 @@ export class ConversationComponent implements OnInit {
   }
 
   onScrollEnd() {
-    if (this.loading$.value) {
+    this.scrollEndSubject.next();
+  }
+
+  private setupScrollListener() {
+    this.scrollEndSubject.pipe(
+      debounceTime(300),
+      filter(() => !this.loading$.value && this.hasMoreMessages$.value),
+      filter(() => !!this.conversation?.id && this.messagesSubject.value.length > 0),
+      tap(() => this.loading$.next(true)),
+      switchMap(() => {
+        const conversationId = this.conversation.id;
+        const oldestMsg = this.messagesSubject.value[0];
+        const cursor = oldestMsg.createdAt;
+        return this._conversationService
+          .getMessages(conversationId, cursor)
+          .pipe(finalize(() => this.loading$.next(false)));
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (messages) => this.handleLoadedMessages(messages),
+      error: (err) => console.error(`m=setupScrollListener; msg=Error loading more messages`, err)
+    });
+  }
+
+  private handleLoadedMessages(messages: Message[]) {
+    if (!messages || messages.length === 0) {
+      this.hasMoreMessages$.next(false);
       return;
     }
 
-    if (!this.hasMoreMessages$.value) {
-      return;
-    }
+    const container = this.messagesContainer?.nativeElement;
+    const oldScrollHeight = container?.scrollHeight || 0;
+    const oldScrollTop = container?.scrollTop || 0;
 
-    const conversationId = this.conversation?.id;
+    this.putMessagesCache(this.conversation.id, messages);
 
-    if (!conversationId) {
-      return;
-    }
-
-    const currentMessages = this.messagesSubject.value;
-
-    if (!currentMessages.length) {
-      return;
-    }
-
-    const oldestMsg = currentMessages[0];
-    const cursor = oldestMsg.createdAt;
-
-    this.loading$.next(true);
-
-    this._conversationService.getMessages(conversationId, cursor)
-      .pipe(
-        finalize(() => this.loading$.next(false)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: (messages) => {
-          if (!messages || messages.length === 0) {
-            this.hasMoreMessages$.next(false);
-            return;
-          }
-          this.putMessagesCache(conversationId, messages);
-        },
-        error: (err) => console.error(`m=onScrollEnd; msg=Error loading more messages`, err)
-      });
+    requestAnimationFrame(() => {
+      const newScrollHeight = container?.scrollHeight || 0;
+      const heightDifference = newScrollHeight - oldScrollHeight;
+      container.scrollTop = oldScrollTop + heightDifference;
+    });
   }
 
   autoResize(textarea: HTMLTextAreaElement) {
