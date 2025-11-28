@@ -82,13 +82,14 @@
                   </ng-container>
                   <div *ngIf="media.url" class="flex flex-col w-[350px] h-[80px]">
                     <a [href]="media.url" target="_blank" rel="noopener"
-                      class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer no-underline">
+                      class="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer no-underline">
                       <div class="flex-none">
-                        <mat-icon class="text-gray-600 w-10 h-10 !text-[40px]" svgIcon="mat:insert_drive_file"></mat-icon>
+                        <mat-icon class="text-gray-600 w-10 h-10 !text-[40px]"
+                          svgIcon="mat:insert_drive_file"></mat-icon>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="text-sm font-medium text-gray-900 truncate">{{ doc.filename || 'Documento' }}</div>
-                        <div class="text-xs text-gray-500">Clique para abrir em nova aba</div>
+                        <div class="text-xs text-gray-500">{{ 'document-click-to-open' | translate }}</div>
                       </div>
                       <div class="flex-none">
                         <mat-icon class="text-gray-500 w-5 h-5 !text-[20px]" svgIcon="mat:open_in_new"></mat-icon>
