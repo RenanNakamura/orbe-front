@@ -267,9 +267,7 @@ export class ConversationComponent implements OnInit {
       )
       .subscribe({
         next: messages => {
-          messages.sort((a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
+          messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
           this.messagesSubject.next(messages);
           this._messageCache.setAll(conversationId, messages);
           this.scrollToBottom(true);
@@ -281,7 +279,7 @@ export class ConversationComponent implements OnInit {
   }
 
   private putMessagesCache(conversationId: string, messages: Message[]) {
-    const currentMessages = this._messageCache.get(conversationId) ?? [];
+    const currentMessages = this.messagesSubject.value ?? [];
     const combined = [...messages, ...currentMessages];
 
     combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
