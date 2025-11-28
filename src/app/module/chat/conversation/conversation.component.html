@@ -4,7 +4,7 @@
       <mat-icon svgIcon="mat:menu"></mat-icon>
     </button>
     <div class="flex items-center gap-3">
-      <img class="hidden sm:block flex-none w-9 h-9 rounded-full" src="assets/img/no-avatar.png" alt=""/>
+      <img class="hidden sm:block flex-none w-9 h-9 rounded-full" src="assets/img/no-avatar.png" alt="" />
       <div class="flex-1 truncate">
         <div class="font-semibold text-sm truncate">{{ conversation?.name }}</div>
         <div class="text-xs text-gray-500 truncate">
@@ -22,16 +22,10 @@
     <!--    </div>-->
   </div>
 
-  <div #messagesContainer
-       infinite-scroll
-       [infiniteScrollUpDistance]="2"
-       [infiniteScrollThrottle]="150"
-       [fromRoot]="false"
-       [alwaysCallback]="true"
-       [scrollWindow]="false"
-       (scrolledUp)="onScrollEnd()"
-       [ngClass]="(messagesReady$ | async) ? 'messages-ready' : 'messages-loading'"
-       class="flex-1 overflow-auto flex flex-col p-8">
+  <div #messagesContainer infinite-scroll [infiniteScrollUpDistance]="2" [infiniteScrollThrottle]="150"
+    [fromRoot]="false" [alwaysCallback]="true" [scrollWindow]="false" (scrolledUp)="onScrollEnd()"
+    [ngClass]="(messagesReady$ | async) ? 'messages-ready' : 'messages-loading'"
+    class="flex-1 overflow-auto flex flex-col p-8">
     <ng-container *ngIf="(loading$ | async) as loading">
       <div class="flex justify-center mb-2" *ngIf="loading">
         <mat-progress-spinner mode="indeterminate" diameter="22" strokeWidth="3"></mat-progress-spinner>
@@ -55,7 +49,7 @@
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
+                  <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" />
                   <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -71,7 +65,7 @@
                     </div>
                   </ng-container>
                   <video *ngIf="media.url" [src]="media.url" controls
-                         class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
+                    class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
                   <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
@@ -82,13 +76,26 @@
               <ng-container *ngIf="message?.content?.document as doc">
                 <ng-container *ngIf="message?.content?.document | mediaAsync: conversation.channelId | async as media">
                   <ng-container *ngIf="media.loading">
-                    <div class="flex justify-center my-2">
+                    <div class="flex justify-center items-center w-[350px] h-[80px] bg-gray-100 rounded mb-1">
                       <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                     </div>
                   </ng-container>
-                  <a *ngIf="media.url" [href]="media.url" target="_blank" rel="noopener"
-                     class="break-all underline text-blue-700">{{ doc.filename || 'Documento' }}</a>
-                  <div class="text-sm whitespace-pre-wrap">{{ doc?.caption }}</div>
+                  <div *ngIf="media.url" class="flex flex-col w-[350px] h-[80px]">
+                    <a [href]="media.url" target="_blank" rel="noopener"
+                      class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer no-underline">
+                      <div class="flex-none">
+                        <mat-icon class="text-gray-600 w-10 h-10 !text-[40px]" svgIcon="mat:insert_drive_file"></mat-icon>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-gray-900 truncate">{{ doc.filename || 'Documento' }}</div>
+                        <div class="text-xs text-gray-500">Clique para abrir em nova aba</div>
+                      </div>
+                      <div class="flex-none">
+                        <mat-icon class="text-gray-500 w-5 h-5 !text-[20px]" svgIcon="mat:open_in_new"></mat-icon>
+                      </div>
+                    </a>
+                  </div>
+                  <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1">{{ doc?.caption }}</div>
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -117,7 +124,7 @@
                     </div>
                   </ng-container>
                   <img *ngIf="media.url" [src]="media.url" [alt]="'sticker'"
-                       class="w-32 h-32 object-contain rounded mb-2 bg-gray-100"/>
+                    class="w-32 h-32 object-contain rounded mb-2 bg-gray-100" />
                   <div *ngIf="media.error" class="text-xs text-red-600">{{ media.error }}</div>
                 </ng-container>
               </ng-container>
@@ -147,8 +154,8 @@
             <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
             </div>
             <mat-icon class="w-[14px] h-[14px]" [matTooltip]="message?.error | MapWhatsAppError"
-                      [svgIcon]="MessageStatusIconMap[message.status]"
-                      [ngClass]="MessageStatusColorMap[message.status]"></mat-icon>
+              [svgIcon]="MessageStatusIconMap[message.status]"
+              [ngClass]="MessageStatusColorMap[message.status]"></mat-icon>
           </div>
         </div>
       </div>
@@ -166,8 +173,8 @@
               <div class="text-[12px] mr-1">{{ message.createdAt | dateOnlyHour }}
               </div>
               <mat-icon class="w-[14px] h-[14px]" [matTooltip]="message?.error | MapWhatsAppError"
-                        [svgIcon]="MessageStatusIconMap[message.status]"
-                        [ngClass]="MessageStatusColorMap[message.status]"></mat-icon>
+                [svgIcon]="MessageStatusIconMap[message.status]"
+                [ngClass]="MessageStatusColorMap[message.status]"></mat-icon>
             </div>
           </div>
         </div>
@@ -179,20 +186,19 @@
 
     <!-- Botão de adicionar -->
     <button [matMenuTriggerFor]="addMenuButton" color="primary" mat-icon-button type="button"
-            class="flex-none self-end">
+      class="flex-none self-end">
       <mat-icon svgIcon="mat:add"></mat-icon>
     </button>
 
     <button color="primary" mat-icon-button type="button" class="flex-none self-end" #emojiTrigger="matMenuTrigger"
-            [matMenuTriggerFor]="emojiMenu">
+      [matMenuTriggerFor]="emojiMenu">
       <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
     </button>
 
     <mat-menu #emojiMenu="matMenu" class="shadow-none bg-none" xPosition="after" yPosition="above">
       <div (click)="$event.stopPropagation()">
         <emoji-mart [isNative]="true" [showPreview]="false" [enableSearch]="true"
-                    [style]="{ width: '100%', height: 'auto' }"
-                    (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
+          [style]="{ width: '100%', height: 'auto' }" (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
       </div>
     </mat-menu>
 
@@ -217,11 +223,11 @@
                overflow-y-auto outline-none resize-none
                whitespace-pre-wrap break-words bg-transparent
                text-[15px] leading-[18px]" [placeholder]="'type-a-message' | translate"
-                (input)="autoResize(textareaMessage)" (keydown)="onKeyDownTextarea($event, textareaMessage)"></textarea>
+        (input)="autoResize(textareaMessage)" (keydown)="onKeyDownTextarea($event, textareaMessage)"></textarea>
     </div>
 
     <button color="primary" mat-icon-button type="button" class="flex-none self-end"
-            (click)="sendMessage(textareaMessage)">
+      (click)="sendMessage(textareaMessage)">
       <mat-icon svgIcon="mat:send"></mat-icon>
     </button>
   </div>
