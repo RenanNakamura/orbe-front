@@ -54,8 +54,8 @@
 
                     <!-- Download button - visible on hover -->
                     <button *ngIf="media.url" [matMenuTriggerFor]="mediaMenu" mat-icon-button
-                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-white"></mat-icon>
+                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white">
+                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-gray-500"></mat-icon>
                     </button>
                     <mat-menu #mediaMenu="matMenu">
                       <button mat-menu-item (click)="downloadMedia(media.url, img.id || 'image')">
@@ -93,8 +93,8 @@
                     <button *ngIf="media.url"
                             [matMenuTriggerFor]="videoMenu"
                             mat-icon-button
-                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-white"></mat-icon>
+                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white">
+                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-gray-500"></mat-icon>
                     </button>
                     <mat-menu #videoMenu="matMenu">
                       <button mat-menu-item (click)="downloadMedia(media.url, vid.id || 'video')">
