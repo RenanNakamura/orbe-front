@@ -579,5 +579,9 @@
   "type-a-message": "Digite uma mensagem",
   "media-not-found": "Esta mídia não está mais disponível",
   "unsupported-message": "Este tipo de mensagem não é suportado",
-  "download": "Baixar"
+  "download": "Baixar",
+  "timeIntervalNode": {
+    "match": "Dentro do intervalo de horário",
+    "noMatch": "Fora do intervalo de horário"
+  }
 }
