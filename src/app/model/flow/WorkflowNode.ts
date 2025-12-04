@@ -59,6 +59,18 @@ export enum NodeType {
     LIST = 'LIST',
     ACTION = 'ACTION',
     CONDITION = 'CONDITION',
+    TIME_INTERVAL = 'TIME_INTERVAL',
+}
+
+export interface TimeIntervalNode extends WorkflowNode {
+    timezone?: string;
+    intervals?: TimeInterval[];
+}
+
+export interface TimeInterval {
+    id: string;
+    startTime: string;
+    endTime: string;
 }
 
 export interface NodePosition {

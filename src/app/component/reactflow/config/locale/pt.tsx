@@ -96,6 +96,35 @@ const pt = {
             notEmpty: `Adicione uma condição clicando em + abaixo`
         }
     },
+    timeIntervalNode: {
+        title: 'Horários',
+        alert: {
+            message: 'Selecione um fuso horário e adicione pelo menos um intervalo de tempo.'
+        },
+        timezone: {
+            label: 'Fuso horário',
+            placeholder: 'Selecione o fuso horário'
+        },
+        intervals: {
+            notEmpty: 'Adicione um intervalo clicando em + abaixo'
+        },
+        interval: {
+            startTime: 'Horário inicial',
+            endTime: 'Horário final',
+            validation: {
+                startRequired: 'O horário inicial é obrigatório.',
+                endRequired: 'O horário final é obrigatório.',
+                endAfterStart: 'O horário final deve ser maior que o horário inicial.',
+                overlap: 'Este intervalo se sobrepõe a outro intervalo existente.',
+                sameTime: 'Hora de início e fim não podem ser iguais.',
+            },
+            crossMidnight: 'Este intervalo cruza a meia-noite (termina no dia seguinte).',
+        },
+        noMatch: 'Fora dos intervalos',
+        modal: {
+            title: 'Adicionar intervalo'
+        }
+    },
     conditions: {
         empty: 'Não está preenchido',
         notEmpty: 'Está preenchido',

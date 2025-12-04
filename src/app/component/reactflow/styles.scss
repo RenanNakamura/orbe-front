@@ -1,6 +1,6 @@
 @import "reactflow-component";
 
-// nodes
+// Import Node Styles
 @import "node/start/start-node";
 @import "node/action/action-node";
 @import "node/condition/condition-node";
@@ -9,8 +9,9 @@
 @import "node/question/question-node";
 @import "node/list/list-node";
 @import "node/select/select-node";
+@import "node/time-interval/time-interval-node";
 
-// components
+// Import Component Styles
 @import "component/shared";
 @import "component/groupList/group-list";
 @import "component/edge/custom-edge";

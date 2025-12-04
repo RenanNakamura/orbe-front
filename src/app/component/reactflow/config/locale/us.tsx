@@ -96,6 +96,35 @@ const us = {
             notEmpty: 'Add a condition by clicking + below'
         }
     },
+    timeIntervalNode: {
+        title: 'Hours',
+        alert: {
+            message: 'Select a timezone and add at least one time interval.'
+        },
+        timezone: {
+            label: 'Timezone',
+            placeholder: 'Select timezone'
+        },
+        intervals: {
+            notEmpty: 'Add an interval by clicking + below'
+        },
+        interval: {
+            startTime: 'Start time',
+            endTime: 'End time',
+            validation: {
+                startRequired: 'Start time is required.',
+                endRequired: 'End time is required.',
+                endAfterStart: 'End time must be after start time.',
+                overlap: 'This interval overlaps with another existing interval.',
+                sameTime: 'Start and end time cannot be the same.',
+            },
+            crossMidnight: 'This interval crosses midnight (ends the next day).',
+        },
+        noMatch: 'Outside intervals',
+        modal: {
+            title: 'Add interval'
+        }
+    },
     conditions: {
         empty: 'Is empty',
         notEmpty: 'Is filled',

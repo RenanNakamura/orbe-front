@@ -2,17 +2,17 @@ import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {NodeType, WorkflowNode} from '../../model/flow/WorkflowNode';
 import {
-    addEdge,
-    Background,
-    Controls,
-    Edge,
-    MiniMap,
-    Node,
-    ReactFlow,
-    ReactFlowProvider,
-    useEdgesState,
-    useNodesState,
-    useReactFlow
+  addEdge,
+  Background,
+  Controls,
+  Edge,
+  MiniMap,
+  Node,
+  ReactFlow,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+  useReactFlow
 } from '@xyflow/react';
 import StartNode from './node/start/StartNode';
 import MessageNode from './node/message/MessageNode';
@@ -27,6 +27,7 @@ import ListNode from './node/list/ListNode';
 import SelectNode from './node/select/SelectNode';
 import {Connection} from '@xyflow/system';
 import ConditionNode from './node/condition/ConditionNode';
+import TimeIntervalNode from './node/time-interval/TimeIntervalNode';
 
 export interface FlowProps {
     nodes: WorkflowNode[];
@@ -44,7 +45,7 @@ const initialEdgeTypes = {
 function ReactFlowComponent(props: FlowProps) {
     const reactFlow = useReactFlow();
     const initialNodeTypes = {
-        SELECT: (nodeProps) => <SelectNode {...nodeProps} onSelectNode={replaceNode}/>,
+        SELECT: (nodeProps) => <SelectNode {...nodeProps} onSelectNode={replaceNode} />,
         START: StartNode,
         MESSAGE: MessageNode,
         BUTTON: ButtonNode,
@@ -52,6 +53,7 @@ function ReactFlowComponent(props: FlowProps) {
         LIST: ListNode,
         ACTION: ActionNode,
         CONDITION: ConditionNode,
+        TIME_INTERVAL: TimeIntervalNode,
     };
 
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -62,12 +64,12 @@ function ReactFlowComponent(props: FlowProps) {
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const {screenToFlowPosition} = useReactFlow();
+    const { screenToFlowPosition } = useReactFlow();
 
-    const proOptions = useMemo(() => ({hideAttribution: true}), []);
+    const proOptions = useMemo(() => ({ hideAttribution: true }), []);
 
-    const {i18n} = useTranslation();
-    const {onSubmit, lang} = props;
+    const { i18n } = useTranslation();
+    const { onSubmit, lang } = props;
     const sourceNodeRef = useRef<string | null>(null);
     const sourceHandleRef = useRef<string | null>(null);
 
@@ -85,7 +87,7 @@ function ReactFlowComponent(props: FlowProps) {
         const e = flow.edges;
 
         if (onSubmit) {
-            onSubmit({nodes: n, edges: e, viewport: flow.viewport});
+            onSubmit({ nodes: n, edges: e, viewport: flow.viewport });
         }
     }, [reactFlow, onSubmit]);
 
@@ -97,7 +99,7 @@ function ReactFlowComponent(props: FlowProps) {
 
     const onConnectEdge = useCallback(
         (connection) => {
-            const edge = {...connection, type: EdgeType.CUSTOM, id: uuidv4()};
+            const edge = { ...connection, type: EdgeType.CUSTOM, id: uuidv4() };
             setEdges((eds) => addEdge(edge, eds));
 
             sourceNodeRef.current = null;
@@ -130,14 +132,14 @@ function ReactFlowComponent(props: FlowProps) {
         }
 
         const id = uuidv4();
-        const {clientX, clientY} = 'changedTouches' in event ? event.changedTouches[0] : event;
-        const position = screenToFlowPosition({x: clientX, y: clientY});
+        const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event;
+        const position = screenToFlowPosition({ x: clientX, y: clientY });
 
         const newNode: Node = {
             id,
             type: 'SELECT',
             position,
-            data: {id, type: 'SELECT', position},
+            data: { id, type: 'SELECT', position },
         };
 
         const newEdge: Edge = {
@@ -156,13 +158,13 @@ function ReactFlowComponent(props: FlowProps) {
     const replaceNode = useCallback((id: string, newType: NodeType) => {
         setNodes((nds) =>
             nds.map(node =>
-                node.id === id ? {...node, type: newType, data: {...node.data, type: newType}} : node
+                node.id === id ? { ...node, type: newType, data: { ...node.data, type: newType } } : node
             )
         );
     }, [setNodes]);
 
     const isValidConnection = (connection: Connection) => {
-        const {source, sourceHandle} = connection;
+        const { source, sourceHandle } = connection;
 
         if (!source || !sourceHandle) {
             return false;
@@ -192,9 +194,9 @@ function ReactFlowComponent(props: FlowProps) {
             onConnectStart={onConnectStart}
             onConnectEnd={onConnectEnd}
             onInit={onInit}>
-            <Controls className={'xyflow-controls'}/>
-            <MiniMap position={'bottom-right'}/>
-            <Background gap={20} size={1} bgColor={'#f9fafb'}/>
+            <Controls className={'xyflow-controls'} />
+            <MiniMap position={'bottom-right'} />
+            <Background gap={20} size={1} bgColor={'#f9fafb'} />
         </ReactFlow>
     );
 }
@@ -213,7 +215,7 @@ function toReactFlowNodes(nodes: WorkflowNode[]): Node[] {
 function toWorkflowNode(reactFlowNodes: Node[]): WorkflowNode[] {
     return reactFlowNodes.map(node => {
         const data = node.data as any;
-        return Object.assign(data, {position: node.position});
+        return Object.assign(data, { position: node.position });
     });
 }
 

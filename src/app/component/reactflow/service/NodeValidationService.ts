@@ -7,7 +7,8 @@ import {
     NodeType,
     WorkflowNode,
     QuestionNode,
-    StartNode
+    StartNode,
+    TimeIntervalNode
 } from '../../../model/flow/WorkflowNode';
 
 const startNodeSchemaValidation = yup
@@ -105,6 +106,15 @@ const questionNodeSchemaValidation = yup
             .required('O tempo caso o cliente não responda é obrigatório.'),
     });
 
+const timeIntervalNodeSchemaValidation = yup
+    .object()
+    .shape({
+        timezone: yup.string().trim().required('O fuso horário é obrigatório.'),
+        intervals: yup.array()
+            .min(1, 'Pelo menos um intervalo é obrigatório.')
+            .required('Pelo menos um intervalo é obrigatório.')
+    });
+
 export const NodeValidationService = {
 
     validate: async (node: WorkflowNode): Promise<boolean> => {
@@ -123,6 +133,8 @@ export const NodeValidationService = {
                 return await questionNodeSchemaValidation.isValid(node as QuestionNode);
             case NodeType.LIST:
                 return await listNodeSchemaValidation.isValid(node as QuestionNode);
+            case NodeType.TIME_INTERVAL:
+                return await timeIntervalNodeSchemaValidation.isValid(node as TimeIntervalNode);
         }
     }
 
