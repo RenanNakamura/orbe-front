@@ -53,7 +53,8 @@ export class MediaAsyncPipe implements PipeTransform {
 
     this.http.get(`${environment.whatsappService}/medias/${media.id}`, {
       responseType: 'blob',
-      params: {channelId}
+      params: {channelId},
+      headers: {'X-Skip-Global-Error': 'true'}
     })
       .pipe(
         map(blob => {
