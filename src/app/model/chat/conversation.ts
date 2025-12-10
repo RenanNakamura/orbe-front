@@ -29,6 +29,7 @@ export class MessageContent {
   audio?: AudioMessage;
   document?: DocumentMessage;
   sticker?: StickerMessage;
+  button?: ButtonMessage;
 }
 
 export class MessageError {
@@ -39,6 +40,11 @@ export class MessageError {
 export class TextMessage {
   body: string;
   previewUrl?: boolean;
+}
+
+export class ButtonMessage {
+  text: string;
+  payload: string;
 }
 
 export class ImageMessage {
@@ -129,6 +135,7 @@ export enum MessageType {
   DOCUMENT = 'DOCUMENT',
   AUDIO = 'AUDIO',
   STICKER = 'STICKER',
+  BUTTON = 'BUTTON',
   UNSUPPORTED = 'UNSUPPORTED'
 }
 

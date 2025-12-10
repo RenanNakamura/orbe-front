@@ -187,6 +187,12 @@
               </ng-container>
             </ng-container>
 
+            <ng-container *ngSwitchCase="MessageType.BUTTON">
+              <ng-container *ngIf="message?.content?.button as button">
+                <div class="text-sm whitespace-pre-wrap">{{ button?.text || button?.payload }}</div>
+              </ng-container>
+            </ng-container>
+
             <ng-container *ngSwitchCase="MessageType.UNSUPPORTED">
               <div class="text-sm text-gray-500 italic">{{ 'unsupported-message' | translate }}</div>
             </ng-container>
