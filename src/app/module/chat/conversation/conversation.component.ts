@@ -8,11 +8,11 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
-import {stagger20ms} from '@vex/animations/stagger.animation';
-import {ChatService} from "../../../service/chat/chat.service";
-import {ActivatedRoute} from "@angular/router";
-import {ConversationService} from "../../../service/chat/conversation.service";
+import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
+import { stagger20ms } from '@vex/animations/stagger.animation';
+import { ChatService } from "../../../service/chat/chat.service";
+import { ActivatedRoute } from "@angular/router";
+import { ConversationService } from "../../../service/chat/conversation.service";
 import {
   Conversation,
   Message,
@@ -22,11 +22,12 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
-import {MatMenuTrigger} from '@angular/material/menu';
-import {MessageCache} from "../../../service/chat/message.cache";
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { debounceTime, filter, finalize, switchMap, tap } from "rxjs/operators";
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MessageCache } from "../../../service/chat/message.cache";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { WhatsAppService } from '../../../service/whatsapp/whatsapp.service';
 
 @Component({
   selector: 'vex-conversation',
@@ -56,6 +57,12 @@ export class ConversationComponent implements OnInit {
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
   protected readonly MessageStatusColorMap = MessageStatusColorMap;
 
+  imagePreview?: {
+    file: File;
+    url: string;
+  };
+  uploadingImage = false;
+
   private destroyRef = inject(DestroyRef);
 
   constructor(
@@ -64,6 +71,7 @@ export class ConversationComponent implements OnInit {
     private _chatService: ChatService,
     private _conversationService: ConversationService,
     private _messageCache: MessageCache,
+    private _whatsappService: WhatsAppService
   ) {
   }
 
@@ -144,7 +152,38 @@ export class ConversationComponent implements OnInit {
     textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
   }
 
-  sendMessage(textarea: HTMLTextAreaElement) {
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.imagePreview = {
+        file,
+        url: e.target?.result as string
+      };
+      this._cd.markForCheck();
+    };
+
+    reader.readAsDataURL(file);
+
+    input.value = '';
+  }
+
+  clearImagePreview() {
+    this.imagePreview = undefined;
+    this._cd.markForCheck();
+  }
+
+  async sendMessage(textarea: HTMLTextAreaElement) {
+    // Se tem imagem, enviar imagem
+    if (this.imagePreview) {
+      await this.sendImageMessage();
+      return;
+    }
+
     const value = textarea?.value?.trim();
     if (!value) return;
 
@@ -155,7 +194,7 @@ export class ConversationComponent implements OnInit {
       content: {
         to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
         type: MessageType.TEXT,
-        text: {body: value, previewUrl: false}
+        text: { body: value, previewUrl: false }
       }
     }
 
@@ -177,6 +216,71 @@ export class ConversationComponent implements OnInit {
           message: messageCreated
         });
       });
+  }
+
+  async sendImageMessage() {
+    if (!this.imagePreview) return;
+
+    try {
+      this.uploadingImage = true;
+      this._cd.markForCheck();
+
+      // 1. Upload da imagem para o Facebook
+      const uploadResult = await this._whatsappService.uploadCache(
+        this.conversation.phoneNumberId,
+        this.imagePreview.file
+      );
+
+      console.log('uploadResult => ', uploadResult);
+
+      // 2. Pegar a legenda do textarea
+      const textarea = this.msgTextarea?.nativeElement as HTMLTextAreaElement;
+      const caption = textarea?.value?.trim() || undefined;
+
+      // 3. Enviar mensagem com o media_id
+      const request: SendMessageRequest = {
+        senderType: SenderType.AGENT,
+        senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+        phoneNumberId: this.conversation.phoneNumberId,
+        content: {
+          to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
+          type: MessageType.IMAGE,
+          image: {
+            id: uploadResult.id,
+            caption: caption
+          }
+        }
+      };
+
+      this._conversationService.sendMessage(this.conversation.id, request)
+        .pipe(
+          finalize(() => {
+            this.uploadingImage = false;
+            this.clearImagePreview();
+            if (textarea) {
+              textarea.value = '';
+              textarea.style.height = 'auto';
+            }
+            if (this.stickToBottom$.value) {
+              this.scrollToBottom();
+            }
+          }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(messageCreated => {
+          this.putMessagesCache(this.conversation.id, [messageCreated]);
+          this._chatService.messageSent.next({
+            conversationId: this.conversation.id,
+            message: messageCreated
+          });
+        });
+
+    } catch (error) {
+      console.error('Error sending image:', error);
+      this.uploadingImage = false;
+      this._cd.markForCheck();
+      // TODO: Mostrar erro para o usuário
+    }
   }
 
   onSelectEmoji(event, trigger: MatMenuTrigger) {

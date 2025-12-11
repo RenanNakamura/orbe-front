@@ -580,6 +580,8 @@
   "media-not-found": "Esta mídia não está mais disponível",
   "unsupported-message": "Este tipo de mensagem não é suportado",
   "download": "Baixar",
+  "add-caption": "Adicionar legenda",
+  "uploading": "Enviando...",
   "timeIntervalNode": {
     "match": "Dentro do intervalo de horário",
     "noMatch": "Fora do intervalo de horário"

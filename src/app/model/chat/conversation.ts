@@ -108,12 +108,18 @@ export class SendMessageRequest {
 export class MessageContentRequest {
   to: string;
   type: MessageType;
-  text: TextMessageRequest;
+  text?: TextMessageRequest;
+  image?: ImageMessageRequest;
 }
 
 export class TextMessageRequest {
   body: string;
   previewUrl?: boolean;
+}
+
+export class ImageMessageRequest {
+  id: string;
+  caption?: string;
 }
 
 export enum ConversationStatus {

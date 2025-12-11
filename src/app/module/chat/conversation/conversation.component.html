@@ -83,16 +83,11 @@
                         <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                       </div>
                     </ng-container>
-                    <video *ngIf="media.url"
-                           [src]="media.url"
-                           controls
-                           controlsList="nodownload"
+                    <video *ngIf="media.url" [src]="media.url" controls controlsList="nodownload"
                            class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
 
                     <!-- Download button - visible on hover -->
-                    <button *ngIf="media.url"
-                            [matMenuTriggerFor]="videoMenu"
-                            mat-icon-button
+                    <button *ngIf="media.url" [matMenuTriggerFor]="videoMenu" mat-icon-button
                             class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white">
                       <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-gray-500"></mat-icon>
                     </button>
@@ -207,8 +202,46 @@
       <!-- AGENT/OUTRO + BOT. Coloque trechos similares, omitido pelo limite -->
       <div *ngIf="this.isAgent(message)" class="flex gap-2 mt-1 self-end">
         <div class="flex flex-col space-y-1 px-3 py-2 rounded-xl bg-primary-600 text-white max-w-[400px] shadow-sm">
-          <ng-container *ngIf="message?.content?.text as text">
-            <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+          <ng-container [ngSwitch]="message?.content?.type">
+
+            <ng-container *ngSwitchCase="MessageType.IMAGE">
+              <ng-container *ngIf="message?.content?.image as img">
+                <ng-container *ngIf="img | mediaAsync: conversation.channelId | async as media">
+                  <div class="relative group">
+                    <ng-container *ngIf="media.loading">
+                      <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
+                        <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                      </div>
+                    </ng-container>
+                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
+
+                    <!-- Download button - visible on hover -->
+                    <button *ngIf="media.url" [matMenuTriggerFor]="mediaMenu" mat-icon-button
+                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white">
+                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-gray-500"></mat-icon>
+                    </button>
+                    <mat-menu #mediaMenu="matMenu">
+                      <button mat-menu-item (click)="downloadMedia(media.url, img.id || 'image')">
+                        <mat-icon svgIcon="mat:download"></mat-icon>
+                        <span>{{ 'download' | translate }}</span>
+                      </button>
+                    </mat-menu>
+
+                    <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{
+                        'media-not-found' | translate
+                      }}
+                    </div>
+                  </div>
+                  <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MessageType.TEXT">
+              <ng-container *ngIf="message?.content?.text as text">
+                <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+              </ng-container>
+            </ng-container>
           </ng-container>
 
           <div class="self-end flex items-center">
@@ -243,54 +276,73 @@
     </ng-container>
   </div>
 
-  <div class="flex items-center mb-3 mr-3 ml-3 bg-white rounded-xl border shadow px-1 py-1">
-
-    <!-- Botão de adicionar -->
-    <button [matMenuTriggerFor]="addMenuButton" color="primary" mat-icon-button type="button"
-            class="flex-none self-end">
-      <mat-icon svgIcon="mat:add"></mat-icon>
-    </button>
-
-    <button color="primary" mat-icon-button type="button" class="flex-none self-end" #emojiTrigger="matMenuTrigger"
-            [matMenuTriggerFor]="emojiMenu">
-      <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
-    </button>
-
-    <mat-menu #emojiMenu="matMenu" class="shadow-none bg-none" xPosition="after" yPosition="above">
-      <div (click)="$event.stopPropagation()">
-        <emoji-mart [isNative]="true" [showPreview]="false" [enableSearch]="true"
-                    [style]="{ width: '100%', height: 'auto' }"
-                    (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
+  <div class="relative mb-3 mr-3 ml-3">
+    <!-- Image Preview -->
+    <div *ngIf="imagePreview" class="relative w-full mb-2 p-3 bg-white rounded-lg shadow-lg border">
+      <div class="relative justify-items-center">
+        <button mat-icon-button (click)="clearImagePreview()">
+          <mat-icon svgIcon="mat:close"></mat-icon>
+        </button>
+        <img [src]="imagePreview.url" class="w-[512px] h-[512px] object-cover rounded"/>
       </div>
-    </mat-menu>
+      <div *ngIf="uploadingImage" class="mt-2 flex items-center justify-center gap-2">
+        <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+        <span class="text-sm text-gray-600">{{ 'uploading' | translate }}</span>
+      </div>
+    </div>
 
-    <mat-menu #addMenuButton="matMenu" xPosition="after" yPosition="above">
-      <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:image"></mat-icon>
-        <span>{{ 'IMAGE' | translate }}</span>
-      </button>
-      <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:videocam"></mat-icon>
-        <span>{{ 'VIDEO' | translate }}</span>
-      </button>
-      <button mat-menu-item>
-        <mat-icon matMenuItemIcon svgIcon="mat:insert_drive_file"></mat-icon>
-        <span>{{ 'DOCUMENT' | translate }}</span>
-      </button>
-    </mat-menu>
+    <div class="flex items-center bg-white rounded-xl border shadow px-1 py-1">
 
-    <!-- Campo de texto -->
-    <div class="flex flex-col justify-end flex-1">
-      <textarea #textareaMessage rows="1" class="w-full min-h-[24px] max-h-[160px] px-0 py-1
+      <!-- Botão de adicionar -->
+      <button [matMenuTriggerFor]="addMenuButton" color="primary" mat-icon-button type="button"
+              class="flex-none self-end">
+        <mat-icon svgIcon="mat:add"></mat-icon>
+      </button>
+
+      <button color="primary" mat-icon-button type="button" class="flex-none self-end" #emojiTrigger="matMenuTrigger"
+              [matMenuTriggerFor]="emojiMenu">
+        <mat-icon svgIcon="mat:emoji_emotions"></mat-icon>
+      </button>
+
+      <mat-menu #emojiMenu="matMenu" class="shadow-none bg-none" xPosition="after" yPosition="above">
+        <div (click)="$event.stopPropagation()">
+          <emoji-mart [isNative]="true" [showPreview]="false" [enableSearch]="true"
+                      [style]="{ width: '100%', height: 'auto' }"
+                      (emojiSelect)="onSelectEmoji($event, emojiTrigger)"></emoji-mart>
+        </div>
+      </mat-menu>
+
+      <mat-menu #addMenuButton="matMenu" xPosition="after" yPosition="above">
+        <button mat-menu-item (click)="imageInput.click()">
+          <mat-icon matMenuItemIcon svgIcon="mat:image"></mat-icon>
+          <span>{{ 'IMAGE' | translate }}</span>
+        </button>
+        <input #imageInput type="file" accept="image/png, image/jpg, image/jpeg" (change)="onImageSelected($event)"
+               class="hidden"/>
+        <button mat-menu-item>
+          <mat-icon matMenuItemIcon svgIcon="mat:videocam"></mat-icon>
+          <span>{{ 'VIDEO' | translate }}</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon matMenuItemIcon svgIcon="mat:insert_drive_file"></mat-icon>
+          <span>{{ 'DOCUMENT' | translate }}</span>
+        </button>
+      </mat-menu>
+
+      <!-- Campo de texto -->
+      <div class="flex flex-col justify-end flex-1">
+        <textarea #textareaMessage rows="1" class="w-full min-h-[24px] max-h-[160px] px-0 py-1
                overflow-y-auto outline-none resize-none
                whitespace-pre-wrap break-words bg-transparent
                text-[15px] leading-[18px]" [placeholder]="'type-a-message' | translate"
-                (input)="autoResize(textareaMessage)" (keydown)="onKeyDownTextarea($event, textareaMessage)"></textarea>
-    </div>
+                  (input)="autoResize(textareaMessage)"
+                  (keydown)="onKeyDownTextarea($event, textareaMessage)"></textarea>
+      </div>
 
-    <button color="primary" mat-icon-button type="button" class="flex-none self-end"
-            (click)="sendMessage(textareaMessage)">
-      <mat-icon svgIcon="mat:send"></mat-icon>
-    </button>
+      <button color="primary" mat-icon-button type="button" class="flex-none self-end"
+              (click)="sendMessage(textareaMessage)">
+        <mat-icon svgIcon="mat:send"></mat-icon>
+      </button>
+    </div>
   </div>
 </div>
