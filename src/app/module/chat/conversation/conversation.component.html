@@ -50,7 +50,8 @@
                         <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                       </div>
                     </ng-container>
-                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" alt=""/>
+                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"
+                         alt=""/>
 
                     <!-- Download button - visible on hover -->
                     <button *ngIf="media.url" [matMenuTriggerFor]="mediaMenu" mat-icon-button
@@ -213,7 +214,8 @@
                         <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                       </div>
                     </ng-container>
-                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" alt=""/>
+                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"
+                         alt=""/>
 
                     <!-- Download button - visible on hover -->
                     <button *ngIf="media.url" [matMenuTriggerFor]="mediaMenu" mat-icon-button
@@ -271,6 +273,39 @@
               </ng-container>
             </ng-container>
 
+            <ng-container *ngSwitchCase="MessageType.DOCUMENT">
+              <ng-container *ngIf="message?.content?.document as doc">
+                <ng-container *ngIf="message?.content?.document | mediaAsync: conversation.channelId | async as media">
+                  <ng-container *ngIf="media.loading">
+                    <div class="flex justify-center items-center w-[350px] h-[80px] bg-gray-100 rounded mb-1">
+                      <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                  </ng-container>
+                  <div *ngIf="media.url" class="flex flex-col w-[350px] h-[80px]">
+                    <a [href]="media.url" target="_blank" rel="noopener"
+                       class="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer no-underline">
+                      <div class="flex-none">
+                        <mat-icon class="text-gray-600 w-10 h-10 !text-[40px]"
+                                  svgIcon="mat:insert_drive_file"></mat-icon>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-gray-900 truncate">{{ doc.filename || 'Document' }}</div>
+                        <div class="text-xs text-gray-500">{{ 'document-click-to-open' | translate }}</div>
+                      </div>
+                      <div class="flex-none">
+                        <mat-icon class="text-gray-500 w-5 h-5 !text-[20px]" svgIcon="mat:open_in_new"></mat-icon>
+                      </div>
+                    </a>
+                  </div>
+                  <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{
+                      'media-not-found' | translate
+                    }}
+                  </div>
+                  <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1">{{ doc?.caption }}</div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
             <ng-container *ngSwitchCase="MessageType.TEXT">
               <ng-container *ngIf="message?.content?.text as text">
                 <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
@@ -323,10 +358,19 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="MessageType.VIDEO">
-            <video [src]="mediaPreview.url"
-                   controls
-                   controlsList="nodownload"
+            <video [src]="mediaPreview.url" controls controlsList="nodownload"
                    class="w-[512px] h-[512px] object-cover rounded"></video>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="MessageType.DOCUMENT">
+            <div class="flex items-center gap-3 p-6 bg-gray-100 rounded-lg w-[512px] h-[100px]">
+              <div class="flex-none">
+                <mat-icon class="text-gray-600 w-16 h-16 !text-[64px]" svgIcon="mat:insert_drive_file"></mat-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-base font-medium text-gray-900 truncate">{{ mediaPreview.filename }}</div>
+              </div>
+            </div>
           </ng-container>
         </ng-container>
       </div>
@@ -370,9 +414,11 @@
           <input #videoInput type="file" accept="video/mp4" (change)="onMediaSelected($event, MessageType.VIDEO)"
                  class="hidden"/>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="documentInput.click()">
           <mat-icon matMenuItemIcon svgIcon="mat:insert_drive_file"></mat-icon>
           <span>{{ 'DOCUMENT' | translate }}</span>
+          <input #documentInput type="file" accept="application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                 (change)="onMediaSelected($event, MessageType.DOCUMENT)" class="hidden"/>
         </button>
       </mat-menu>
 

@@ -8,11 +8,11 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
-import {stagger20ms} from '@vex/animations/stagger.animation';
-import {ChatService} from "../../../service/chat/chat.service";
-import {ActivatedRoute} from "@angular/router";
-import {ConversationService} from "../../../service/chat/conversation.service";
+import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
+import { stagger20ms } from '@vex/animations/stagger.animation';
+import { ChatService } from "../../../service/chat/chat.service";
+import { ActivatedRoute } from "@angular/router";
+import { ConversationService } from "../../../service/chat/conversation.service";
 import {
   Conversation,
   Message,
@@ -22,12 +22,12 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
-import {MatMenuTrigger} from '@angular/material/menu';
-import {MessageCache} from "../../../service/chat/message.cache";
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {WhatsAppService} from '../../../service/whatsapp/whatsapp.service';
+import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { debounceTime, filter, finalize, switchMap, tap } from "rxjs/operators";
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MessageCache } from "../../../service/chat/message.cache";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { WhatsAppService } from '../../../service/whatsapp/whatsapp.service';
 
 @Component({
   selector: 'vex-conversation',
@@ -63,6 +63,7 @@ export class ConversationComponent implements OnInit {
     type: MessageType;
     file: File;
     url: string;
+    filename?: string;
   };
 
   private destroyRef = inject(DestroyRef);
@@ -125,7 +126,8 @@ export class ConversationComponent implements OnInit {
       this.mediaPreview = {
         type: mediaType,
         file,
-        url: e.target?.result as string
+        url: e.target?.result as string,
+        filename: file.name
       };
       this._cd.markForCheck();
     };
@@ -188,7 +190,7 @@ export class ConversationComponent implements OnInit {
       content: {
         to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
         type: MessageType.TEXT,
-        text: {body: value, previewUrl: false}
+        text: { body: value, previewUrl: false }
       }
     }
 
@@ -243,7 +245,7 @@ export class ConversationComponent implements OnInit {
         )
         .subscribe(messageCreated => {
           this.putMessagesCache(this.conversation.id, [messageCreated]);
-          this._chatService.messageSent.next({conversationId: this.conversation.id, message: messageCreated});
+          this._chatService.messageSent.next({ conversationId: this.conversation.id, message: messageCreated });
         });
 
     } catch (e) {
@@ -396,8 +398,6 @@ export class ConversationComponent implements OnInit {
   }
 
   private buildMediaMessageRequest(text: string, mediaUploaded: { id: string }): SendMessageRequest {
-    if (!text) return;
-
     switch (this.mediaPreview.type) {
       case MessageType.IMAGE:
         return {
@@ -424,6 +424,21 @@ export class ConversationComponent implements OnInit {
             video: {
               id: mediaUploaded.id,
               caption: text
+            }
+          }
+        };
+      case MessageType.DOCUMENT:
+        return {
+          senderType: SenderType.AGENT,
+          senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+          phoneNumberId: this.conversation.phoneNumberId,
+          content: {
+            to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
+            type: MessageType.DOCUMENT,
+            document: {
+              id: mediaUploaded.id,
+              caption: text,
+              filename: this.mediaPreview.filename
             }
           }
         };

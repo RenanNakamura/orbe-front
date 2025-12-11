@@ -111,6 +111,7 @@ export class MessageContentRequest {
   text?: TextMessageRequest;
   image?: ImageMessageRequest;
   video?: VideoMessageRequest;
+  document?: DocumentMessageRequest;
 }
 
 export class TextMessageRequest {
@@ -126,6 +127,12 @@ export class ImageMessageRequest {
 export class VideoMessageRequest {
   id: string;
   caption?: string;
+}
+
+export class DocumentMessageRequest {
+  id: string;
+  caption?: string;
+  filename?: string;
 }
 
 export enum ConversationStatus {
