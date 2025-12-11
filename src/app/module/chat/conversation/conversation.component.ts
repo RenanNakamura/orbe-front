@@ -8,11 +8,11 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
-import { stagger20ms } from '@vex/animations/stagger.animation';
-import { ChatService } from "../../../service/chat/chat.service";
-import { ActivatedRoute } from "@angular/router";
-import { ConversationService } from "../../../service/chat/conversation.service";
+import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
+import {stagger20ms} from '@vex/animations/stagger.animation';
+import {ChatService} from "../../../service/chat/chat.service";
+import {ActivatedRoute} from "@angular/router";
+import {ConversationService} from "../../../service/chat/conversation.service";
 import {
   Conversation,
   Message,
@@ -22,12 +22,12 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { debounceTime, filter, finalize, switchMap, tap } from "rxjs/operators";
-import { MatMenuTrigger } from '@angular/material/menu';
-import { MessageCache } from "../../../service/chat/message.cache";
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { WhatsAppService } from '../../../service/whatsapp/whatsapp.service';
+import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
+import {MatMenuTrigger} from '@angular/material/menu';
+import {MessageCache} from "../../../service/chat/message.cache";
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {WhatsAppService} from '../../../service/whatsapp/whatsapp.service';
 
 @Component({
   selector: 'vex-conversation',
@@ -48,7 +48,9 @@ export class ConversationComponent implements OnInit {
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
   private scrollEndSubject = new Subject<void>();
+
   loading$ = new BehaviorSubject<boolean>(false);
+  uploadingMedia$ = new BehaviorSubject<boolean>(false);
 
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
   conversation?: Conversation;
@@ -57,11 +59,11 @@ export class ConversationComponent implements OnInit {
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
   protected readonly MessageStatusColorMap = MessageStatusColorMap;
 
-  imagePreview?: {
+  mediaPreview?: {
+    type: MessageType;
     file: File;
     url: string;
   };
-  uploadingImage = false;
 
   private destroyRef = inject(DestroyRef);
 
@@ -106,6 +108,174 @@ export class ConversationComponent implements OnInit {
     this.scrollEndSubject.next();
   }
 
+  autoResize(textarea: HTMLTextAreaElement) {
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+  }
+
+  onMediaSelected(event: Event, mediaType: MessageType) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.mediaPreview = {
+        type: mediaType,
+        file,
+        url: e.target?.result as string
+      };
+      this._cd.markForCheck();
+    };
+
+    reader.readAsDataURL(file);
+
+    input.value = '';
+  }
+
+  onSelectEmoji(event, trigger: MatMenuTrigger) {
+    const emoji = event?.emoji?.native;
+    const textarea = this.msgTextarea?.nativeElement as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const index = textarea.selectionStart;
+    const text = textarea.value;
+
+    textarea.value = text.slice(0, index) + emoji + text.slice(index);
+
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = index + emoji.length;
+      textarea.focus();
+      this.autoResize(textarea);
+    });
+
+    trigger?.closeMenu?.();
+  }
+
+  onKeyDownTextarea(event: KeyboardEvent, textarea: HTMLTextAreaElement) {
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        return;
+      }
+
+      event.preventDefault();
+      this.sendMessage(textarea);
+    }
+  }
+
+  clearMediaPreview() {
+    this.mediaPreview = null;
+  }
+
+  async sendMessage(textarea: HTMLTextAreaElement) {
+    if (this.mediaPreview) {
+      await this.sendMediaMessage();
+      return;
+    }
+
+    const value = textarea?.value?.trim();
+
+    if (!value) {
+      return;
+    }
+
+    const request: SendMessageRequest = {
+      senderType: SenderType.AGENT,
+      senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+      phoneNumberId: this.conversation.phoneNumberId,
+      content: {
+        to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
+        type: MessageType.TEXT,
+        text: {body: value, previewUrl: false}
+      }
+    }
+
+    this._conversationService.sendMessage(this.conversation.id, request)
+      .pipe(
+        finalize(() => {
+          textarea.value = '';
+          textarea.style.height = 'auto';
+          if (this.stickToBottom$.value) {
+            this.scrollToBottom();
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(messageCreated => {
+        this.putMessagesCache(this.conversation.id, [messageCreated]);
+        this._chatService.messageSent.next({
+          conversationId: this.conversation.id,
+          message: messageCreated
+        });
+      });
+  }
+
+  async sendMediaMessage() {
+    if (!this.mediaPreview) {
+      return;
+    }
+
+    try {
+      this.uploadingMedia$.next(true);
+
+      const uploadResult = await this._whatsappService.uploadCache(this.conversation.phoneNumberId, this.mediaPreview.file);
+      const textarea = this.msgTextarea?.nativeElement as HTMLTextAreaElement;
+      const caption = textarea?.value?.trim() || null;
+
+      const request = this.buildMediaMessageRequest(caption, uploadResult);
+
+      this._conversationService.sendMessage(this.conversation.id, request)
+        .pipe(
+          finalize(() => {
+            this.uploadingMedia$.next(false);
+            this.clearMediaPreview();
+            if (textarea) {
+              textarea.value = '';
+              textarea.style.height = 'auto';
+            }
+            if (this.stickToBottom$.value) {
+              this.scrollToBottom();
+            }
+          }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(messageCreated => {
+          this.putMessagesCache(this.conversation.id, [messageCreated]);
+          this._chatService.messageSent.next({conversationId: this.conversation.id, message: messageCreated});
+        });
+
+    } catch (e) {
+      console.error('m=sendMediaMessage; msg=Error sending media', e);
+      this.uploadingMedia$.next(false);
+    }
+  }
+
+  downloadMedia(url: any, filename?: string) {
+    if (!url) {
+      return;
+    }
+
+    let actualUrl: string;
+
+    if (typeof url === 'string') {
+      actualUrl = url;
+    } else if (url && typeof url === 'object' && 'changingThisBreaksApplicationSecurity' in url) {
+      actualUrl = url['changingThisBreaksApplicationSecurity'];
+    } else {
+      actualUrl = String(url);
+    }
+
+    const link = document.createElement('a');
+    link.href = actualUrl;
+    link.download = filename || 'media';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   private setupScrollListener() {
     this.scrollEndSubject.pipe(
       debounceTime(300),
@@ -144,173 +314,6 @@ export class ConversationComponent implements OnInit {
       const heightDifference = newScrollHeight - oldScrollHeight;
       container.scrollTop = oldScrollTop + heightDifference;
     });
-  }
-
-  autoResize(textarea: HTMLTextAreaElement) {
-    if (!textarea) return;
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
-  }
-
-  onImageSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.imagePreview = {
-        file,
-        url: e.target?.result as string
-      };
-      this._cd.markForCheck();
-    };
-
-    reader.readAsDataURL(file);
-
-    input.value = '';
-  }
-
-  clearImagePreview() {
-    this.imagePreview = undefined;
-    this._cd.markForCheck();
-  }
-
-  async sendMessage(textarea: HTMLTextAreaElement) {
-    // Se tem imagem, enviar imagem
-    if (this.imagePreview) {
-      await this.sendImageMessage();
-      return;
-    }
-
-    const value = textarea?.value?.trim();
-    if (!value) return;
-
-    const request: SendMessageRequest = {
-      senderType: SenderType.AGENT,
-      senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
-      phoneNumberId: this.conversation.phoneNumberId,
-      content: {
-        to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
-        type: MessageType.TEXT,
-        text: { body: value, previewUrl: false }
-      }
-    }
-
-    this._conversationService.sendMessage(this.conversation.id, request)
-      .pipe(
-        finalize(() => {
-          textarea.value = '';
-          textarea.style.height = 'auto';
-          if (this.stickToBottom$.value) {
-            this.scrollToBottom();
-          }
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(messageCreated => {
-        this.putMessagesCache(this.conversation.id, [messageCreated]);
-        this._chatService.messageSent.next({
-          conversationId: this.conversation.id,
-          message: messageCreated
-        });
-      });
-  }
-
-  async sendImageMessage() {
-    if (!this.imagePreview) return;
-
-    try {
-      this.uploadingImage = true;
-      this._cd.markForCheck();
-
-      // 1. Upload da imagem para o Facebook
-      const uploadResult = await this._whatsappService.uploadCache(
-        this.conversation.phoneNumberId,
-        this.imagePreview.file
-      );
-
-      console.log('uploadResult => ', uploadResult);
-
-      // 2. Pegar a legenda do textarea
-      const textarea = this.msgTextarea?.nativeElement as HTMLTextAreaElement;
-      const caption = textarea?.value?.trim() || undefined;
-
-      // 3. Enviar mensagem com o media_id
-      const request: SendMessageRequest = {
-        senderType: SenderType.AGENT,
-        senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
-        phoneNumberId: this.conversation.phoneNumberId,
-        content: {
-          to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
-          type: MessageType.IMAGE,
-          image: {
-            id: uploadResult.id,
-            caption: caption
-          }
-        }
-      };
-
-      this._conversationService.sendMessage(this.conversation.id, request)
-        .pipe(
-          finalize(() => {
-            this.uploadingImage = false;
-            this.clearImagePreview();
-            if (textarea) {
-              textarea.value = '';
-              textarea.style.height = 'auto';
-            }
-            if (this.stickToBottom$.value) {
-              this.scrollToBottom();
-            }
-          }),
-          takeUntilDestroyed(this.destroyRef)
-        )
-        .subscribe(messageCreated => {
-          this.putMessagesCache(this.conversation.id, [messageCreated]);
-          this._chatService.messageSent.next({
-            conversationId: this.conversation.id,
-            message: messageCreated
-          });
-        });
-
-    } catch (error) {
-      console.error('Error sending image:', error);
-      this.uploadingImage = false;
-      this._cd.markForCheck();
-      // TODO: Mostrar erro para o usuário
-    }
-  }
-
-  onSelectEmoji(event, trigger: MatMenuTrigger) {
-    const emoji = event?.emoji?.native;
-    const textarea = this.msgTextarea?.nativeElement as HTMLTextAreaElement;
-    if (!textarea) return;
-
-    const index = textarea.selectionStart;
-    const text = textarea.value;
-
-    textarea.value = text.slice(0, index) + emoji + text.slice(index);
-
-    setTimeout(() => {
-      textarea.selectionStart = textarea.selectionEnd = index + emoji.length;
-      textarea.focus();
-      this.autoResize(textarea);
-    });
-
-    trigger?.closeMenu?.();
-  }
-
-  onKeyDownTextarea(event: KeyboardEvent, textarea: HTMLTextAreaElement) {
-    if (event.key === 'Enter') {
-      if (event.shiftKey) {
-        return;
-      }
-
-      event.preventDefault();
-      this.sendMessage(textarea);
-    }
   }
 
   private syncSubscribers() {
@@ -392,28 +395,39 @@ export class ConversationComponent implements OnInit {
     this._messageCache.setAll(conversationId, combined);
   }
 
-  downloadMedia(url: any, filename?: string) {
-    if (!url) {
-      return;
+  private buildMediaMessageRequest(text: string, mediaUploaded: { id: string }): SendMessageRequest {
+    if (!text) return;
+
+    switch (this.mediaPreview.type) {
+      case MessageType.IMAGE:
+        return {
+          senderType: SenderType.AGENT,
+          senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+          phoneNumberId: this.conversation.phoneNumberId,
+          content: {
+            to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
+            type: MessageType.IMAGE,
+            image: {
+              id: mediaUploaded.id,
+              caption: text
+            }
+          }
+        };
+      case MessageType.VIDEO:
+        return {
+          senderType: SenderType.AGENT,
+          senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+          phoneNumberId: this.conversation.phoneNumberId,
+          content: {
+            to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
+            type: MessageType.VIDEO,
+            video: {
+              id: mediaUploaded.id,
+              caption: text
+            }
+          }
+        };
     }
-
-    let actualUrl: string;
-
-    if (typeof url === 'string') {
-      actualUrl = url;
-    } else if (url && typeof url === 'object' && 'changingThisBreaksApplicationSecurity' in url) {
-      actualUrl = url['changingThisBreaksApplicationSecurity'];
-    } else {
-      actualUrl = String(url);
-    }
-
-    const link = document.createElement('a');
-    link.href = actualUrl;
-    link.download = filename || 'media';
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   }
 
 }

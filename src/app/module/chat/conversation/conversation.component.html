@@ -50,7 +50,7 @@
                         <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                       </div>
                     </ng-container>
-                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
+                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" alt=""/>
 
                     <!-- Download button - visible on hover -->
                     <button *ngIf="media.url" [matMenuTriggerFor]="mediaMenu" mat-icon-button
@@ -213,7 +213,7 @@
                         <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
                       </div>
                     </ng-container>
-                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1"/>
+                    <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" alt=""/>
 
                     <!-- Download button - visible on hover -->
                     <button *ngIf="media.url" [matMenuTriggerFor]="mediaMenu" mat-icon-button
@@ -233,6 +233,40 @@
                     </div>
                   </div>
                   <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MessageType.VIDEO">
+              <ng-container *ngIf="message?.content?.video as vid">
+                <ng-container *ngIf="message?.content?.video | mediaAsync: conversation.channelId | async as media">
+                  <div class="relative group">
+                    <ng-container *ngIf="media.loading">
+                      <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
+                        <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                      </div>
+                    </ng-container>
+                    <video *ngIf="media.url" [src]="media.url" controls controlsList="nodownload"
+                           class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
+
+                    <!-- Download button - visible on hover -->
+                    <button *ngIf="media.url" [matMenuTriggerFor]="videoMenu" mat-icon-button
+                            class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white">
+                      <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-gray-500"></mat-icon>
+                    </button>
+                    <mat-menu #videoMenu="matMenu">
+                      <button mat-menu-item (click)="downloadMedia(media.url, vid.id || 'video')">
+                        <mat-icon svgIcon="mat:download"></mat-icon>
+                        <span>{{ 'download' | translate }}</span>
+                      </button>
+                    </mat-menu>
+
+                    <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">{{
+                        'media-not-found' | translate
+                      }}
+                    </div>
+                  </div>
+                  <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -278,14 +312,25 @@
 
   <div class="relative mb-3 mr-3 ml-3">
     <!-- Image Preview -->
-    <div *ngIf="imagePreview" class="relative w-full mb-2 p-3 bg-white rounded-lg shadow-lg border">
+    <div *ngIf="mediaPreview" class="relative w-full mb-2 p-3 bg-white rounded-xl border shadow">
       <div class="relative justify-items-center">
-        <button mat-icon-button (click)="clearImagePreview()">
+        <button mat-icon-button (click)="clearMediaPreview()">
           <mat-icon svgIcon="mat:close"></mat-icon>
         </button>
-        <img [src]="imagePreview.url" class="w-[512px] h-[512px] object-cover rounded"/>
+        <ng-container [ngSwitch]="mediaPreview?.type">
+          <ng-container *ngSwitchCase="MessageType.IMAGE">
+            <img [src]="mediaPreview.url" class="w-[512px] h-[512px] object-cover rounded" alt=""/>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="MessageType.VIDEO">
+            <video [src]="mediaPreview.url"
+                   controls
+                   controlsList="nodownload"
+                   class="w-[512px] h-[512px] object-cover rounded"></video>
+          </ng-container>
+        </ng-container>
       </div>
-      <div *ngIf="uploadingImage" class="mt-2 flex items-center justify-center gap-2">
+      <div *ngIf="uploadingMedia$ | async" class="mt-2 flex items-center justify-center gap-2">
         <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
         <span class="text-sm text-gray-600">{{ 'uploading' | translate }}</span>
       </div>
@@ -317,11 +362,13 @@
           <mat-icon matMenuItemIcon svgIcon="mat:image"></mat-icon>
           <span>{{ 'IMAGE' | translate }}</span>
         </button>
-        <input #imageInput type="file" accept="image/png, image/jpg, image/jpeg" (change)="onImageSelected($event)"
-               class="hidden"/>
-        <button mat-menu-item>
+        <input #imageInput type="file" accept="image/png, image/jpg, image/jpeg"
+               (change)="onMediaSelected($event, MessageType.IMAGE)" class="hidden"/>
+        <button mat-menu-item (click)="videoInput.click()">
           <mat-icon matMenuItemIcon svgIcon="mat:videocam"></mat-icon>
           <span>{{ 'VIDEO' | translate }}</span>
+          <input #videoInput type="file" accept="video/mp4" (change)="onMediaSelected($event, MessageType.VIDEO)"
+                 class="hidden"/>
         </button>
         <button mat-menu-item>
           <mat-icon matMenuItemIcon svgIcon="mat:insert_drive_file"></mat-icon>

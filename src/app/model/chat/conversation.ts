@@ -110,6 +110,7 @@ export class MessageContentRequest {
   type: MessageType;
   text?: TextMessageRequest;
   image?: ImageMessageRequest;
+  video?: VideoMessageRequest;
 }
 
 export class TextMessageRequest {
@@ -118,6 +119,11 @@ export class TextMessageRequest {
 }
 
 export class ImageMessageRequest {
+  id: string;
+  caption?: string;
+}
+
+export class VideoMessageRequest {
   id: string;
   caption?: string;
 }
