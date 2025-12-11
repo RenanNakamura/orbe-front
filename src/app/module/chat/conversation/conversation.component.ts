@@ -22,11 +22,12 @@ import {
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, Observable, Subject, Subscription} from "rxjs";
 import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {WebSocketService} from "../../../service/chat/websocket.service";
 
 @Component({
   selector: 'vex-conversation',
@@ -46,6 +47,9 @@ export class ConversationComponent implements OnInit {
   public hasMoreMessages$ = new BehaviorSubject<boolean>(true);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
+  private conversationChange$ = new Subject<void>();
+  private messageSub: Subscription | null = null;
+  private statusSub: Subscription | null = null;
   private scrollEndSubject = new Subject<void>();
   loading$ = new BehaviorSubject<boolean>(false);
 
@@ -64,6 +68,7 @@ export class ConversationComponent implements OnInit {
     private _chatService: ChatService,
     private _conversationService: ConversationService,
     private _messageCache: MessageCache,
+    private _webSocketService: WebSocketService,
   ) {
   }
 
@@ -213,10 +218,89 @@ export class ConversationComponent implements OnInit {
     this._route.data
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
-        this.conversation = data['conversation'] as Conversation;
+        const newConversation = data['conversation'] as Conversation;
+
+        // SEMPRE cancelar subscriptions RxJS anteriores para evitar duplicatas
+        this.conversationChange$.next();
+
+        this.conversation = newConversation;
         this.initLoadMessages();
+        this.subscribeToWebSocketEvents();
       });
   }
+
+  private subscribeToWebSocketEvents() {
+    if (!this.conversation?.id) return;
+
+    const conversationId = this.conversation.id;
+
+    // Subscrever aos eventos desta conversa
+    this._webSocketService.subscribeToConversation(conversationId);
+
+    // ==================================================================
+    // 1. Mensagens (MANUAL SUBSCRIPTION MANAGEMENT)
+    // ==================================================================
+    if (this.messageSub) {
+      this.messageSub.unsubscribe();
+      this.messageSub = null;
+    }
+
+    this.messageSub = this._chatService.messageReceived$
+      .pipe(
+        filter(event => event.conversationId === conversationId),
+        takeUntilDestroyed(this.destroyRef) // Segurança extra
+      )
+      .subscribe(event => {
+        if (this.conversation?.id === conversationId) {
+          this.handleNewMessage(event.message);
+        }
+      });
+
+    // ==================================================================
+    // 2. Status (MANUAL SUBSCRIPTION MANAGEMENT)
+    // ==================================================================
+    if (this.statusSub) {
+      this.statusSub.unsubscribe();
+      this.statusSub = null;
+    }
+
+    this.statusSub = this._chatService.messageStatusUpdated$
+      .pipe(
+        filter(event => event.conversationId === conversationId),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(event => {
+        if (this.conversation?.id === conversationId) {
+          this.updateMessageStatus(event.messageId, event.status);
+        }
+      });
+  }
+
+  private handleNewMessage(message: Message) {
+    // Adicionar mensagem ao cache e lista
+    this.putMessagesCache(this.conversation.id, [message]);
+
+    // Scroll para baixo se estiver no final
+    if (this.stickToBottom$.value) {
+      this.scrollToBottom();
+    }
+
+    this._cd.markForCheck();
+  }
+
+  private updateMessageStatus(messageId: string, status: string) {
+    const messages = this.messagesSubject.value;
+    const updated = messages.map(msg =>
+      msg.id === messageId ? { ...msg, status: status as any } : msg
+    );
+
+    this.messagesSubject.next(updated);
+    this._messageCache.setAll(this.conversation.id, updated);
+    this._cd.markForCheck();
+  }
+
+  // ngOnDestroy removido - ChatComponent gerencia as conexões WebSocket
+
 
   private scrollToBottom(instant: boolean = false) {
     const doScroll = () => {
@@ -280,7 +364,17 @@ export class ConversationComponent implements OnInit {
 
   private putMessagesCache(conversationId: string, messages: Message[]) {
     const currentMessages = this.messagesSubject.value ?? [];
-    const combined = [...messages, ...currentMessages];
+
+    // Filtrar mensagens que já existem na lista para evitar duplicatas visuais
+    const newUniqueMessages = messages.filter(newMsg =>
+      !currentMessages.some(existingMsg => existingMsg.id === newMsg.id)
+    );
+
+    if (newUniqueMessages.length === 0) {
+      return;
+    }
+
+    const combined = [...newUniqueMessages, ...currentMessages];
 
     combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
