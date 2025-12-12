@@ -29,6 +29,7 @@ export class MessageContent {
   audio?: AudioMessage;
   document?: DocumentMessage;
   sticker?: StickerMessage;
+  button?: ButtonMessage;
 }
 
 export class MessageError {
@@ -39,6 +40,11 @@ export class MessageError {
 export class TextMessage {
   body: string;
   previewUrl?: boolean;
+}
+
+export class ButtonMessage {
+  text: string;
+  payload: string;
 }
 
 export class ImageMessage {
@@ -102,12 +108,31 @@ export class SendMessageRequest {
 export class MessageContentRequest {
   to: string;
   type: MessageType;
-  text: TextMessageRequest;
+  text?: TextMessageRequest;
+  image?: ImageMessageRequest;
+  video?: VideoMessageRequest;
+  document?: DocumentMessageRequest;
 }
 
 export class TextMessageRequest {
   body: string;
   previewUrl?: boolean;
+}
+
+export class ImageMessageRequest {
+  id: string;
+  caption?: string;
+}
+
+export class VideoMessageRequest {
+  id: string;
+  caption?: string;
+}
+
+export class DocumentMessageRequest {
+  id: string;
+  caption?: string;
+  filename?: string;
 }
 
 export enum ConversationStatus {
@@ -129,6 +154,7 @@ export enum MessageType {
   DOCUMENT = 'DOCUMENT',
   AUDIO = 'AUDIO',
   STICKER = 'STICKER',
+  BUTTON = 'BUTTON',
   UNSUPPORTED = 'UNSUPPORTED'
 }
 

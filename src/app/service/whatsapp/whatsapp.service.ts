@@ -28,4 +28,12 @@ export class WhatsAppService {
     return firstValueFrom(this._http.post<any>(`${environment.whatsappService}/medias/${channelId}/upload`, formData));
   }
 
+  uploadCache(phoneNumberId: string, file: File): Promise<{ id: string }> {
+    const formData = new FormData();
+
+    formData.append('file', file);
+
+    return firstValueFrom(this._http.post<any>(`${environment.whatsappService}/medias/${phoneNumberId}/upload-cache`, formData));
+  }
+
 }

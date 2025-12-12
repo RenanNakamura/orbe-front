@@ -7,7 +7,8 @@ import {TranslateService} from "@ngx-translate/core";
 })
 export class LastMessagePipe implements PipeTransform {
 
-  constructor(private _translate: TranslateService) {}
+  constructor(private _translate: TranslateService) {
+  }
 
   transform(message?: Message): string {
     if (!message || !message.content) {
@@ -18,7 +19,7 @@ export class LastMessagePipe implements PipeTransform {
 
     switch (content.type) {
       case MessageType.TEXT:
-        return content.text?.body ?? '';
+        return content?.text?.body ?? '';
 
       case MessageType.IMAGE:
         return `📷 ${this._translate.instant(`photo`)}`;
@@ -34,6 +35,9 @@ export class LastMessagePipe implements PipeTransform {
 
       case MessageType.AUDIO:
         return `🎤 ${this._translate.instant(`voice-message`)}`;
+
+      case MessageType.BUTTON:
+        return content?.button?.text || content?.button?.payload || '';
 
       case MessageType.UNSUPPORTED:
         return `${this._translate.instant(`unsupported-message`)}`;
