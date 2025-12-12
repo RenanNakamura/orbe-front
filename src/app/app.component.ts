@@ -10,6 +10,7 @@ import { LanguageService } from './service/sk/language.service';
 import { NavigationService } from './core/navigation/navigation.service';
 import { LanguageUtil } from './util/language.util';
 import { UserStorage } from './storage/user/user.storage';
+import { GlobalWebSocketManager } from './service/chat/global-websocket-manager.service';
 
 @Component({
   selector: 'vex-root',
@@ -25,7 +26,8 @@ export class AppComponent {
     private _navigationService: NavigationService,
     private _translate: TranslateService,
     private _userStorage: UserStorage,
-    private _languageService: LanguageService
+    private _languageService: LanguageService,
+    private _globalWebSocketManager: GlobalWebSocketManager
   ) {
     Settings.defaultLocale = this._localeId;
 
@@ -47,6 +49,10 @@ export class AppComponent {
     if (userLogged) {
       const lang = LanguageUtil.toLang(userLogged.language);
       this._languageService.changeLang(lang);
+
+      // Initialize global WebSocket manager for authenticated user
+      console.debug('[AppComponent] User authenticated, initializing WebSocket manager');
+      this._globalWebSocketManager.initialize();
     }
   }
 }

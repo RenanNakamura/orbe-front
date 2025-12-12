@@ -18,7 +18,6 @@ import {Channel} from "../../model/Channel";
 import {ChannelService} from "../../service/channel/channel.service";
 import {Contact} from "../../model/Contact";
 import {ContactService} from "../../service/contact/contact.service";
-import {WebSocketService} from "../../service/chat/websocket.service";
 import {MessageCache} from "../../service/chat/message.cache";
 
 @Component({
@@ -73,7 +72,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _layoutService: VexLayoutService,
     private _channelService: ChannelService,
     private _contactService: ContactService,
-    private _webSocketService: WebSocketService,
     private _messageCache: MessageCache,
   ) {
   }
@@ -81,11 +79,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.syncSubscribers();
     this.loadChannels();
-    this.connectWebSocket();
+    this.subscribeToGlobalEvents();
+  }
+
+  private subscribeToGlobalEvents() {
+    this._chatService.messageReceived$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: any) => {
+        this.handleNewMessageEvent(event);
+      });
   }
 
   ngOnDestroy(): void {
-    this._webSocketService.disconnect();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -296,11 +301,6 @@ export class ChatComponent implements OnInit, OnDestroy {
           const current = this.conversationsSubject.value;
           const merged = [...current, ...conversations];
           this.conversationsSubject.next(merged);
-          
-          // Subscrever ao WebSocket de cada conversa para receber atualizações
-          conversations.forEach(conv => {
-            this._webSocketService.subscribeToConversation(conv.id);
-          });
         },
         error: (err) => {
           console.error('m=loadConversations; msg=Error when load conversations', err);
@@ -381,54 +381,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.conversationsSubject.next(updated);
   }
 
-  private connectWebSocket() {
-    // Conectar ao WebSocket
-    this._webSocketService.connect();
-
-    // Escutar eventos de novas mensagens
-    this._webSocketService.events$
-      .pipe(
-        filter(event => event.eventType === 'NEW_MESSAGE'),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((event: any) => {
-        this.handleNewMessageEvent(event);
-      });
-
-    // Escutar eventos de status
-    this._webSocketService.events$
-      .pipe(
-        filter(event => event.eventType === 'MESSAGE_STATUS_UPDATED'),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((event: any) => {
-        this._chatService.messageStatusUpdated.next({
-          conversationId: event.conversationId,
-          messageId: event.messageId,
-          status: event.status
-        });
-      });
-  }
-
   private handleNewMessageEvent(event: any) {
     const message = event.message;
     const conversationId = event.conversationId;
 
-    // Só adicionar ao cache se já existir cache para esta conversa
-    // Caso contrário, deixar que initLoadMessages() carregue tudo da API
-    const existingCache = this._messageCache.get(conversationId);
-    if (existingCache && existingCache.length > 0) {
-      this._messageCache.push(conversationId, message);
-    }
-
-    // Notificar ChatService
-    console.log(`[ChatComponent] Emitting messageReceived for ${conversationId}`);
-    this._chatService.messageReceived.next({
-      conversationId: conversationId,
-      message: message
-    });
-
-    // Mover conversa para o topo
     this.moveConversationToTop(conversationId, message);
   }
 

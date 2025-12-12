@@ -28,7 +28,7 @@ import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {WebSocketService} from "../../../service/chat/websocket.service";
+import {GlobalWebSocketManager} from "../../../service/chat/global-websocket-manager.service";
 
 @Component({
   selector: 'vex-conversation',
@@ -78,7 +78,7 @@ export class ConversationComponent implements OnInit {
     private _chatService: ChatService,
     private _conversationService: ConversationService,
     private _messageCache: MessageCache,
-    private _webSocketService: WebSocketService,
+    private _globalWebSocketManager: GlobalWebSocketManager,
     private _whatsappService: WhatsAppService
   ) {
   }
@@ -343,12 +343,8 @@ export class ConversationComponent implements OnInit {
 
     const conversationId = this.conversation.id;
 
-    // Subscrever aos eventos desta conversa
-    this._webSocketService.subscribeToConversation(conversationId);
+    this._globalWebSocketManager.subscribeToConversation(conversationId);
 
-    // ==================================================================
-    // 1. Mensagens (MANUAL SUBSCRIPTION MANAGEMENT)
-    // ==================================================================
     if (this.messageSub) {
       this.messageSub.unsubscribe();
       this.messageSub = null;
@@ -365,9 +361,6 @@ export class ConversationComponent implements OnInit {
         }
       });
 
-    // ==================================================================
-    // 2. Status (MANUAL SUBSCRIPTION MANAGEMENT)
-    // ==================================================================
     if (this.statusSub) {
       this.statusSub.unsubscribe();
       this.statusSub = null;
@@ -407,9 +400,6 @@ export class ConversationComponent implements OnInit {
     this._messageCache.setAll(this.conversation.id, updated);
     this._cd.markForCheck();
   }
-
-  // ngOnDestroy removido - ChatComponent gerencia as conexões WebSocket
-
 
   private scrollToBottom(instant: boolean = false) {
     const doScroll = () => {
