@@ -18,6 +18,7 @@ import {Channel} from "../../model/Channel";
 import {ChannelService} from "../../service/channel/channel.service";
 import {Contact} from "../../model/Contact";
 import {ContactService} from "../../service/contact/contact.service";
+import {MessageCache} from "../../service/chat/message.cache";
 
 @Component({
   selector: 'vex-chat',
@@ -71,12 +72,22 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _layoutService: VexLayoutService,
     private _channelService: ChannelService,
     private _contactService: ContactService,
+    private _messageCache: MessageCache,
   ) {
   }
 
   ngOnInit() {
     this.syncSubscribers();
     this.loadChannels();
+    this.subscribeToGlobalEvents();
+  }
+
+  private subscribeToGlobalEvents() {
+    this._chatService.messageReceived$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: any) => {
+        this.handleNewMessageEvent(event);
+      });
   }
 
   ngOnDestroy(): void {
@@ -368,6 +379,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     const updated = [updatedConversation, ...current.filter(c => c.id !== conversationId)];
 
     this.conversationsSubject.next(updated);
+  }
+
+  private handleNewMessageEvent(event: any) {
+    const message = event.message;
+    const conversationId = event.conversationId;
+
+    this.moveConversationToTop(conversationId, message);
   }
 
 }

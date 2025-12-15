@@ -7,6 +7,17 @@ export interface MessageSentEvent {
   message: Message;
 }
 
+export interface MessageReceivedEvent {
+  conversationId: string;
+  message: Message;
+}
+
+export interface MessageStatusUpdatedEvent {
+  conversationId: string;
+  messageId: string;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,5 +28,12 @@ export class ChatService {
 
   messageSent = new Subject<MessageSentEvent>();
   messageSent$ = this.messageSent.asObservable();
+
+  // WebSocket events
+  messageReceived = new Subject<MessageReceivedEvent>();
+  messageReceived$ = this.messageReceived.asObservable();
+
+  messageStatusUpdated = new Subject<MessageStatusUpdatedEvent>();
+  messageStatusUpdated$ = this.messageStatusUpdated.asObservable();
 
 }
