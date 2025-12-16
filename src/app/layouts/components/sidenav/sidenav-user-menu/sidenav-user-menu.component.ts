@@ -9,6 +9,7 @@ import {RefreshTokenStorage} from '../../../../storage/user/refresh-token.storag
 import {UserStorage} from '../../../../storage/user/user.storage';
 import {BillingService} from "../../../../service/billing/billing.service";
 import {CommonModule} from "@angular/common";
+import {ChatWebSocketService} from "../../../../service/chat/chat-websocket.service";
 
 @Component({
   selector: 'vex-sidenav-user-menu',
@@ -26,7 +27,8 @@ export class SidenavUserMenuComponent implements OnInit {
     private _tokenStorage: TokenStorage,
     private _refreshTokenStorage: RefreshTokenStorage,
     private _userStorage: UserStorage,
-    private _billingService: BillingService
+    private _billingService: BillingService,
+    private _chatWebSocket: ChatWebSocketService,
   ) {
   }
 
@@ -39,6 +41,7 @@ export class SidenavUserMenuComponent implements OnInit {
     this._tokenStorage.clear();
     this._userStorage.clear();
     this._popoverRef.close();
+    this._chatWebSocket.disconnect();
     setTimeout(() => this._popoverRef.close(), 250);
   }
 

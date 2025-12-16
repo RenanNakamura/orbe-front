@@ -12,6 +12,7 @@ import {HttpResponse} from "@angular/common/http";
 import {LoggedUser, Role} from "../../../model/User";
 import {take} from "rxjs/operators";
 import {NavigationLoaderService} from "../../../core/navigation/navigation-loader.service";
+import {ChatWebSocketService} from "../../../service/chat/chat-websocket.service";
 
 declare var grecaptcha: any;
 
@@ -36,7 +37,8 @@ export class SignInComponent implements OnInit {
               private _userStorage: UserStorage,
               private _changeDetectorRef: ChangeDetectorRef,
               private _languageService: LanguageService,
-              private _navigationLoaderService: NavigationLoaderService) {
+              private _navigationLoaderService: NavigationLoaderService,
+              private _chatWebSocket: ChatWebSocketService) {
   }
 
   ngOnInit(): void {
@@ -85,6 +87,9 @@ export class SignInComponent implements OnInit {
                 this.isLoading = false;
 
                 this._navigationLoaderService.loadNavigation();
+
+                // WebSockets connects...
+                this._chatWebSocket.connect();
 
                 if (userLogged.role === Role.AGENT) {
                   this._router.navigate(['/chat']);

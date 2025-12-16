@@ -1,16 +1,13 @@
-import { Component, Inject, LOCALE_ID, Renderer2 } from '@angular/core';
-import { Settings } from 'luxon';
-import { DOCUMENT } from '@angular/common';
-import { Platform } from '@angular/cdk/platform';
-import { TranslateService } from '@ngx-translate/core';
-// import { PlanEnum, Role } from './model/User';
-// import { UserStorage } from './storage/user/user.storage';
-// import { LanguageUtil } from './util/language.util';
-import { LanguageService } from './service/sk/language.service';
-import { NavigationService } from './core/navigation/navigation.service';
-import { LanguageUtil } from './util/language.util';
-import { UserStorage } from './storage/user/user.storage';
-import { GlobalWebSocketManager } from './service/chat/global-websocket-manager.service';
+import {Component, Inject, LOCALE_ID, Renderer2} from '@angular/core';
+import {Settings} from 'luxon';
+import {DOCUMENT} from '@angular/common';
+import {Platform} from '@angular/cdk/platform';
+import {TranslateService} from '@ngx-translate/core';
+import {LanguageService} from './service/sk/language.service';
+import {LanguageUtil} from './util/language.util';
+import {UserStorage} from './storage/user/user.storage';
+import {ChatWebSocketService} from "./service/chat/chat-websocket.service";
+import {ChatEventStoreService} from "./service/chat/chat-event-store.service";
 
 @Component({
   selector: 'vex-root',
@@ -23,11 +20,11 @@ export class AppComponent {
     private _platform: Platform,
     @Inject(DOCUMENT) private _document: Document,
     @Inject(LOCALE_ID) private _localeId: string,
-    private _navigationService: NavigationService,
     private _translate: TranslateService,
     private _userStorage: UserStorage,
     private _languageService: LanguageService,
-    private _globalWebSocketManager: GlobalWebSocketManager
+    private _chatWebSocket: ChatWebSocketService,
+    private _chatEventStore: ChatEventStoreService
   ) {
     Settings.defaultLocale = this._localeId;
 
@@ -49,10 +46,8 @@ export class AppComponent {
     if (userLogged) {
       const lang = LanguageUtil.toLang(userLogged.language);
       this._languageService.changeLang(lang);
-
-      // Initialize global WebSocket manager for authenticated user
-      console.debug('[AppComponent] User authenticated, initializing WebSocket manager');
-      this._globalWebSocketManager.initialize();
+      this._chatWebSocket.connect();
+      this._chatEventStore.init();
     }
   }
 }

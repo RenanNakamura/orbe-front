@@ -8,27 +8,26 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
-import { stagger20ms } from '@vex/animations/stagger.animation';
-import { ChatService } from "../../../service/chat/chat.service";
-import { ActivatedRoute } from "@angular/router";
-import { ConversationService } from "../../../service/chat/conversation.service";
+import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
+import {stagger20ms} from '@vex/animations/stagger.animation';
+import {ChatService} from "../../../service/chat/chat.service";
+import {ActivatedRoute} from "@angular/router";
+import {ConversationService} from "../../../service/chat/conversation.service";
 import {
   Conversation,
-  Message,
+  Message, MessageStatus,
   MessageStatusColorMap,
   MessageStatusIconMap,
   MessageType,
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import { WhatsAppService } from '../../../service/whatsapp/whatsapp.service';
+import {WhatsAppService} from '../../../service/whatsapp/whatsapp.service';
 import {BehaviorSubject, Observable, Subject, Subscription} from "rxjs";
 import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {GlobalWebSocketManager} from "../../../service/chat/global-websocket-manager.service";
 
 @Component({
   selector: 'vex-conversation',
@@ -48,9 +47,8 @@ export class ConversationComponent implements OnInit {
   public hasMoreMessages$ = new BehaviorSubject<boolean>(true);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
-  private conversationChange$ = new Subject<void>();
-  private messageSub: Subscription | null = null;
-  private statusSub: Subscription | null = null;
+  private messageReceived$: Subscription | null = null;
+  private messageStatusUpdate$: Subscription | null = null;
   private scrollEndSubject = new Subject<void>();
 
   loading$ = new BehaviorSubject<boolean>(false);
@@ -78,7 +76,6 @@ export class ConversationComponent implements OnInit {
     private _chatService: ChatService,
     private _conversationService: ConversationService,
     private _messageCache: MessageCache,
-    private _globalWebSocketManager: GlobalWebSocketManager,
     private _whatsappService: WhatsAppService
   ) {
   }
@@ -195,7 +192,7 @@ export class ConversationComponent implements OnInit {
       content: {
         to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
         type: MessageType.TEXT,
-        text: { body: value, previewUrl: false }
+        text: {body: value, previewUrl: false}
       }
     }
 
@@ -211,7 +208,7 @@ export class ConversationComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(messageCreated => {
-        this.putMessagesCache(this.conversation.id, [messageCreated]);
+        this.syncMessagesCacheAndMessagesSubject(this.conversation.id, [messageCreated]);
         this._chatService.messageSent.next({
           conversationId: this.conversation.id,
           message: messageCreated
@@ -249,8 +246,8 @@ export class ConversationComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef)
         )
         .subscribe(messageCreated => {
-          this.putMessagesCache(this.conversation.id, [messageCreated]);
-          this._chatService.messageSent.next({ conversationId: this.conversation.id, message: messageCreated });
+          this.syncMessagesCacheAndMessagesSubject(this.conversation.id, [messageCreated]);
+          this._chatService.messageSent.next({conversationId: this.conversation.id, message: messageCreated});
         });
 
     } catch (e) {
@@ -314,7 +311,7 @@ export class ConversationComponent implements OnInit {
     const oldScrollHeight = container?.scrollHeight || 0;
     const oldScrollTop = container?.scrollTop || 0;
 
-    this.putMessagesCache(this.conversation.id, messages);
+    this.syncMessagesCacheAndMessagesSubject(this.conversation.id, messages);
 
     requestAnimationFrame(() => {
       const newScrollHeight = container?.scrollHeight || 0;
@@ -327,62 +324,60 @@ export class ConversationComponent implements OnInit {
     this._route.data
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
-        const newConversation = data['conversation'] as Conversation;
-
-        // SEMPRE cancelar subscriptions RxJS anteriores para evitar duplicatas
-        this.conversationChange$.next();
-
-        this.conversation = newConversation;
+        this.conversation = data['conversation'] as Conversation;
         this.initLoadMessages();
-        this.subscribeToWebSocketEvents();
+        this.subscribeWebSocketEvents();
       });
   }
 
-  private subscribeToWebSocketEvents() {
+  private subscribeWebSocketEvents() {
     if (!this.conversation?.id) return;
 
     const conversationId = this.conversation.id;
 
-    this._globalWebSocketManager.subscribeToConversation(conversationId);
-
-    if (this.messageSub) {
-      this.messageSub.unsubscribe();
-      this.messageSub = null;
+    if (this.messageReceived$) {
+      this.messageReceived$.unsubscribe();
+      this.messageReceived$ = null;
     }
 
-    this.messageSub = this._chatService.messageReceived$
-      .pipe(
-        filter(event => event.conversationId === conversationId),
-        takeUntilDestroyed(this.destroyRef) // Segurança extra
-      )
-      .subscribe(event => {
-        if (this.conversation?.id === conversationId) {
-          this.handleNewMessage(event.message);
-        }
-      });
-
-    if (this.statusSub) {
-      this.statusSub.unsubscribe();
-      this.statusSub = null;
-    }
-
-    this.statusSub = this._chatService.messageStatusUpdated$
+    this.messageReceived$ = this._chatService.messageReceived$
       .pipe(
         filter(event => event.conversationId === conversationId),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(event => {
-        if (this.conversation?.id === conversationId) {
-          this.updateMessageStatus(event.messageId, event.status);
-        }
+        this.handleNewMessage(event.message);
+      });
+
+    if (this.messageStatusUpdate$) {
+      this.messageStatusUpdate$.unsubscribe();
+      this.messageStatusUpdate$ = null;
+    }
+
+    this.messageStatusUpdate$ = this._chatService.messageStatusUpdated$
+      .pipe(
+        filter(event => event.conversationId === conversationId),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(event => {
+        this.updateMessageStatus(event.messageId, event.status);
       });
   }
 
   private handleNewMessage(message: Message) {
-    // Adicionar mensagem ao cache e lista
-    this.putMessagesCache(this.conversation.id, [message]);
+    const currentMessages = this.messagesSubject.value ?? [];
+    const existsMessage = currentMessages.some(existingMsg => existingMsg.id === message.id)
 
-    // Scroll para baixo se estiver no final
+    if (existsMessage) {
+      return;
+    }
+
+    const combined = [...[message], ...currentMessages];
+
+    combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    this.messagesSubject.next(combined);
+
     if (this.stickToBottom$.value) {
       this.scrollToBottom();
     }
@@ -393,7 +388,7 @@ export class ConversationComponent implements OnInit {
   private updateMessageStatus(messageId: string, status: string) {
     const messages = this.messagesSubject.value;
     const updated = messages.map(msg =>
-      msg.id === messageId ? { ...msg, status: status as any } : msg
+      msg.id === messageId ? {...msg, status: status as MessageStatus} : msg
     );
 
     this.messagesSubject.next(updated);
@@ -461,19 +456,17 @@ export class ConversationComponent implements OnInit {
       });
   }
 
-  private putMessagesCache(conversationId: string, messages: Message[]) {
+  private syncMessagesCacheAndMessagesSubject(conversationId: string, messages: Message[]) {
     const currentMessages = this.messagesSubject.value ?? [];
 
-    // Filtrar mensagens que já existem na lista para evitar duplicatas visuais
-    const newUniqueMessages = messages.filter(newMsg =>
-      !currentMessages.some(existingMsg => existingMsg.id === newMsg.id)
-    );
+    const existsMessage = messages
+      .filter(m => currentMessages.some(existingMsg => existingMsg.id === m.id));
 
-    if (newUniqueMessages.length === 0) {
+    if (existsMessage?.length) {
       return;
     }
 
-    const combined = [...newUniqueMessages, ...currentMessages];
+    const combined = [...messages, ...currentMessages];
 
     combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
