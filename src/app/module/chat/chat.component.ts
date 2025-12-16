@@ -79,10 +79,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.syncSubscribers();
     this.loadChannels();
-    this.subscribeToGlobalEvents();
+    this.subscribeWebsocketEvents();
   }
 
-  private subscribeToGlobalEvents() {
+  private subscribeWebsocketEvents() {
     this._chatService.messageReceived$
       .pipe(takeUntil(this.destroy$))
       .subscribe((event: any) => {
@@ -361,12 +361,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.contactsNextPage = 0;
   }
 
-  private moveConversationToTop(conversationId: string, message: Message) {
+  private moveConversationToTop(conversationId: string, message: Message): boolean {
     const current = this.conversationsSubject.value;
     const conversationIndex = current.findIndex(c => c.id === conversationId);
 
     if (conversationIndex === -1) {
-      return;
+      return false;
     }
 
     const conversation = current[conversationIndex];
@@ -379,13 +379,22 @@ export class ChatComponent implements OnInit, OnDestroy {
     const updated = [updatedConversation, ...current.filter(c => c.id !== conversationId)];
 
     this.conversationsSubject.next(updated);
+    return true;
   }
 
   private handleNewMessageEvent(event: any) {
     const message = event.message;
     const conversationId = event.conversationId;
 
-    this.moveConversationToTop(conversationId, message);
+    const moved = this.moveConversationToTop(conversationId, message);
+
+    if (!moved) {
+      this._conversationService.findById(conversationId)
+        .subscribe(conversation => {
+          const currentConversations = this.conversationsSubject.value ?? [];
+          this.conversationsSubject.next([...[conversation], ...currentConversations]);
+        });
+    }
   }
 
 }
