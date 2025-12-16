@@ -8,26 +8,27 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
-import { stagger20ms } from '@vex/animations/stagger.animation';
-import { ChatService } from "../../../service/chat/chat.service";
-import { ActivatedRoute } from "@angular/router";
-import { ConversationService } from "../../../service/chat/conversation.service";
+import {fadeInUp400ms} from '@vex/animations/fade-in-up.animation';
+import {stagger20ms} from '@vex/animations/stagger.animation';
+import {ChatService} from "../../../service/chat/chat.service";
+import {ActivatedRoute} from "@angular/router";
+import {ConversationService} from "../../../service/chat/conversation.service";
 import {
   Conversation,
-  Message, MessageStatus,
+  Message,
+  MessageStatus,
   MessageStatusColorMap,
   MessageStatusIconMap,
   MessageType,
   SenderType,
   SendMessageRequest
 } from "../../../model/chat/conversation";
-import { WhatsAppService } from '../../../service/whatsapp/whatsapp.service';
-import { BehaviorSubject, Observable, Subject, Subscription } from "rxjs";
-import { debounceTime, filter, finalize, switchMap, tap } from "rxjs/operators";
-import { MatMenuTrigger } from '@angular/material/menu';
-import { MessageCache } from "../../../service/chat/message.cache";
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {WhatsAppService} from '../../../service/whatsapp/whatsapp.service';
+import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
+import {MatMenuTrigger} from '@angular/material/menu';
+import {MessageCache} from "../../../service/chat/message.cache";
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'vex-conversation',
@@ -47,8 +48,6 @@ export class ConversationComponent implements OnInit {
   public hasMoreMessages$ = new BehaviorSubject<boolean>(true);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
-  private messageReceived$: Subscription | null = null;
-  private messageStatusUpdate$: Subscription | null = null;
   private scrollEndSubject = new Subject<void>();
 
   loading$ = new BehaviorSubject<boolean>(false);
@@ -192,7 +191,7 @@ export class ConversationComponent implements OnInit {
       content: {
         to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
         type: MessageType.TEXT,
-        text: { body: value, previewUrl: false }
+        text: {body: value, previewUrl: false}
       }
     }
 
@@ -247,7 +246,7 @@ export class ConversationComponent implements OnInit {
         )
         .subscribe(messageCreated => {
           this.syncMessagesCacheAndMessagesSubject(this.conversation.id, [messageCreated]);
-          this._chatService.messageSent.next({ conversationId: this.conversation.id, message: messageCreated });
+          this._chatService.messageSent.next({conversationId: this.conversation.id, message: messageCreated});
         });
 
     } catch (e) {
@@ -335,12 +334,7 @@ export class ConversationComponent implements OnInit {
 
     const conversationId = this.conversation.id;
 
-    if (this.messageReceived$) {
-      this.messageReceived$.unsubscribe();
-      this.messageReceived$ = null;
-    }
-
-    this.messageReceived$ = this._chatService.messageReceived$
+    this._chatService.messageReceived$
       .pipe(
         filter(event => event.conversationId === conversationId),
         takeUntilDestroyed(this.destroyRef)
@@ -349,12 +343,7 @@ export class ConversationComponent implements OnInit {
         this.handleNewMessage(event.message);
       });
 
-    if (this.messageStatusUpdate$) {
-      this.messageStatusUpdate$.unsubscribe();
-      this.messageStatusUpdate$ = null;
-    }
-
-    this.messageStatusUpdate$ = this._chatService.messageStatusUpdated$
+    this._chatService.messageStatusUpdated$
       .pipe(
         filter(event => event.conversationId === conversationId),
         takeUntilDestroyed(this.destroyRef)
@@ -388,7 +377,7 @@ export class ConversationComponent implements OnInit {
   private updateMessageStatus(messageId: string, status: string) {
     const messages = this.messagesSubject.value;
     const updated = messages.map(msg =>
-      msg.id === messageId ? { ...msg, status: status as MessageStatus } : msg
+      msg.id === messageId ? {...msg, status: status as MessageStatus} : msg
     );
 
     this.messagesSubject.next(updated);
