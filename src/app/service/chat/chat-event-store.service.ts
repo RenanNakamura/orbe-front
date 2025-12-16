@@ -1,7 +1,8 @@
-import {Injectable} from '@angular/core';
-import {ChatWebSocketService} from "./chat-websocket.service";
-import {ChatService} from "./chat.service";
-import {MessageCache} from "./message.cache";
+import { Injectable, OnDestroy } from '@angular/core';
+import { ChatWebSocketService } from "./chat-websocket.service";
+import { ChatService } from "./chat.service";
+import { MessageCache } from "./message.cache";
+import { Subscription } from "rxjs";
 
 export interface WebSocketEvent {
   eventType: string;
@@ -28,16 +29,20 @@ export interface MessageErrorEvent extends WebSocketEvent {
 @Injectable({
   providedIn: 'root'
 })
-export class ChatEventStoreService {
+export class ChatEventStoreService implements OnDestroy {
+
+  private subscription?: Subscription;
 
   constructor(private _chatWebSocket: ChatWebSocketService,
-              private _chatService: ChatService,
-              private _messageCache: MessageCache
+    private _chatService: ChatService,
+    private _messageCache: MessageCache
   ) {
   }
 
   init() {
-    this._chatWebSocket.events$
+    this.subscription?.unsubscribe();
+
+    this.subscription = this._chatWebSocket.events$
       .subscribe(e => {
         switch (e.eventType) {
           case 'NEW_MESSAGE':
@@ -70,6 +75,10 @@ export class ChatEventStoreService {
       messageId: event.messageId,
       status: event.status
     });
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
   }
 
 }

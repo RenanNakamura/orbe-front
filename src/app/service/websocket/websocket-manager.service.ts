@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {TokenStorage} from '../../storage/user/token.storage';
-import {WebSocketConnection} from "./websocket-connection";
+import { Injectable } from '@angular/core';
+import { TokenStorage } from '../../storage/user/token.storage';
+import { WebSocketConnection } from "./websocket-connection";
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class WebSocketManagerService {
 
   private connections = new Map<string, WebSocketConnection>();
@@ -26,7 +26,10 @@ export class WebSocketManagerService {
   }
 
   disconnectAll() {
-    this.connections.forEach(c => c.disconnect());
+    console.log('[WebSocketManager] Disconnecting all connections', {
+      count: this.connections.size
+    });
+    this.connections.forEach(c => c.complete());
     this.connections.clear();
   }
 }
