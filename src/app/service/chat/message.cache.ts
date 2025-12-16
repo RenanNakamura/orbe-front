@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {Conversation, Message} from "../../model/chat/conversation";
+import { Injectable } from '@angular/core';
+import { Conversation, Message } from "../../model/chat/conversation";
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,21 @@ export class MessageCache {
 
   clear(conversationId: string) {
     this.cache.delete(conversationId);
+  }
+
+  updateStatus(conversationId: string, messageId: string, status: string): boolean {
+    const messages = this.cache.get(conversationId);
+
+    if (!messages) {
+      return false;
+    }
+
+    const updated = messages.map(msg =>
+      msg.id === messageId ? { ...msg, status: status as any } : msg
+    );
+
+    this.cache.set(conversationId, updated);
+    return true;
   }
 
 }

@@ -70,6 +70,8 @@ export class ChatEventStoreService implements OnDestroy {
   }
 
   private handleStatusUpdate(event: MessageStatusEvent): void {
+    this._messageCache.updateStatus(event.conversationId, event.messageId, event.status);
+
     this._chatService.messageStatusUpdated.next({
       conversationId: event.conversationId,
       messageId: event.messageId,
