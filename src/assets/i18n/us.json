@@ -561,7 +561,7 @@
       "connected": "Connected",
       "connecting": "Connecting",
       "reconnecting": "Reconnecting",
-      "error": "Connection error",
+      "error": "Connection lost",
       "disconnected": "Disconnected"
     }
   },

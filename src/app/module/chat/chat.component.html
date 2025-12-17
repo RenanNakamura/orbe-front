@@ -65,8 +65,8 @@
                     'bg-yellow-500 animate-pulse': status === WebSocketStatus.CONNECTING || status === WebSocketStatus.RECONNECTING,
                     'bg-red-500': status === WebSocketStatus.ERROR || status === WebSocketStatus.DISCONNECTED
                   }"></div>
-                  <span class="text-xs" [ngClass]="getConnectionStatusColor(status)">
-                    {{ getConnectionStatusText(status) | translate }}
+                  <span class="text-xs" [ngClass]="status | wsStatusColor">
+                    {{ status | wsStatusText | translate }}
                   </span>
                 </div>
               </div>

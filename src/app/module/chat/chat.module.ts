@@ -24,6 +24,7 @@ import {DateMomentPipeModule} from "../../pipe/date-moment.pipe";
 import {PickerComponent} from "@ctrl/ngx-emoji-mart";
 import {MetaPipeModule} from "../../pipe/meta.pipe";
 import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
+import {WebSocketStatusPipeModule} from "../../pipe/websocket-status.pipe";
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
     DateMomentPipeModule,
     PickerComponent,
     MetaPipeModule,
+    WebSocketStatusPipeModule,
   ],
   providers: []
 })

@@ -209,36 +209,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     return !!channel?.wabaId;
   }
 
-  getConnectionStatusText(status: WebSocketStatus): string {
-    switch (status) {
-      case WebSocketStatus.CONNECTED:
-        return 'chat.status.connected';
-      case WebSocketStatus.CONNECTING:
-        return 'chat.status.connecting';
-      case WebSocketStatus.RECONNECTING:
-        return 'chat.status.reconnecting';
-      case WebSocketStatus.ERROR:
-        return 'chat.status.error';
-      case WebSocketStatus.DISCONNECTED:
-      default:
-        return 'chat.status.disconnected';
-    }
-  }
-
-  getConnectionStatusColor(status: WebSocketStatus): string {
-    switch (status) {
-      case WebSocketStatus.CONNECTED:
-        return 'text-green-600';
-      case WebSocketStatus.CONNECTING:
-      case WebSocketStatus.RECONNECTING:
-        return 'text-yellow-600';
-      case WebSocketStatus.ERROR:
-      case WebSocketStatus.DISCONNECTED:
-      default:
-        return 'text-red-600';
-    }
-  }
-
   private syncSubscribers() {
     this._router.events
       .pipe(
