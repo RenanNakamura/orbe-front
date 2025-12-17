@@ -24,7 +24,7 @@ import {
   SendMessageRequest
 } from "../../../model/chat/conversation";
 import {WhatsAppService} from '../../../service/whatsapp/whatsapp.service';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, Observable, Subject, Subscription} from "rxjs";
 import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
@@ -48,6 +48,8 @@ export class ConversationComponent implements OnInit {
   public hasMoreMessages$ = new BehaviorSubject<boolean>(true);
 
   private messagesSubject = new BehaviorSubject<Message[]>([]);
+  private messageReceived$: Subscription | null = null;
+  private messageStatusUpdate$: Subscription | null = null;
   private scrollEndSubject = new Subject<void>();
 
   loading$ = new BehaviorSubject<boolean>(false);
@@ -334,7 +336,12 @@ export class ConversationComponent implements OnInit {
 
     const conversationId = this.conversation.id;
 
-    this._chatService.messageReceived$
+    if (this.messageReceived$) {
+      this.messageReceived$.unsubscribe();
+      this.messageReceived$ = null;
+    }
+
+    this.messageReceived$ = this._chatService.messageReceived$
       .pipe(
         filter(event => event.conversationId === conversationId),
         takeUntilDestroyed(this.destroyRef)
@@ -343,7 +350,12 @@ export class ConversationComponent implements OnInit {
         this.handleNewMessage(event.message);
       });
 
-    this._chatService.messageStatusUpdated$
+    if (this.messageStatusUpdate$) {
+      this.messageStatusUpdate$.unsubscribe();
+      this.messageStatusUpdate$ = null;
+    }
+
+    this.messageStatusUpdate$ = this._chatService.messageStatusUpdated$
       .pipe(
         filter(event => event.conversationId === conversationId),
         takeUntilDestroyed(this.destroyRef)
@@ -355,9 +367,13 @@ export class ConversationComponent implements OnInit {
 
   private handleNewMessage(message: Message) {
     const currentMessages = this.messagesSubject.value ?? [];
-    const existsMessage = currentMessages.some(existingMsg => existingMsg.id === message.id)
+    const existsMessage = currentMessages.some(existingMsg => existingMsg.id == message.id)
 
     if (existsMessage) {
+      if (this.stickToBottom$.value) {
+        this.scrollToBottom();
+      }
+      this._cd.markForCheck();
       return;
     }
 

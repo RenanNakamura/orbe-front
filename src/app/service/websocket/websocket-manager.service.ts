@@ -32,4 +32,14 @@ export class WebSocketManagerService {
     this.connections.forEach(c => c.complete());
     this.connections.clear();
   }
+
+  removeConnection(urlBase: string) {
+    const fullUrl = `${urlBase}`;
+    if (this.connections.has(fullUrl)) {
+      console.log('[WebSocketManager] Removing connection', { url: fullUrl });
+      const connection = this.connections.get(fullUrl);
+      connection?.complete();
+      this.connections.delete(fullUrl);
+    }
+  }
 }
