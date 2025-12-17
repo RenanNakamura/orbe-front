@@ -29,6 +29,7 @@ import {debounceTime, filter, finalize, switchMap, tap} from "rxjs/operators";
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MessageCache} from "../../../service/chat/message.cache";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TokenStorage} from "../../../storage/user/token.storage";
 
 @Component({
   selector: 'vex-conversation',
@@ -71,13 +72,25 @@ export class ConversationComponent implements OnInit {
 
   private destroyRef = inject(DestroyRef);
 
+  private getAgentId(): string {
+    const agentId = this._tokenStorage.getClaim('agentId') || this._tokenStorage.getClaim('sub');
+
+    if (!agentId) {
+      console.error('m=getAgentId; msg=Agent ID not found in token');
+      throw new Error('Agent ID not found in token');
+    }
+
+    return agentId;
+  }
+
   constructor(
     private _route: ActivatedRoute,
     private _cd: ChangeDetectorRef,
     private _chatService: ChatService,
     private _conversationService: ConversationService,
     private _messageCache: MessageCache,
-    private _whatsappService: WhatsAppService
+    private _whatsappService: WhatsAppService,
+    private _tokenStorage: TokenStorage
   ) {
   }
 
@@ -188,7 +201,7 @@ export class ConversationComponent implements OnInit {
 
     const request: SendMessageRequest = {
       senderType: SenderType.AGENT,
-      senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+      senderId: this.getAgentId(),
       phoneNumberId: this.conversation.phoneNumberId,
       content: {
         to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
@@ -367,7 +380,7 @@ export class ConversationComponent implements OnInit {
 
   private handleNewMessage(message: Message) {
     const currentMessages = this.messagesSubject.value ?? [];
-    const existsMessage = currentMessages.some(existingMsg => existingMsg.id == message.id)
+    const existsMessage = currentMessages.some(existingMsg => existingMsg.id === message.id)
 
     if (existsMessage) {
       if (this.stickToBottom$.value) {
@@ -483,7 +496,7 @@ export class ConversationComponent implements OnInit {
       case MessageType.IMAGE:
         return {
           senderType: SenderType.AGENT,
-          senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+          senderId: this.getAgentId(),
           phoneNumberId: this.conversation.phoneNumberId,
           content: {
             to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
@@ -497,7 +510,7 @@ export class ConversationComponent implements OnInit {
       case MessageType.VIDEO:
         return {
           senderType: SenderType.AGENT,
-          senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+          senderId: this.getAgentId(),
           phoneNumberId: this.conversation.phoneNumberId,
           content: {
             to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,
@@ -511,7 +524,7 @@ export class ConversationComponent implements OnInit {
       case MessageType.DOCUMENT:
         return {
           senderType: SenderType.AGENT,
-          senderId: 'd03facc0-cc8a-42a2-9ad5-f0045b583502',
+          senderId: this.getAgentId(),
           phoneNumberId: this.conversation.phoneNumberId,
           content: {
             to: `${this.conversation.ddi}${this.conversation.phoneNumber}`,

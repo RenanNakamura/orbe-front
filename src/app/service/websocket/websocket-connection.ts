@@ -1,5 +1,13 @@
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import {TokenStorage} from "../../storage/user/token.storage";
+
+export enum WebSocketStatus {
+  DISCONNECTED = 'DISCONNECTED',
+  CONNECTING = 'CONNECTING',
+  CONNECTED = 'CONNECTED',
+  RECONNECTING = 'RECONNECTING',
+  ERROR = 'ERROR'
+}
 
 export class WebSocketConnection {
 
@@ -7,6 +15,7 @@ export class WebSocketConnection {
 
   private socket?: WebSocket;
   private events$ = new Subject<any>();
+  private status$ = new BehaviorSubject<WebSocketStatus>(WebSocketStatus.DISCONNECTED);
   private heartbeat?: number;
   private reconnectAttempts = 0;
   private manuallyClosed = false;
@@ -21,6 +30,7 @@ export class WebSocketConnection {
     if (this.socket) return;
 
     this.manuallyClosed = false;
+    this.status$.next(this.reconnectAttempts > 0 ? WebSocketStatus.RECONNECTING : WebSocketStatus.CONNECTING);
 
     const token = this.tokenStorage.get();
     const wsUrl = token ? `${this.url}?token=${token}` : this.url;
@@ -30,6 +40,7 @@ export class WebSocketConnection {
     this.socket.onopen = () => {
       console.log('[WebSocket] Connected', { url: this.url, attempts: this.reconnectAttempts });
       this.reconnectAttempts = 0;
+      this.status$.next(WebSocketStatus.CONNECTED);
       this.startHeartbeat();
     };
 
@@ -44,6 +55,7 @@ export class WebSocketConnection {
 
     this.socket.onerror = (error) => {
       console.error('[WebSocket] Error:', error);
+      this.status$.next(WebSocketStatus.ERROR);
     };
 
     this.socket.onclose = (event) => {
@@ -60,6 +72,14 @@ export class WebSocketConnection {
     return this.events$.asObservable();
   }
 
+  status() {
+    return this.status$.asObservable();
+  }
+
+  getCurrentStatus(): WebSocketStatus {
+    return this.status$.value;
+  }
+
   send(data: any): boolean {
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(data));
@@ -74,6 +94,7 @@ export class WebSocketConnection {
   disconnect() {
     console.log('[WebSocket] Disconnecting manually');
     this.manuallyClosed = true;
+    this.status$.next(WebSocketStatus.DISCONNECTED);
 
     if (this.socket) {
       this.socket.close();
@@ -88,6 +109,7 @@ export class WebSocketConnection {
   private handleClose() {
     this.stopHeartbeat();
     this.socket = undefined;
+    this.status$.next(WebSocketStatus.DISCONNECTED);
 
     if (!this.manuallyClosed) {
       this.scheduleReconnect();
@@ -109,10 +131,12 @@ export class WebSocketConnection {
       console.error('[WebSocket] Max reconnection attempts reached', {
         attempts: this.reconnectAttempts
       });
+      this.status$.next(WebSocketStatus.ERROR);
       this.events$.error(new Error('Failed to reconnect after max attempts'));
       return;
     }
 
+    this.status$.next(WebSocketStatus.RECONNECTING);
     const delay = Math.min(30000, 1000 * Math.pow(2, this.reconnectAttempts++));
     console.log('[WebSocket] Scheduling reconnection', {
       attempt: this.reconnectAttempts,

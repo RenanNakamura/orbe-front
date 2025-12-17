@@ -56,7 +56,20 @@
           class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
           <div class="flex items-center mx-4">
             <ng-container *ngIf="!(isCreatingConversation$ | async); else newConversationHeader">
-              <div class="w-8/12 text-2xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+              <div class="w-8/12 flex items-center gap-3">
+                <div class="text-2xl font-semibold">{{ 'chat.conversations' | translate }}</div>
+                <!-- Indicador de Status de Conexão -->
+                <div class="flex items-center gap-1.5" *ngIf="wsStatus$ | async as status">
+                  <div class="w-2 h-2 rounded-full" [ngClass]="{
+                    'bg-green-500': status === WebSocketStatus.CONNECTED,
+                    'bg-yellow-500 animate-pulse': status === WebSocketStatus.CONNECTING || status === WebSocketStatus.RECONNECTING,
+                    'bg-red-500': status === WebSocketStatus.ERROR || status === WebSocketStatus.DISCONNECTED
+                  }"></div>
+                  <span class="text-xs" [ngClass]="getConnectionStatusColor(status)">
+                    {{ getConnectionStatusText(status) | translate }}
+                  </span>
+                </div>
+              </div>
               <div class="w-4/12 text-end self-end">
                 <button
                   class="cursor-pointer mr-2"

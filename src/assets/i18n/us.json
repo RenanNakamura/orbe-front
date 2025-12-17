@@ -556,7 +556,14 @@
   "role": "Role",
   "chat": {
     "label": "Chat",
-    "conversations": "Conversations"
+    "conversations": "Conversations",
+    "status": {
+      "connected": "Connected",
+      "connecting": "Connecting",
+      "reconnecting": "Reconnecting",
+      "error": "Connection error",
+      "disconnected": "Disconnected"
+    }
   },
   "conversation": {
     "label": "Conversation",

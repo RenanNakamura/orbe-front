@@ -1,8 +1,9 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { ChatWebSocketService } from "./chat-websocket.service";
-import { ChatService } from "./chat.service";
-import { MessageCache } from "./message.cache";
-import { Subscription } from "rxjs";
+import {Injectable, OnDestroy} from '@angular/core';
+import {ChatWebSocketService} from "./chat-websocket.service";
+import {ChatService} from "./chat.service";
+import {MessageCache} from "./message.cache";
+import {Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
 export interface WebSocketEvent {
   eventType: string;
@@ -31,18 +32,25 @@ export interface MessageErrorEvent extends WebSocketEvent {
 })
 export class ChatEventStoreService implements OnDestroy {
 
-  private subscription?: Subscription;
+  private initialized = false;
+  private sessionDestroyed$ = new Subject<void>();
 
-  constructor(private _chatWebSocket: ChatWebSocketService,
+  constructor(
+    private _chatWebSocket: ChatWebSocketService,
     private _chatService: ChatService,
     private _messageCache: MessageCache
   ) {
   }
 
   init() {
-    this.subscription?.unsubscribe();
+    if (this.initialized) {
+      return;
+    }
 
-    this.subscription = this._chatWebSocket.events$
+    this._chatWebSocket.connect();
+
+    this._chatWebSocket.events$
+      .pipe(takeUntil(this.sessionDestroyed$))
       .subscribe(e => {
         switch (e.eventType) {
           case 'NEW_MESSAGE':
@@ -54,6 +62,8 @@ export class ChatEventStoreService implements OnDestroy {
             break;
         }
       });
+
+    this.initialized = true;
   }
 
   private handleNewMessage(event: NewMessageEvent): void {
@@ -80,8 +90,16 @@ export class ChatEventStoreService implements OnDestroy {
     });
   }
 
+  disconnect() {
+    this.sessionDestroyed$.next();
+    this.sessionDestroyed$.complete();
+    this.sessionDestroyed$ = new Subject<void>();
+    this._chatWebSocket.disconnect();
+    this.initialized = false;
+  }
+
   ngOnDestroy() {
-    this.subscription?.unsubscribe();
+    this.disconnect();
   }
 
 }

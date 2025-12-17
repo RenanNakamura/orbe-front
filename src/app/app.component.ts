@@ -6,7 +6,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from './service/sk/language.service';
 import {LanguageUtil} from './util/language.util';
 import {UserStorage} from './storage/user/user.storage';
-import {ChatWebSocketService} from "./service/chat/chat-websocket.service";
 import {ChatEventStoreService} from "./service/chat/chat-event-store.service";
 
 @Component({
@@ -23,7 +22,6 @@ export class AppComponent {
     private _translate: TranslateService,
     private _userStorage: UserStorage,
     private _languageService: LanguageService,
-    private _chatWebSocket: ChatWebSocketService,
     private _chatEventStore: ChatEventStoreService
   ) {
     Settings.defaultLocale = this._localeId;
@@ -46,7 +44,6 @@ export class AppComponent {
     if (userLogged) {
       const lang = LanguageUtil.toLang(userLogged.language);
       this._languageService.changeLang(lang);
-      this._chatWebSocket.connect();
       this._chatEventStore.init();
     }
   }

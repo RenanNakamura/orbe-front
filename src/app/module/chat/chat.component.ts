@@ -19,6 +19,8 @@ import {ChannelService} from "../../service/channel/channel.service";
 import {Contact} from "../../model/Contact";
 import {ContactService} from "../../service/contact/contact.service";
 import {MessageCache} from "../../service/chat/message.cache";
+import {ChatWebSocketService} from "../../service/chat/chat-websocket.service";
+import {WebSocketStatus} from "../../service/websocket/websocket-connection";
 
 @Component({
   selector: 'vex-chat',
@@ -63,6 +65,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   selectedConversationId: string | null = null;
 
+  wsStatus$ = this._chatWebSocket.status$;
+  protected readonly WebSocketStatus = WebSocketStatus;
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -73,6 +78,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _channelService: ChannelService,
     private _contactService: ContactService,
     private _messageCache: MessageCache,
+    private _chatWebSocket: ChatWebSocketService
   ) {
   }
 
@@ -201,6 +207,36 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   isWhatsAppChannel(channel: Channel | null): boolean {
     return !!channel?.wabaId;
+  }
+
+  getConnectionStatusText(status: WebSocketStatus): string {
+    switch (status) {
+      case WebSocketStatus.CONNECTED:
+        return 'chat.status.connected';
+      case WebSocketStatus.CONNECTING:
+        return 'chat.status.connecting';
+      case WebSocketStatus.RECONNECTING:
+        return 'chat.status.reconnecting';
+      case WebSocketStatus.ERROR:
+        return 'chat.status.error';
+      case WebSocketStatus.DISCONNECTED:
+      default:
+        return 'chat.status.disconnected';
+    }
+  }
+
+  getConnectionStatusColor(status: WebSocketStatus): string {
+    switch (status) {
+      case WebSocketStatus.CONNECTED:
+        return 'text-green-600';
+      case WebSocketStatus.CONNECTING:
+      case WebSocketStatus.RECONNECTING:
+        return 'text-yellow-600';
+      case WebSocketStatus.ERROR:
+      case WebSocketStatus.DISCONNECTED:
+      default:
+        return 'text-red-600';
+    }
   }
 
   private syncSubscribers() {
