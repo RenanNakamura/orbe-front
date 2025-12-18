@@ -54,33 +54,34 @@
       <div class="flex-1 flex flex-col min-w-0 h-full">
         <div
           class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
-          <div class="flex items-center mx-4">
+          <div class="flex items-center justify-between mx-4">
             <ng-container *ngIf="!(isCreatingConversation$ | async); else newConversationHeader">
-              <div class="w-8/12 flex items-center gap-3">
-                <div class="text-2xl font-semibold">{{ 'chat.conversations' | translate }}</div>
-                <!-- Indicador de Status de Conexão -->
-                <div class="flex items-center gap-1.5" *ngIf="wsStatus$ | async as status">
-                  <div class="w-2 h-2 rounded-full" [ngClass]="{
+<!--              <div class="flex items-center">-->
+<!--                <div class="text-2xl font-semibold">{{ 'chat.conversations' | translate }}</div>-->
+<!--              </div>-->
+              <div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800" *ngIf="wsStatus$ | async as status">
+                <div class="w-2 h-2 rounded-full" [ngClass]="{
                     'bg-green-500': status === WebSocketStatus.CONNECTED,
                     'bg-yellow-500 animate-pulse': status === WebSocketStatus.CONNECTING || status === WebSocketStatus.RECONNECTING,
                     'bg-red-500': status === WebSocketStatus.ERROR || status === WebSocketStatus.DISCONNECTED
                   }"></div>
-                  <span class="text-xs" [ngClass]="status | wsStatusColor">
+                <span class="text-xs font-medium" [ngClass]="status | wsStatusColor">
                     {{ status | wsStatusText | translate }}
                   </span>
-                </div>
               </div>
-              <div class="w-4/12 text-end self-end">
-                <button
-                  class="cursor-pointer mr-2"
-                  [disabled]="!(selectedChannel$ | async)"
-                  (click)="this.onAddNewConversation()">
-                  <mat-icon svgIcon="mat:add_comment"
-                            color="primary"
-                            [ngClass]="{'text-gray-300': !(selectedChannel$ | async)}"
-                            [matTooltip]="'conversation.new' | translate"
-                  ></mat-icon>
-                </button>
+              <button
+                class="cursor-pointer"
+                [disabled]="!(selectedChannel$ | async)"
+                (click)="this.onAddNewConversation()">
+                <mat-icon svgIcon="mat:add_comment"
+                          color="primary"
+                          [ngClass]="{'text-gray-300': !(selectedChannel$ | async)}"
+                          [matTooltip]="'conversation.new' | translate"
+                ></mat-icon>
+              </button>
+
+<!--              <div class="flex items-center gap-3">-->
+                <!-- Indicador de Status de Conexão -->
                 <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
                 <!--                <mat-icon svgIcon="mat:more_vert"-->
                 <!--                          color="primary"-->
@@ -88,7 +89,7 @@
                 <!--                          [matMenuTriggerFor]="conversationMenu"-->
                 <!--                          [matTooltip]="'more-options' | translate"-->
                 <!--                ></mat-icon>-->
-              </div>
+<!--              </div>-->
             </ng-container>
 
             <ng-template #newConversationHeader>

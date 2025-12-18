@@ -558,11 +558,11 @@
     "label": "Chat",
     "conversations": "Conversas",
     "status": {
-      "connected": "Conectado",
-      "connecting": "Conectando",
-      "reconnecting": "Reconectando",
-      "error": "Conexão perdida",
-      "disconnected": "Desconectado"
+      "connected": "Online",
+      "connecting": "Conectando…",
+      "reconnecting": "Reconectando…",
+      "error": "Falha na conexão",
+      "disconnected": "Offline"
     }
   },
   "conversation": {
