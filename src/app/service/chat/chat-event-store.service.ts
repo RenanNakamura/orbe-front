@@ -52,13 +52,18 @@ export class ChatEventStoreService implements OnDestroy {
     this._chatWebSocket.events$
       .pipe(takeUntil(this.sessionDestroyed$))
       .subscribe(e => {
+        console.log(e);
         switch (e.eventType) {
           case 'NEW_MESSAGE':
             this.handleNewMessage(e as NewMessageEvent);
             break;
 
           case 'MESSAGE_STATUS_UPDATED':
-            this.handleStatusUpdate(e as MessageStatusEvent);
+            this.handleMessageStatusUpdate(e as MessageStatusEvent);
+            break;
+
+          case 'MESSAGE_ERROR':
+            this.handleMessageErrorUpdate(e as MessageErrorEvent);
             break;
         }
       });
@@ -80,13 +85,24 @@ export class ChatEventStoreService implements OnDestroy {
     });
   }
 
-  private handleStatusUpdate(event: MessageStatusEvent): void {
+  private handleMessageStatusUpdate(event: MessageStatusEvent): void {
     this._messageCache.updateStatus(event.conversationId, event.messageId, event.status);
 
     this._chatService.messageStatusUpdated.next({
       conversationId: event.conversationId,
       messageId: event.messageId,
       status: event.status
+    });
+  }
+
+  private handleMessageErrorUpdate(event: MessageErrorEvent): void {
+    this._messageCache.updateStatusAndError(event.conversationId, event.messageId, event.status, event.error);
+
+    this._chatService.messageStatusUpdated.next({
+      conversationId: event.conversationId,
+      messageId: event.messageId,
+      status: event.status,
+      error: event?.error
     });
   }
 

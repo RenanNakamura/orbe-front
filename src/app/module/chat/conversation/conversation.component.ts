@@ -222,7 +222,7 @@ export class ConversationComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(messageCreated => {
-        this.syncMessagesCacheAndMessagesSubject(this.conversation.id, [messageCreated]);
+        this.syncMessagesSubject([messageCreated]);
         this._chatService.messageSent.next({
           conversationId: this.conversation.id,
           message: messageCreated
@@ -260,7 +260,7 @@ export class ConversationComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef)
         )
         .subscribe(messageCreated => {
-          this.syncMessagesCacheAndMessagesSubject(this.conversation.id, [messageCreated]);
+          this.syncMessagesSubject([messageCreated]);
           this._chatService.messageSent.next({conversationId: this.conversation.id, message: messageCreated});
         });
 
@@ -374,7 +374,7 @@ export class ConversationComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(event => {
-        this.updateMessageStatus(event.messageId, event.status);
+        this.updateMessageStatus(event.messageId, event.status, event?.['error']);
       });
   }
 
@@ -403,10 +403,10 @@ export class ConversationComponent implements OnInit {
     this._cd.markForCheck();
   }
 
-  private updateMessageStatus(messageId: string, status: string) {
+  private updateMessageStatus(messageId: string, status: string, error?: any) {
     const messages = this.messagesSubject.value;
     const updated = messages.map(msg =>
-      msg.id === messageId ? {...msg, status: status as MessageStatus} : msg
+      msg.id === messageId ? {...msg, status: status as MessageStatus, error} : msg
     );
 
     this.messagesSubject.next(updated);
@@ -474,6 +474,10 @@ export class ConversationComponent implements OnInit {
   }
 
   private syncMessagesCacheAndMessagesSubject(conversationId: string, messages: Message[]) {
+    this._messageCache.setAll(conversationId, this.syncMessagesSubject(messages));
+  }
+
+  private syncMessagesSubject(messages: Message[]) {
     const currentMessages = this.messagesSubject.value ?? [];
 
     const existsMessage = messages
@@ -488,7 +492,8 @@ export class ConversationComponent implements OnInit {
     combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     this.messagesSubject.next(combined);
-    this._messageCache.setAll(conversationId, combined);
+
+    return combined;
   }
 
   private buildMediaMessageRequest(text: string, mediaUploaded: { id: string }): SendMessageRequest {

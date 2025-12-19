@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {Message} from '../../model/chat/conversation';
+import {MessageErrorEvent} from "./chat-event-store.service";
 
 export interface MessageSentEvent {
   conversationId: string;
@@ -33,7 +34,7 @@ export class ChatService {
   messageReceived = new Subject<MessageReceivedEvent>();
   messageReceived$ = this.messageReceived.asObservable();
 
-  messageStatusUpdated = new Subject<MessageStatusUpdatedEvent>();
+  messageStatusUpdated = new Subject<MessageStatusUpdatedEvent | MessageErrorEvent>();
   messageStatusUpdated$ = this.messageStatusUpdated.asObservable();
 
 }

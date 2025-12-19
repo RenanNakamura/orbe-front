@@ -12,8 +12,7 @@ export const environment = {
     calendar: 'http://localhost:8092',
     whatsappService: 'http://localhost:9000',
     chat: 'http://localhost:8091',
-    // chatWebSocket: 'ws://localhost:8091/ws/chat', // TODO descomentar e excluir a linha abaixo...
-    chatWebSocket: 'ws://localhost:8091/ws/conversations/6a597797-5940-48da-818b-fef32bb6e1b3',
+    chatWebSocket: 'ws://localhost:8091/ws/chat',
     receptcha: {
         sitekey: '6LdsZT0pAAAAACxAmMHdH5grjNUDJSQ6rdfdBE04'
     },
