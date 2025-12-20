@@ -1,5 +1,5 @@
-import {BehaviorSubject, Subject} from "rxjs";
-import {TokenStorage} from "../../storage/user/token.storage";
+import { BehaviorSubject, Subject } from "rxjs";
+import { TokenStorage } from "../../storage/user/token.storage";
 
 export enum WebSocketStatus {
   DISCONNECTED = 'DISCONNECTED',
@@ -12,6 +12,7 @@ export enum WebSocketStatus {
 export class WebSocketConnection {
 
   private static readonly MAX_RECONNECT_ATTEMPTS = 10;
+  private static readonly PONG_TIMEOUT_MS = 60000;
 
   private socket?: WebSocket;
   private events$ = new Subject<any>();
@@ -19,6 +20,8 @@ export class WebSocketConnection {
   private heartbeat?: number;
   private reconnectAttempts = 0;
   private manuallyClosed = false;
+  private pendingPong = false;
+  private pongTimeout?: number;
 
   constructor(
     private url: string,
@@ -47,6 +50,17 @@ export class WebSocketConnection {
     this.socket.onmessage = e => {
       try {
         const data = JSON.parse(e.data);
+
+        // Handle PONG response
+        if (data.type === 'PONG') {
+          this.pendingPong = false;
+          if (this.pongTimeout) {
+            clearTimeout(this.pongTimeout);
+            this.pongTimeout = undefined;
+          }
+          return; // Don't propagate PONG to events$
+        }
+
         this.events$.next(data);
       } catch (error) {
         console.error('[WebSocket] Failed to parse message:', e.data, error);
@@ -118,12 +132,41 @@ export class WebSocketConnection {
 
   private startHeartbeat() {
     this.heartbeat = window.setInterval(() => {
-      this.send({type: 'PING'});
+      // If previous PONG not received, reconnect
+      if (this.pendingPong) {
+        console.warn('[WebSocket] PONG timeout detected, reconnecting');
+        this.handlePongTimeout();
+        return;
+      }
+
+      this.pendingPong = true;
+      this.send({ type: 'PING' });
+
+      // Set timeout to wait for PONG
+      this.pongTimeout = window.setTimeout(() => {
+        if (this.pendingPong) {
+          console.error('[WebSocket] PONG not received within timeout');
+          this.handlePongTimeout();
+        }
+      }, WebSocketConnection.PONG_TIMEOUT_MS);
     }, 30000);
   }
 
   private stopHeartbeat() {
-    if (this.heartbeat) clearInterval(this.heartbeat);
+    if (this.heartbeat) {
+      clearInterval(this.heartbeat);
+      this.heartbeat = undefined;
+    }
+    if (this.pongTimeout) {
+      clearTimeout(this.pongTimeout);
+      this.pongTimeout = undefined;
+    }
+    this.pendingPong = false;
+  }
+
+  private handlePongTimeout() {
+    this.stopHeartbeat();
+    this.socket?.close();
   }
 
   private scheduleReconnect() {
@@ -137,16 +180,20 @@ export class WebSocketConnection {
     }
 
     this.status$.next(WebSocketStatus.RECONNECTING);
-    const delay = Math.min(30000, 1000 * Math.pow(2, this.reconnectAttempts++));
+
+    const baseDelay = Math.min(30000, 1000 * Math.pow(2, this.reconnectAttempts++));
+    const jitter = baseDelay * (0.5 + Math.random() * 0.5); // 50-100% of base delay
+
     console.log('[WebSocket] Scheduling reconnection', {
       attempt: this.reconnectAttempts,
-      delayMs: delay
+      baseDelayMs: baseDelay,
+      jitterDelayMs: Math.round(jitter)
     });
 
     setTimeout(() => {
       if (!this.manuallyClosed) {
         this.connect();
       }
-    }, delay);
+    }, jitter);
   }
 }
