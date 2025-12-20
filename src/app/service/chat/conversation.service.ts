@@ -57,8 +57,8 @@ export class ConversationService {
     return this._http.get<Message[]>(`${environment.chat}${this._api}/${id}/messages`, {params});
   }
 
-  sendMessage(conversationId: string, request: SendMessageRequest): Observable<Message> {
-    return this._http.post<Message>(`${environment.chat}${this._api}/${conversationId}/messages/send`, request);
+  sendMessage(channelId: string, conversationId: string, request: SendMessageRequest): Observable<Message> {
+    return this._http.post<Message>(`${environment.chat}${this._api}/${conversationId}/channels/${channelId}/messages/send`, request);
   }
 
   archive(conversationId: string): Observable<void> {

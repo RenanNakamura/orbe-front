@@ -210,7 +210,7 @@ export class ConversationComponent implements OnInit {
       }
     }
 
-    this._conversationService.sendMessage(this.conversation.id, request)
+    this._conversationService.sendMessage(this.conversation.channelId, this.conversation.id, request)
       .pipe(
         finalize(() => {
           textarea.value = '';
@@ -244,7 +244,7 @@ export class ConversationComponent implements OnInit {
 
       const request = this.buildMediaMessageRequest(caption, uploadResult);
 
-      this._conversationService.sendMessage(this.conversation.id, request)
+      this._conversationService.sendMessage(this.conversation.channelId, this.conversation.id, request)
         .pipe(
           finalize(() => {
             this.uploadingMedia$.next(false);
