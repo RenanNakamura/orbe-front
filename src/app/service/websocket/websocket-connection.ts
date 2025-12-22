@@ -22,10 +22,12 @@ export class WebSocketConnection {
   private manuallyClosed = false;
   private pendingPong = false;
   private pongTimeout?: number;
+  private authFailureDetected = false;
 
   constructor(
     private url: string,
-    private tokenStorage: TokenStorage
+    private tokenStorage: TokenStorage,
+    private onAuthenticationFailed?: () => Promise<void>
   ) {
   }
 
@@ -35,14 +37,23 @@ export class WebSocketConnection {
     this.manuallyClosed = false;
     this.status$.next(this.reconnectAttempts > 0 ? WebSocketStatus.RECONNECTING : WebSocketStatus.CONNECTING);
 
+    // Sempre pega o token ATUAL do storage (pode ter sido atualizado via refresh)
     const token = this.tokenStorage.get();
-    const wsUrl = token ? `${this.url}?token=${token}` : this.url;
+
+    if (!token) {
+      console.error('[WebSocket] Cannot connect without token');
+      this.status$.next(WebSocketStatus.ERROR);
+      return;
+    }
+
+    const wsUrl = `${this.url}?token=${token}`;
 
     this.socket = new WebSocket(wsUrl);
 
     this.socket.onopen = () => {
       console.log('[WebSocket] Connected', { url: this.url, attempts: this.reconnectAttempts });
       this.reconnectAttempts = 0;
+      this.authFailureDetected = false; // Reset auth failure flag on successful connection
       this.status$.next(WebSocketStatus.CONNECTED);
       this.startHeartbeat();
     };
@@ -50,6 +61,13 @@ export class WebSocketConnection {
     this.socket.onmessage = e => {
       try {
         const data = JSON.parse(e.data);
+
+        if (data.type === 'AUTH_ERROR') {
+          console.warn('[WebSocket] Auth error received');
+          this.authFailureDetected = true;
+          this.socket?.close(4001, 'Auth error');
+          return;
+        }
 
         // Handle PONG response
         if (data.type === 'PONG') {
@@ -78,6 +96,18 @@ export class WebSocketConnection {
         reason: event.reason,
         wasClean: event.wasClean
       });
+
+      // Detect authentication failures
+      // 1002 = Protocol error, 1008 = Policy violation, 1011 = Internal server error
+      // 3000+ = Custom close codes (can be used for auth failures)
+      const isAuthFailure = event.code === 4001 || event.code === 1002 || event.code === 1008 ||
+        event.code === 1011 || event.code >= 3000;
+
+      if (isAuthFailure && !this.authFailureDetected) {
+        console.warn('[WebSocket] Authentication failure detected', { code: event.code });
+        this.authFailureDetected = true;
+      }
+
       this.handleClose();
     };
   }
@@ -187,13 +217,29 @@ export class WebSocketConnection {
     console.log('[WebSocket] Scheduling reconnection', {
       attempt: this.reconnectAttempts,
       baseDelayMs: baseDelay,
-      jitterDelayMs: Math.round(jitter)
+      jitterDelayMs: Math.round(jitter),
+      authFailureDetected: this.authFailureDetected
     });
 
-    setTimeout(() => {
-      if (!this.manuallyClosed) {
-        this.connect();
+    setTimeout(async () => {
+      if (this.manuallyClosed) {
+        return;
       }
+
+      // Try to refresh token if authentication failure was detected
+      if (this.authFailureDetected && this.onAuthenticationFailed) {
+        try {
+          console.log('[WebSocket] Attempting token refresh before reconnection');
+          await this.onAuthenticationFailed();
+          console.log('[WebSocket] Token refresh completed, proceeding with reconnection');
+        } catch (error) {
+          console.error('[WebSocket] Token refresh failed', error);
+          this.status$.next(WebSocketStatus.ERROR);
+          // Continue with reconnection anyway, as the token might still be valid
+        }
+      }
+
+      this.connect();
     }, jitter);
   }
 }

@@ -30,8 +30,12 @@ export class MessageCache {
     this.cache.set(conversationId, sliced);
   }
 
-  clear(conversationId: string) {
+  delete(conversationId: string) {
     this.cache.delete(conversationId);
+  }
+
+  clear() {
+    this.cache.clear();
   }
 
   updateStatus(conversationId: string, messageId: string, status: string): boolean {

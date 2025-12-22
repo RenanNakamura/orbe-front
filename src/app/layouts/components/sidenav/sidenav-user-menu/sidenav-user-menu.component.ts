@@ -10,6 +10,7 @@ import {UserStorage} from '../../../../storage/user/user.storage';
 import {BillingService} from "../../../../service/billing/billing.service";
 import {CommonModule} from "@angular/common";
 import {ChatEventStoreService} from "../../../../service/chat/chat-event-store.service";
+import {MessageCache} from "../../../../service/chat/message.cache";
 
 @Component({
   selector: 'vex-sidenav-user-menu',
@@ -29,6 +30,7 @@ export class SidenavUserMenuComponent implements OnInit {
     private _userStorage: UserStorage,
     private _billingService: BillingService,
     private _chatEventStore: ChatEventStoreService,
+    private _messageCache: MessageCache,
   ) {
   }
 
@@ -38,6 +40,7 @@ export class SidenavUserMenuComponent implements OnInit {
 
   onLogout() {
     this._refreshTokenStorage.clear();
+    this._messageCache.clear();
     this._tokenStorage.clear();
     this._userStorage.clear();
     this._popoverRef.close();
