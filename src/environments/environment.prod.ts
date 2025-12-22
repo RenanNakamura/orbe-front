@@ -8,6 +8,7 @@ export const environment = {
   calendar: 'http://localhost:8092',
   whatsappService: 'https://api.tipefy.com/whatsapp',
   chat: 'https://api.tipefy.com/chat',
+  chatWebSocket: 'wss://api.tipefy.com/chat/ws/chat',
   receptcha: {
     sitekey: '6Ld-R5UqAAAAAOFwUurtIj-KVO2XZti8aw72m3SM'
   },
