@@ -90,6 +90,7 @@ export interface CreateCampaign {
     parameters: Parameter[];
     importStrategy: any;
     phoneNumberId: string;
+    channelId: string;
 }
 
 export interface CampaignDashboard {
