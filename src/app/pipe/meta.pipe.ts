@@ -5,7 +5,8 @@ import {HttpClient} from "@angular/common/http";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {BehaviorSubject, Observable, of} from "rxjs";
 import {environment} from "../../environments/environment";
-import {catchError, finalize, map} from "rxjs/operators";
+import {catchError, finalize, map, switchMap} from "rxjs/operators";
+import {StorageService} from "../service/storage/storage.service";
 
 interface MediaAsyncPipeState {
   loading: boolean;
@@ -73,14 +74,45 @@ export class MediaAsyncPipe implements PipeTransform {
   }
 }
 
+@Pipe({
+  name: 'storageAsync',
+  pure: true
+})
+export class StorageAsyncPipe implements PipeTransform {
+
+  constructor(private storageService: StorageService, private sanitizer: DomSanitizer) {
+  }
+
+  transform(fileName: string): Observable<MediaAsyncPipeState> {
+    if (!fileName) {
+      return of({loading: false});
+    }
+
+    const subject = new BehaviorSubject<MediaAsyncPipeState>({loading: true});
+
+    this.storageService.getSharedUrl(fileName)
+      .then(response => {
+        const url = this.sanitizer.bypassSecurityTrustUrl(response.url);
+        subject.next({loading: false, url});
+      })
+      .catch(err => {
+        subject.next({loading: false, error: err.message || 'Failed to load media'});
+      });
+
+    return subject.asObservable();
+  }
+}
+
 @NgModule({
   declarations: [
     MapWhatsAppErrorPipe,
-    MediaAsyncPipe
+    MediaAsyncPipe,
+    StorageAsyncPipe
   ],
   exports: [
     MapWhatsAppErrorPipe,
-    MediaAsyncPipe
+    MediaAsyncPipe,
+    StorageAsyncPipe
   ],
 })
 export class MetaPipeModule {
