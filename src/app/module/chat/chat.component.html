@@ -56,10 +56,11 @@
           class="flex-none py-4 bg-gray-50 dark:bg-gray-900 space-y-4 border-b">
           <div class="flex items-center justify-between mx-4">
             <ng-container *ngIf="!(isCreatingConversation$ | async); else newConversationHeader">
-<!--              <div class="flex items-center">-->
-<!--                <div class="text-2xl font-semibold">{{ 'chat.conversations' | translate }}</div>-->
-<!--              </div>-->
-              <div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800" *ngIf="wsStatus$ | async as status">
+              <!--              <div class="flex items-center">-->
+              <!--                <div class="text-2xl font-semibold">{{ 'chat.conversations' | translate }}</div>-->
+              <!--              </div>-->
+              <div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800"
+                   *ngIf="wsStatus$ | async as status">
                 <div class="w-2 h-2 rounded-full" [ngClass]="{
                     'bg-green-500': status === WebSocketStatus.CONNECTED,
                     'bg-yellow-500 animate-pulse': status === WebSocketStatus.CONNECTING || status === WebSocketStatus.RECONNECTING,
@@ -80,16 +81,16 @@
                 ></mat-icon>
               </button>
 
-<!--              <div class="flex items-center gap-3">-->
-                <!-- Indicador de Status de Conexão -->
-                <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
-                <!--                <mat-icon svgIcon="mat:more_vert"-->
-                <!--                          color="primary"-->
-                <!--                          class="cursor-pointer"-->
-                <!--                          [matMenuTriggerFor]="conversationMenu"-->
-                <!--                          [matTooltip]="'more-options' | translate"-->
-                <!--                ></mat-icon>-->
-<!--              </div>-->
+              <!--              <div class="flex items-center gap-3">-->
+              <!-- Indicador de Status de Conexão -->
+              <!-- VAI SER UTILIZADO MAIS PARA FRENTE -->
+              <!--                <mat-icon svgIcon="mat:more_vert"-->
+              <!--                          color="primary"-->
+              <!--                          class="cursor-pointer"-->
+              <!--                          [matMenuTriggerFor]="conversationMenu"-->
+              <!--                          [matTooltip]="'more-options' | translate"-->
+              <!--                ></mat-icon>-->
+              <!--              </div>-->
             </ng-container>
 
             <ng-template #newConversationHeader>
@@ -219,7 +220,8 @@
                             <div class="text-xs text-gray-500 truncate flex-1">
                               {{ conversation?.messages[0] | lastMessage }}
                             </div>
-                            <div *ngIf="conversation.unreadCount > 0" class="flex-none bg-green-500 text-white rounded-full px-1.5 py-0.5 text-[10px] font-bold min-w-[1.25rem] text-center ml-2">
+                            <div *ngIf="conversation?.unreadCount > 0"
+                              class="flex items-center justify-center bg-primary-500 text-white rounded-full text-[10px] font-bold min-w-[1.25rem] h-[1.25rem] px-1 ml-2 leading-none">
                               {{ conversation.unreadCount }}
                             </div>
                           </div>

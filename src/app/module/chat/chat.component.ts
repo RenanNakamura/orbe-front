@@ -273,15 +273,22 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.moveConversationToTop(event.conversationId, event.message);
       });
 
-    this._route.firstChild?.paramMap
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
-        console.log("passou aqui");
-        const id = params.get('conversationId');
+    this._router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        const child = this._route.firstChild;
+
+        if (!child) return;
+
+        const id = child.snapshot.paramMap.get('conversationId');
+
+        if (!id || this.selectedConversationId === id) return;
+
         this.selectedConversationId = id;
-        if (id) {
-          this.markConversationAsRead(id);
-        }
+        this.markConversationAsRead(id);
       });
   }
 

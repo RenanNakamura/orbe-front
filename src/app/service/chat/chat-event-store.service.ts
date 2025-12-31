@@ -52,7 +52,6 @@ export class ChatEventStoreService implements OnDestroy {
     this._chatWebSocket.events$
       .pipe(takeUntil(this.sessionDestroyed$))
       .subscribe(e => {
-        console.log(e);
         switch (e.eventType) {
           case 'NEW_MESSAGE':
             this.handleNewMessage(e as NewMessageEvent);

@@ -25,8 +25,6 @@ export class StorageAsyncPipe implements PipeTransform {
 
     const subject = new BehaviorSubject<StorageAsyncPipeState>({loading: true});
 
-    console.log('fileName', fileName);
-
     this.storageService.getSharedUrl(fileName)
       .then(response => {
         const url = this.sanitizer.bypassSecurityTrustUrl(response.url);
