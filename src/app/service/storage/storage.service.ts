@@ -33,7 +33,7 @@ export class StorageService {
     }
 
     getSharedUrl(fileName: string): Promise<SharedUrlResponse> {
-        return firstValueFrom(this._http.get<SharedUrlResponse>(`${environment.storage}${this._api}/${fileName}/url`));
+        return firstValueFrom(this._http.get<SharedUrlResponse>(`${environment.storage}${this._api}/${encodeURIComponent(fileName)}/url`));
     }
 
     async validateFile(file: File, type: string): Promise<void> {
