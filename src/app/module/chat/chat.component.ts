@@ -64,6 +64,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   selectedConversationId: string | null = null;
+  conversationMenuOpenedId: string | null = null;
 
   wsStatus$ = this._chatWebSocket.status$;
   protected readonly WebSocketStatus = WebSocketStatus;
@@ -300,8 +301,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private markConversationAsRead(conversationId: string) {
-    this._conversationService.markAsRead(conversationId).subscribe();
-    this.updateLocalUnreadCount(conversationId, 0);
+    this._conversationService.markAsRead(conversationId)
+      .subscribe(() => {
+        setTimeout(() => this.updateLocalUnreadCount(conversationId, 0), 1);
+      });
   }
 
   private updateLocalUnreadCount(conversationId: string, count: number) {

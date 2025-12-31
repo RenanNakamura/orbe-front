@@ -221,7 +221,7 @@
                               {{ conversation?.messages[0] | lastMessage }}
                             </div>
                             <div *ngIf="conversation?.unreadCount > 0"
-                              class="flex items-center justify-center bg-primary-500 text-white rounded-full text-[10px] font-bold min-w-[1.25rem] h-[1.25rem] px-1 ml-2 leading-none">
+                              class="flex items-center justify-center bg-primary-500 text-white rounded-full text-[10px] font-bold min-w-[1.25rem] h-[1.25rem] px-1 ml-2 leading-none flex-none transition-transform duration-200 ease-in-out group-hover:-translate-x-6">
                               {{ conversation.unreadCount }}
                             </div>
                           </div>
@@ -229,9 +229,9 @@
                       </a>
 
                       <button
-                        class="absolute right-2 top-6 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                        class="absolute right-1 top-6 opacity-0 group-hover:opacity-100 transition-opacity p-1"
                         [matMenuTriggerFor]="conversationItemMenu"
-                        (click)="$event.preventDefault(); $event.stopPropagation(); selectedConversationId = conversation.id"
+                        (click)="$event.preventDefault(); $event.stopPropagation(); conversationMenuOpenedId = conversation.id"
                         type="button">
                         <mat-icon svgIcon="mat:keyboard_arrow_down" class="text-gray-600 dark:text-gray-400"></mat-icon>
                       </button>
@@ -247,7 +247,7 @@
                 </ng-container>
 
                 <mat-menu #conversationItemMenu="matMenu" xPosition="after" yPosition="below">
-                  <button mat-menu-item (click)="onArchiveConversation(selectedConversationId)">
+                  <button mat-menu-item (click)="onArchiveConversation(conversationMenuOpenedId)">
                     <mat-icon matMenuItemIcon svgIcon="mat:archive"></mat-icon>
                     <span>{{ 'conversation.archive' | translate }}</span>
                   </button>
