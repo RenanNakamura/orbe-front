@@ -272,6 +272,32 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe(event => {
         this.moveConversationToTop(event.conversationId, event.message);
       });
+
+    this._route.firstChild?.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        console.log("passou aqui");
+        const id = params.get('conversationId');
+        this.selectedConversationId = id;
+        if (id) {
+          this.markConversationAsRead(id);
+        }
+      });
+  }
+
+  private markConversationAsRead(conversationId: string) {
+    this._conversationService.markAsRead(conversationId).subscribe();
+    this.updateLocalUnreadCount(conversationId, 0);
+  }
+
+  private updateLocalUnreadCount(conversationId: string, count: number) {
+    const current = this.conversationsSubject.value;
+    const index = current.findIndex(c => c.id === conversationId);
+    if (index !== -1) {
+      const updated = [...current];
+      updated[index] = { ...updated[index], unreadCount: count };
+      this.conversationsSubject.next(updated);
+    }
   }
 
   private loadChannels() {
@@ -291,6 +317,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
   }
 
+  filterType: 'all' | 'unread' = 'all';
+
+  setFilterType(type: 'all' | 'unread') {
+    if (this.filterType === type) return;
+    this.filterType = type;
+    this.conversationsSubject.next([]);
+    this.loadConversations();
+  }
+
   private loadConversations(datetime?: string) {
     if (this.loading$.value) return;
 
@@ -299,8 +334,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     const selectedChannel = this.selectedChannelSubject.value;
     const channelId = selectedChannel?.id;
     const phoneNumberId = selectedChannel?.phoneNumberId;
+    const onlyUnread = this.filterType === 'unread';
 
-    this._conversationService.list(datetime, this.searchCtrl?.value || '', 20, 1, channelId, phoneNumberId)
+    this._conversationService.list(datetime, this.searchCtrl?.value || '', 20, 1, channelId, phoneNumberId, onlyUnread)
       .pipe(finalize(() => this.loading$.next(false)))
       .subscribe({
         next: (conversations) => {
@@ -367,7 +403,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.contactsNextPage = 0;
   }
 
-  private moveConversationToTop(conversationId: string, message: Message): boolean {
+  private moveConversationToTop(conversationId: string, message: Message, incrementUnread: boolean = false): boolean {
     const current = this.conversationsSubject.value;
     const conversationIndex = current.findIndex(c => c.id === conversationId);
 
@@ -377,10 +413,13 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     const conversation = current[conversationIndex];
     const updatedMessages = [message, ...(conversation.messages || [])];
+    const newUnreadCount = incrementUnread ? (conversation.unreadCount || 0) + 1 : conversation.unreadCount;
+
     const updatedConversation = {
       ...conversation,
       lastMessageAt: message.createdAt,
-      messages: updatedMessages
+      messages: updatedMessages,
+      unreadCount: newUnreadCount
     };
     const updated = [updatedConversation, ...current.filter(c => c.id !== conversationId)];
 
@@ -392,7 +431,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     const message = event.message;
     const conversationId = event.conversationId;
 
-    const moved = this.moveConversationToTop(conversationId, message);
+    const incrementUnread = conversationId !== this.selectedConversationId;
+    const moved = this.moveConversationToTop(conversationId, message, incrementUnread);
 
     if (!moved) {
       this._conversationService.findById(conversationId)
