@@ -31,6 +31,7 @@ export class MessageContent {
   document?: DocumentMessage;
   sticker?: StickerMessage;
   button?: ButtonMessage;
+  template?: TemplateMessage;
 }
 
 export class MessageError {
@@ -86,6 +87,58 @@ export class StickerMessage {
   sha256: string;
   mime_type: string;
   animated: boolean;
+  url?: string;
+}
+
+export class TemplateMessage {
+  name: string;
+  language: string;
+  components: TemplateComponent[];
+  componentsFilled: TemplateComponentFilled[];
+}
+
+export type TemplateComponentFilled = TemplateHeaderFilled | TemplateBodyFilled | TemplateFooterFilled | TemplateButtonsFilled;
+
+export interface TemplateHeaderFilled {
+  type: 'HEADER';
+  format?: string;
+  text?: string;
+  fileNameStored?: string;
+  fileNameOriginal?: string;
+}
+
+export interface TemplateBodyFilled {
+  type: 'BODY';
+  text?: string;
+}
+
+export interface TemplateFooterFilled {
+  type: 'FOOTER';
+  text?: string;
+}
+
+export interface TemplateButtonsFilled {
+  type: 'BUTTONS';
+  buttons?: TemplateButton[];
+}
+
+export class TemplateComponent {
+  type: string;
+  parameters?: TemplateComponentParameter[];
+}
+
+export class TemplateComponentParameter {
+  type: string;
+  text?: string;
+  image?: ImageMessage;
+  document?: DocumentMessage;
+  video?: VideoMessage;
+}
+
+export class TemplateButton {
+  type: string;
+  text: string;
+  phoneNumber?: string;
   url?: string;
 }
 
@@ -156,6 +209,7 @@ export enum MessageType {
   AUDIO = 'AUDIO',
   STICKER = 'STICKER',
   BUTTON = 'BUTTON',
+  TEMPLATE = 'TEMPLATE',
   UNSUPPORTED = 'UNSUPPORTED'
 }
 

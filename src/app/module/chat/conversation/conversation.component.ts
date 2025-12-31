@@ -21,7 +21,12 @@ import {
   MessageStatusIconMap,
   MessageType,
   SenderType,
-  SendMessageRequest
+  SendMessageRequest,
+  TemplateHeaderFilled,
+  TemplateBodyFilled,
+  TemplateFooterFilled,
+  TemplateButtonsFilled,
+  TemplateButton
 } from "../../../model/chat/conversation";
 import {WhatsAppService} from '../../../service/whatsapp/whatsapp.service';
 import {BehaviorSubject, Observable, Subject, Subscription} from "rxjs";
@@ -62,6 +67,54 @@ export class ConversationComponent implements OnInit {
   protected readonly MessageType = MessageType;
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
   protected readonly MessageStatusColorMap = MessageStatusColorMap;
+
+  getTemplateHeader(message: Message): TemplateHeaderFilled | undefined {
+    return message?.content?.template?.componentsFilled?.find(c => c.type === 'HEADER') as TemplateHeaderFilled | undefined;
+  }
+
+  getTemplateBody(message: Message): TemplateBodyFilled | undefined {
+    return message?.content?.template?.componentsFilled?.find(c => c.type === 'BODY') as TemplateBodyFilled | undefined;
+  }
+
+  getTemplateFooter(message: Message): TemplateFooterFilled | undefined {
+    return message?.content?.template?.componentsFilled?.find(c => c.type === 'FOOTER') as TemplateFooterFilled | undefined;
+  }
+
+  getTemplateButtons(message: Message): TemplateButtonsFilled | undefined {
+    return message?.content?.template?.componentsFilled?.find(c => c.type === 'BUTTONS') as TemplateButtonsFilled | undefined;
+  }
+
+  isTemplateHeaderText(header: TemplateHeaderFilled) {
+    return header?.format === 'TEXT';
+  }
+
+  isTemplateHeaderImage(header: TemplateHeaderFilled) {
+    return header?.format === 'IMAGE';
+  }
+
+  isTemplateHeaderVideo(header: TemplateHeaderFilled) {
+    return header?.format === 'VIDEO';
+  }
+
+  isTemplateHeaderDocument(header: TemplateHeaderFilled) {
+    return header?.format === 'DOCUMENT';
+  }
+
+  isButtonQuickReply(button: TemplateButton) {
+    return button?.type === 'QUICK_REPLY';
+  }
+
+  isButtonPhoneNumber(button: TemplateButton) {
+    return button?.type === 'PHONE_NUMBER';
+  }
+
+  isButtonUrl(button: TemplateButton) {
+    return button?.type === 'URL';
+  }
+
+  getTemplateHeaderMediaFileName(header: TemplateHeaderFilled): string | undefined {
+    return header?.fileNameStored;
+  }
 
   mediaPreview?: {
     type: MessageType;

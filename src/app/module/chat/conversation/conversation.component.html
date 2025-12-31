@@ -70,7 +70,7 @@
                       }}
                     </div>
                   </div>
-                  <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ img?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -104,7 +104,7 @@
                       }}
                     </div>
                   </div>
-                  <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ vid?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -137,7 +137,7 @@
                       'media-not-found' | translate
                     }}
                   </div>
-                  <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1">{{ doc?.caption }}</div>
+                  <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1 max-w-[350px]">{{ doc?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -179,13 +179,13 @@
 
             <ng-container *ngSwitchCase="MessageType.TEXT">
               <ng-container *ngIf="message?.content?.text as text">
-                <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+                <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ text?.body }}</div>
               </ng-container>
             </ng-container>
 
             <ng-container *ngSwitchCase="MessageType.BUTTON">
               <ng-container *ngIf="message?.content?.button as button">
-                <div class="text-sm whitespace-pre-wrap">{{ button?.text || button?.payload }}</div>
+                <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ button?.text || button?.payload }}</div>
               </ng-container>
             </ng-container>
 
@@ -234,7 +234,7 @@
                       }}
                     </div>
                   </div>
-                  <div class="text-sm whitespace-pre-wrap">{{ img?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ img?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -268,7 +268,7 @@
                       }}
                     </div>
                   </div>
-                  <div class="text-sm whitespace-pre-wrap">{{ vid?.caption }}</div>
+                  <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ vid?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -301,14 +301,110 @@
                       'media-not-found' | translate
                     }}
                   </div>
-                  <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1">{{ doc?.caption }}</div>
+                  <div *ngIf="doc?.caption" class="text-sm whitespace-pre-wrap mt-1 max-w-[350px]">{{ doc?.caption }}</div>
                 </ng-container>
               </ng-container>
             </ng-container>
 
             <ng-container *ngSwitchCase="MessageType.TEXT">
               <ng-container *ngIf="message?.content?.text as text">
-                <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+                <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ text?.body }}</div>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MessageType.TEMPLATE">
+              <ng-container *ngIf="message?.content?.template as template">
+                <div class="flex flex-col">
+                  <!-- Header -->
+                  <ng-container *ngIf="getTemplateHeader(message) as header">
+                    <ng-container *ngIf="isTemplateHeaderText(header)">
+                      <div class="text-sm font-semibold mb-1">{{ header.text }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="isTemplateHeaderImage(header)">
+                      <ng-container *ngIf="getTemplateHeaderMediaFileName(header) | storageAsync | async as media">
+                        <ng-container *ngIf="media.loading">
+                          <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
+                            <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                          </div>
+                        </ng-container>
+                        <img *ngIf="media.url" [src]="media.url" class="w-[350px] h-[400px] object-cover rounded mb-1" alt=""/>
+                        <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">
+                          {{ 'media-not-found' | translate }}
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                    <ng-container *ngIf="isTemplateHeaderVideo(header)">
+                      <ng-container *ngIf="getTemplateHeaderMediaFileName(header) | storageAsync | async as media">
+                        <ng-container *ngIf="media.loading">
+                          <div class="flex justify-center items-center w-[350px] h-[400px] bg-gray-100 rounded mb-1">
+                            <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                          </div>
+                        </ng-container>
+                        <video *ngIf="media.url" [src]="media.url" controls controlsList="nodownload"
+                               class="w-[350px] h-[400px] object-cover rounded mb-1"></video>
+                        <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">
+                          {{ 'media-not-found' | translate }}
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                    <ng-container *ngIf="isTemplateHeaderDocument(header)">
+                      <ng-container *ngIf="getTemplateHeaderMediaFileName(header) | storageAsync | async as media">
+                        <ng-container *ngIf="media.loading">
+                          <div class="flex justify-center items-center w-[350px] h-[80px] bg-gray-100 rounded mb-1">
+                            <mat-progress-spinner diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                          </div>
+                        </ng-container>
+                        <div *ngIf="media.url" class="flex flex-col w-[350px] h-[80px]">
+                          <a [href]="media.url" target="_blank" rel="noopener"
+                             class="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer no-underline">
+                            <div class="flex-none">
+                              <mat-icon class="text-gray-600 w-10 h-10 !text-[40px]"
+                                        svgIcon="mat:insert_drive_file"></mat-icon>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                              <div class="text-sm font-medium text-gray-900 truncate">{{ header.fileNameStored || 'Document' }}</div>
+                              <div class="text-xs text-gray-500">{{ 'document-click-to-open' | translate }}</div>
+                            </div>
+                            <div class="flex-none">
+                              <mat-icon class="text-gray-500 w-5 h-5 !text-[20px]" svgIcon="mat:open_in_new"></mat-icon>
+                            </div>
+                          </a>
+                        </div>
+                        <div *ngIf="media.error" class="text-sm text-gray-500 italic bg-gray-100 rounded mb-2 p-2">
+                          {{ 'media-not-found' | translate }}
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                  <!-- Body -->
+                  <ng-container *ngIf="getTemplateBody(message) as body">
+                    <div class="text-sm whitespace-pre-wrap mb-1 max-w-[350px]">{{ body.text }}</div>
+                  </ng-container>
+                  <!-- Footer -->
+                  <ng-container *ngIf="getTemplateFooter(message) as footer">
+                    <div class="text-xs text-gray-300 mb-2 max-w-[350px]">{{ footer.text }}</div>
+                  </ng-container>
+                </div>
+                <!-- Buttons -->
+                <ng-container *ngIf="getTemplateButtons(message) as buttons">
+                  <div *ngFor="let button of buttons.buttons" class="mt-1 max-w-[350px]">
+                    <div *ngIf="isButtonQuickReply(button)"
+                         class="flex items-center justify-center bg-white rounded-lg border border-gray-200 px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 cursor-pointer">
+                      <mat-icon svgIcon="mat:reply" class="w-4 h-4 mr-2"></mat-icon>
+                      <span>{{ button.text }}</span>
+                    </div>
+                    <div *ngIf="isButtonPhoneNumber(button)"
+                         class="flex items-center justify-center bg-white rounded-lg border border-gray-200 px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 cursor-pointer">
+                      <mat-icon svgIcon="mat:call" class="w-4 h-4 mr-2"></mat-icon>
+                      <span>{{ button.text }}</span>
+                    </div>
+                    <div *ngIf="isButtonUrl(button)"
+                         class="flex items-center justify-center bg-white rounded-lg border border-gray-200 px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 cursor-pointer">
+                      <mat-icon svgIcon="mat:launch" class="w-4 h-4 mr-2"></mat-icon>
+                      <span>{{ button.text }}</span>
+                    </div>
+                  </div>
+                </ng-container>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -327,7 +423,7 @@
         <div
           class="flex flex-col mt-1 space-y-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 max-w-[400px] shadow-sm">
           <ng-container *ngIf="message?.content?.text as text">
-            <div class="text-sm whitespace-pre-wrap">{{ text?.body }}</div>
+            <div class="text-sm whitespace-pre-wrap max-w-[350px]">{{ text?.body }}</div>
           </ng-container>
 
           <div class="flex items-center justify-between w-full">

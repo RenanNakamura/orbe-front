@@ -76,11 +76,11 @@ export class MediaAsyncPipe implements PipeTransform {
 @NgModule({
   declarations: [
     MapWhatsAppErrorPipe,
-    MediaAsyncPipe
+    MediaAsyncPipe,
   ],
   exports: [
     MapWhatsAppErrorPipe,
-    MediaAsyncPipe
+    MediaAsyncPipe,
   ],
 })
 export class MetaPipeModule {

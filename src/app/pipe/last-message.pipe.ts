@@ -1,6 +1,7 @@
 import {NgModule, Pipe, PipeTransform} from '@angular/core';
 import {Message, MessageType} from "../model/chat/conversation";
 import {TranslateService} from "@ngx-translate/core";
+import {Body, Format, Header} from "../model/Template";
 
 @Pipe({
   name: 'lastMessage'
@@ -38,6 +39,34 @@ export class LastMessagePipe implements PipeTransform {
 
       case MessageType.BUTTON:
         return content?.button?.text || content?.button?.payload || '';
+
+      case MessageType.TEMPLATE: {
+        const components = content?.template?.componentsFilled ?? [];
+
+        const header = components.find(c => c.type === 'HEADER') as Header;
+        const body = components.find(c => c.type === 'BODY') as Body;
+        const headerText = header?.text ?? '';
+        const bodyText = body?.text ?? '';
+
+        if (header?.format) {
+          switch (header.format) {
+            case Format.IMAGE:
+              return `📷 ${bodyText}`;
+
+            case Format.VIDEO:
+              return `🎥 ${bodyText}`;
+
+            case Format.DOCUMENT:
+              return `📎 ${bodyText}`;
+          }
+        }
+
+        if (headerText && bodyText) {
+          return `${headerText} ${bodyText}`;
+        }
+
+        return headerText || bodyText || '';
+      }
 
       case MessageType.UNSUPPORTED:
         return `${this._translate.instant(`unsupported-message`)}`;

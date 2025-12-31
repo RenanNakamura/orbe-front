@@ -119,3 +119,9 @@ export interface TemplateParams {
   status?: Status;
   channelId?: string;
 }
+
+export function isFormatMedia(format: Format): boolean {
+  return format === Format.IMAGE ||
+    format === Format.VIDEO ||
+    format === Format.DOCUMENT;
+}

@@ -22,7 +22,18 @@ import {
 } from '../../../model/Campaign';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {TemplateService} from '../../../service/template/template.service';
-import {Body, Button, Footer, Format, Header, isMediaType, Status, Template, Type} from '../../../model/Template';
+import {
+  Body,
+  Button,
+  Footer,
+  Format,
+  Header,
+  isFormatMedia,
+  isMediaType,
+  Status,
+  Template,
+  Type
+} from '../../../model/Template';
 import {Observable, ReplaySubject} from 'rxjs';
 import {Page} from '../../../model/sk/Page';
 import {TranslateService} from '@ngx-translate/core';
@@ -344,6 +355,15 @@ export class FormComponent implements OnInit {
             .forEach(p => {
               p.fileName = this.selectedFile?.name;
               p.fileNameStored = storage.filename;
+            });
+
+          this.template
+            ?.components
+            ?.filter(c => c.type === Type.HEADER && isFormatMedia((c as Header)?.format))
+            ?.forEach(c => {
+              const header = c as Header;
+              header.fileNameOriginal = this.selectedFile?.name;
+              header.fileNameStored = storage.filename;
             });
         }
 
