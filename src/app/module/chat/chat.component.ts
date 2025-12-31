@@ -273,6 +273,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.moveConversationToTop(event.conversationId, event.message);
       });
 
+    const initialConversationId = this._route.firstChild?.snapshot.paramMap.get('conversationId');
+
+    if (initialConversationId) {
+      this.selectedConversationId = initialConversationId;
+      this.markConversationAsRead(initialConversationId);
+    }
+
     this._router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
@@ -302,7 +309,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     const index = current.findIndex(c => c.id === conversationId);
     if (index !== -1) {
       const updated = [...current];
-      updated[index] = { ...updated[index], unreadCount: count };
+      updated[index] = {...updated[index], unreadCount: count};
       this.conversationsSubject.next(updated);
     }
   }
@@ -438,14 +445,24 @@ export class ChatComponent implements OnInit, OnDestroy {
     const message = event.message;
     const conversationId = event.conversationId;
 
-    const incrementUnread = conversationId !== this.selectedConversationId;
-    const moved = this.moveConversationToTop(conversationId, message, incrementUnread);
+    const isOpenConversation = conversationId === this.selectedConversationId;
+
+    const moved = this.moveConversationToTop(
+      conversationId,
+      message,
+      !isOpenConversation // só incrementa unread se NÃO estiver aberta
+    );
+
+    if (isOpenConversation) {
+      this.updateLocalUnreadCount(conversationId, 0);
+      this.markConversationAsRead(conversationId);
+    }
 
     if (!moved) {
       this._conversationService.findById(conversationId)
         .subscribe(conversation => {
           const currentConversations = this.conversationsSubject.value ?? [];
-          this.conversationsSubject.next([...[conversation], ...currentConversations]);
+          this.conversationsSubject.next([conversation, ...currentConversations]);
         });
     }
   }
