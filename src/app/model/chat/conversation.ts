@@ -7,6 +7,7 @@ export interface Conversation {
   ddi: string;
   phoneNumber: string;
   lastMessageAt: string;
+  unreadCount?: number;
   messages: Message[];
 }
 
