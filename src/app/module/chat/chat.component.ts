@@ -21,7 +21,6 @@ import {ContactService} from "../../service/contact/contact.service";
 import {MessageCache} from "../../service/chat/message.cache";
 import {ChatWebSocketService} from "../../service/chat/chat-websocket.service";
 import {WebSocketStatus} from "../../service/websocket/websocket-connection";
-import { TokenStorage } from '../../storage/user/token.storage';
 
 @Component({
   selector: 'vex-chat',
@@ -70,9 +69,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   wsStatus$ = this._chatWebSocket.status$;
   protected readonly WebSocketStatus = WebSocketStatus;
 
-  agentId: string;
-  tenantId: string;
-
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -84,13 +80,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _contactService: ContactService,
     private _messageCache: MessageCache,
     private _chatWebSocket: ChatWebSocketService,
-    private _tokenStorage: TokenStorage,
   ) {
   }
 
   ngOnInit() {
-    this.agentId = this._tokenStorage.getAgentId();
-    this.tenantId = this._tokenStorage.getTenantId();
     this.syncSubscribers();
     this.loadChannels();
     this.subscribeWebsocketEvents();

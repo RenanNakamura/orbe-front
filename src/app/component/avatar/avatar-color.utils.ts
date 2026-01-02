@@ -1,4 +1,4 @@
-export function tenantAndUserIdAndNameToColor(tenantId: string, userId: string, name: string): string {
+export function tenantAndNameToColor(tenantId: string, name: string): string {
   const input = `${tenantId}:${name}`.toLowerCase();
 
   let hash = 0;

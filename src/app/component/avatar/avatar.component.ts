@@ -1,7 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { getInitials } from './avatar.utils';
-import { tenantAndUserIdAndNameToColor } from './avatar-color.utils';
+import { tenantAndNameToColor } from './avatar-color.utils';
+import { TokenStorage } from '../../storage/user/token.storage';
 
 type AvatarCacheEntry = {
   initials: string;
@@ -31,22 +32,28 @@ function cacheKey(tenantId: string, userId: string, name: string): string {
   `
 })
 export class AvatarComponent implements OnChanges {
-  @Input({ required: true }) userId!: string;
+  private tenantId!: string;
+  private agentId!: string;
+
   @Input({ required: true }) name!: string;
-  @Input({ required: true }) tenantId!: string;
   @Input() size = 36;
 
   initials = '';
   backgroundColor = '#999';
 
+  constructor(private _tokenStorage: TokenStorage) {
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['userId'] || changes['name'] || changes['tenantId']) {
+    this.tenantId = this._tokenStorage.getTenantId();
+    this.agentId = this._tokenStorage.getAgentId();
+    if (changes['name']) {
       this.resolveAvatar();
     }
   }
 
   private resolveAvatar(): void {
-    const key = cacheKey(this.tenantId, this.userId, this.name);
+    const key = cacheKey(this.tenantId, this.agentId, this.name);
     const cached = AVATAR_CACHE.get(key);
 
     if (cached) {
@@ -56,7 +63,10 @@ export class AvatarComponent implements OnChanges {
     }
 
     this.initials = getInitials(this.name);
-    this.backgroundColor = tenantAndUserIdAndNameToColor(this.tenantId, this.userId, this.name);
+    this.backgroundColor = tenantAndNameToColor(
+      this.tenantId,
+      this.name
+    );
 
     AVATAR_CACHE.set(key, {
       initials: this.initials,

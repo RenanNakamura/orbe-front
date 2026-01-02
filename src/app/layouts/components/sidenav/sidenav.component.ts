@@ -19,7 +19,6 @@ import {TranslateModule} from '@ngx-translate/core';
 import {UserStorage} from '../../../storage/user/user.storage';
 import {LoggedUser} from '../../../model/User';
 import { AvatarComponent } from '../../../component/avatar/avatar.component';
-import { TokenStorage } from '../../../storage/user/token.storage';
 
 @Component({
   selector: 'vex-sidenav',
@@ -60,8 +59,6 @@ export class SidenavComponent implements OnInit {
 
   user: LoggedUser;
   userMenuOpen$: Observable<boolean> = of(false);
-  agentId: string;
-  tenantId: string;
 
   items$: Observable<NavigationItem[]> = this.navigationService.items$;
 
@@ -71,15 +68,12 @@ export class SidenavComponent implements OnInit {
     private configService: VexConfigService,
     private readonly popoverService: VexPopoverService,
     private readonly dialog: MatDialog,
-    private _userStorage: UserStorage,
-    private _tokenStorage: TokenStorage
+    private _userStorage: UserStorage
   ) {
   }
 
   ngOnInit() {
     this.user = this._userStorage.get();
-    this.agentId = this._tokenStorage.getAgentId();
-    this.tenantId = this._tokenStorage.getTenantId();
   }
 
   collapseOpenSidenav() {

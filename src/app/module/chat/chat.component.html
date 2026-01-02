@@ -208,9 +208,7 @@
                           class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
 
                         <app-avatar
-                          [userId]="agentId"
                           [name]="conversation?.name"
-                          [tenantId]="tenantId"
                           [size]="40">
                         </app-avatar>
                         <div class="flex-1 select-none truncate">
@@ -279,9 +277,7 @@
                         [disabled]="creatingConversation$ | async"
                         [matRippleDisabled]="creatingConversation$ | async">
                         <app-avatar
-                          [userId]="agentId"
                           [name]="contact?.name"
-                          [tenantId]="tenantId"
                           [size]="40">
                         </app-avatar>
                         <div class="flex-1 select-none truncate">

@@ -63,8 +63,6 @@ export class ConversationComponent implements OnInit {
 
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
   conversation?: Conversation;
-  tenantId: string;
-  agentId: string;
 
   protected readonly MessageType = MessageType;
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
@@ -151,8 +149,6 @@ export class ConversationComponent implements OnInit {
   ngOnInit() {
     this.syncSubscribers();
     this.setupScrollListener();
-    this.agentId = this._tokenStorage.getAgentId();
-    this.tenantId = this._tokenStorage.getTenantId();
   }
 
   openDrawer() {
