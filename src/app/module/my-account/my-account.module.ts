@@ -6,6 +6,7 @@ import { FormComponent } from './form/form.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AvatarComponent } from '../../component/avatar/avatar.component';
 
 @NgModule({
   declarations: [FormComponent],
@@ -14,7 +15,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyAccountRoutingModule,
     TranslateModule,
     MatTabsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AvatarComponent
   ]
 })
 export class MyAccountModule {}

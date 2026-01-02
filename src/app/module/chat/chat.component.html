@@ -207,8 +207,12 @@
                           *ngIf="rla.isActive"
                           class="w-1 bg-primary-600 absolute left-0 top-0 bottom-0 rounded-full my-1"></div>
 
-                        <img src="assets/img/no-avatar.png" alt="Profile"
-                             class="h-10 w-10 rounded-full flex-none select-none">
+                        <app-avatar
+                          [userId]="agentId"
+                          [name]="conversation?.name"
+                          [tenantId]="tenantId"
+                          [size]="40">
+                        </app-avatar>
                         <div class="flex-1 select-none truncate">
                           <div class="truncate flex mb-0.5">
                             <div class="font-medium flex-1">{{ conversation.name }}</div>
@@ -274,8 +278,12 @@
                         (click)="this.onSelectContact(contact)"
                         [disabled]="creatingConversation$ | async"
                         [matRippleDisabled]="creatingConversation$ | async">
-                        <img src="assets/img/no-avatar.png" alt="Profile"
-                             class="h-10 w-10 rounded-full flex-none select-none">
+                        <app-avatar
+                          [userId]="agentId"
+                          [name]="contact?.name"
+                          [tenantId]="tenantId"
+                          [size]="40">
+                        </app-avatar>
                         <div class="flex-1 select-none truncate">
                           <div class="truncate flex mb-0.5">
                             <div class="font-medium flex-1">{{ contact.name }}</div>

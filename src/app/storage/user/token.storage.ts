@@ -6,11 +6,9 @@ import {Role} from "../../model/User";
   providedIn: 'root'
 })
 export class TokenStorage {
-
   private _key = 'Authorization';
 
-  constructor() {
-  }
+  constructor() {}
 
   set(token: string | null): void {
     localStorage.setItem(this._key, token ?? '');
@@ -26,7 +24,15 @@ export class TokenStorage {
 
   isUserToken(): boolean {
     const role = this.getClaim('role');
-    return role !== Role.AGENT
+    return role !== Role.AGENT;
+  }
+
+  getTenantId(): string {
+    return this.getClaim('sub');
+  }
+
+  getAgentId(): string {
+    return this.getClaim('agentId') || this.getClaim('sub');
   }
 
   getClaim(claim: string) {
@@ -51,5 +57,4 @@ export class TokenStorage {
       return null;
     }
   }
-
 }

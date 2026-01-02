@@ -73,10 +73,12 @@
       class="vex-sidenav-user flex items-center"
       matRipple
       matRippleColor="var(--vex-sidenav-item-ripple-color)">
-      <img
-        alt="User Avatar"
-        class="vex-sidenav-user__image flex-none"
-        src="../../../../assets/img/avatars/noavatar.png" />
+      <app-avatar
+        [userId]="agentId"
+        [name]="user?.name"
+        [tenantId]="tenantId"
+        [size]="40">
+      </app-avatar>
       <div class="vex-sidenav-user__content flex-auto">
         <div class="vex-sidenav-user__title">{{user?.name}}</div>
         <div class="vex-sidenav-user__subtitle">{{ user.role | translate }}</div>

@@ -4,6 +4,7 @@ import {scaleIn400ms} from '../../../../@vex/animations/scale-in.animation';
 import {fadeInRight400ms} from '../../../../@vex/animations/fade-in-right.animation';
 import {UserStorage} from '../../../storage/user/user.storage';
 import {LoggedUser} from '../../../model/User';
+import { TokenStorage } from '../../../storage/user/token.storage';
 
 @Component({
     selector: 'my-account',
@@ -25,12 +26,17 @@ export class FormComponent implements OnInit {
     ];
 
     loggedUser: LoggedUser;
+    tenantId: string;
+    agentId: string;
 
-    constructor(private _storage: UserStorage) {
+    constructor(private _storage: UserStorage,
+                private _tokenStorage: TokenStorage) {
     }
 
     ngOnInit(): void {
         this.loggedUser = this._storage.get();
+        this.tenantId = this._tokenStorage.getTenantId();
+        this.agentId = this._tokenStorage.getAgentId();
     }
 
 }

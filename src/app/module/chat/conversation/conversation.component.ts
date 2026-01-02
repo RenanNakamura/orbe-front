@@ -63,6 +63,8 @@ export class ConversationComponent implements OnInit {
 
   messages$: Observable<Message[]> = this.messagesSubject.asObservable();
   conversation?: Conversation;
+  tenantId: string;
+  agentId: string;
 
   protected readonly MessageType = MessageType;
   protected readonly MessageStatusIconMap = MessageStatusIconMap;
@@ -126,7 +128,7 @@ export class ConversationComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   private getAgentId(): string {
-    const agentId = this._tokenStorage.getClaim('agentId') || this._tokenStorage.getClaim('sub');
+    const agentId = this._tokenStorage.getAgentId();
 
     if (!agentId) {
       console.error('m=getAgentId; msg=Agent ID not found in token');
@@ -144,12 +146,13 @@ export class ConversationComponent implements OnInit {
     private _messageCache: MessageCache,
     private _whatsappService: WhatsAppService,
     private _tokenStorage: TokenStorage
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.syncSubscribers();
     this.setupScrollListener();
+    this.agentId = this._tokenStorage.getAgentId();
+    this.tenantId = this._tokenStorage.getTenantId();
   }
 
   openDrawer() {

@@ -26,6 +26,7 @@ import {MetaPipeModule} from "../../pipe/meta.pipe";
 import {PhoneMaskPipeModule} from "../../pipe/phone-mask.pipe";
 import {WebSocketStatusPipeModule} from "../../pipe/websocket-status.pipe";
 import {StoragePipeModule} from "../../pipe/storage.pipe";
+import { AvatarComponent } from '../../component/avatar/avatar.component';
 
 @NgModule({
   declarations: [
@@ -64,8 +65,8 @@ import {StoragePipeModule} from "../../pipe/storage.pipe";
     MetaPipeModule,
     WebSocketStatusPipeModule,
     StoragePipeModule,
+    AvatarComponent
   ],
   providers: []
 })
-export class ChatModule {
-}
+export class ChatModule {}

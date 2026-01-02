@@ -1,0 +1,11 @@
+.avatar-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-photo {
+  border-radius: 50%;
+  object-fit: cover;
+}
